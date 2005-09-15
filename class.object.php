@@ -195,6 +195,10 @@ class Object
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\t\$Database->InsertOrUpdate(\$query);";
+		$this->string .= "\n\t\tif (\$this->".strtolower($this->objectName)."Id == \"\")";
+		$this->string .= "\n\t\t{";
+		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$Database->GetCurrentId();";
+		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t}";
 	}
 	
@@ -256,12 +260,12 @@ class Object
 		$this->string .= "\tstatic function Get".$this->objectName."List(\$field,\$comparator,\$fieldValue)\n\t{\n\t\t";
 		$this->string .= "\n\t\t\$".strtolower($this->objectName)."List = Array();";
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
-		$this->string .= "\n\t\t\$query = \"select ".strtolower($this->objectName)."Id from ".strtolower($this->objectName)." where `\".\$field.\"`\".\$comparator.\"'\".\$Database->Escape(\$fieldValue).\"'\";";
+		$this->string .= "\n\t\t\$query = \"select ".strtolower($this->objectName)."id from ".strtolower($this->objectName)." where `\".\$field.\"`\".\$comparator.\"'\".\$Database->Escape(\$fieldValue).\"'\";";
 		$this->string .= "\n\t\t\$Database->Query(\$query);";
 		$this->string .= "\n\t\tfor (\$i=0; \$i < \$Database->Rows(); \$i++)";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)." = new $this->objectName();";
-		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."->Get(\$Database->Result(\$i,\"".strtolower($this->objectName)."Id\"));";
+		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."->Get(\$Database->Result(\$i,\"".strtolower($this->objectName)."id\"));";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."List[] = $".strtolower($this->objectName).";";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\treturn \$".strtolower($this->objectName)."List;";

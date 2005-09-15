@@ -79,7 +79,7 @@
 	*/
 	function Escape($text) 
 	{
-		if (!ctype_digit($text))
+		if (!ctype_digit($text) && !is_integer($text))
 		{
 			return base64_encode($text);
 		}
@@ -89,7 +89,7 @@
 	// -------------------------------------------------------------
 	function Unescape($text)
 	{
-		if (!ctype_digit($text))
+		if (!ctype_digit($text)  && !is_integer($text))
 		{
 			return base64_decode($text);
 		}

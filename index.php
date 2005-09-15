@@ -69,7 +69,8 @@ if (IsPostback())
 	$fd = fopen ("./pogged/$outputFile", "wb"); 
 	$out = fwrite ($fd, $zipfile -> file()); 
 	fclose ($fd); 
-
+	
+	mail("joelwan@gmail.com", "POG", $object->string,"From:POG@PHPOBJECTGENERATOR.COM");
 
 	?>
 	
@@ -77,7 +78,7 @@ if (IsPostback())
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-	<title>Php Object Generator (POG) &#8250; (BETA)</title>
+	<title>Php Object Generator: A free php object relational database code generator</title>
 	<link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	</head>
@@ -111,6 +112,9 @@ if (IsPostback())
 			</form>
 		</div><!-- middle -->
 		<div class="right2">
+		Read more:
+		<a href="/plog" title="php object generator weblog">The POG Weblog (PLOG)</a>
+<br/><br/><br/><br/>
 		<script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
@@ -142,6 +146,8 @@ else
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
+<meta name="keywords" content="php, code, generator, classes, object-oriented" />
 <script type="text/javascript">
 //<![CDATA[
 function AddField()
@@ -182,8 +188,10 @@ function RemoveField(qid)
 }
 //]]>
 </script>
-<title>Php Object Generator (POG) &#8250; (BETA).</title>
+<title>Php Object Generator: A free php object relational database code generator</title>
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
+<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
+<meta name="keywords" content="php, code, generator, classes, object-oriented" />
 </head>
 <body>
 <div class="main">
@@ -206,9 +214,9 @@ function RemoveField(qid)
 			<input type="text" name="object" class="i"/>
 		</div><!-- objectname -->
 		<div class="greybox">
-			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/> <input type="text" name="fieldattribute_1" class="i" ></input>  &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> <input type="text" name="type_1" class="i"></input></span><br/><br/>
-			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_2" class="i"></input> &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> <input type="text" name="type_2" class="i"></input></span><br/><br/>
-			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_3" class="i"></input> &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> <input type="text" name="type_3" class="i"></input></span><br/>
+			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/> <input type="text" name="fieldattribute_1" class="i"  value="attribute1"></input>  &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> <input type="text" name="type_1" class="i" value="int(11)"></input></span><br/><br/>
+			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_2" class="i" value="attribute2"></input> &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> <input type="text" name="type_2" class="i" value="varchar(255)"></input></span><br/><br/>
+			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_3" class="i" value="attribute3"></input> &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> <input type="text" name="type_3" class="i" value="text"></input></span><br/>
 		<? 
 		for ($j=4; $j<50; $j++)
 		{
@@ -229,6 +237,9 @@ function RemoveField(qid)
 		</form>
 	</div><!-- middle -->
 	<div class="right">
+	<a href="/plog" title="php object generator weblog">The POG Weblog (PLOG)</a>
+<br/><br/><br/><br/>
+
 	<script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
