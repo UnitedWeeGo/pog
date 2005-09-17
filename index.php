@@ -93,7 +93,7 @@ if (IsPostback())
 			
 			<br/><br/>Drop us a line @ <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
 		
-			<br/><br/>Last update: Sep 2 2005.
+			<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a>.
 		</div><!-- left -->
 		
 		<div class="middle">
@@ -112,9 +112,6 @@ if (IsPostback())
 			</form>
 		</div><!-- middle -->
 		<div class="right2">
-		Read more:
-		<a href="/plog" title="php object generator weblog">The POG Weblog (PLOG)</a>
-<br/><br/><br/><br/>
 		<script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
@@ -203,7 +200,7 @@ function RemoveField(qid)
 		<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>. 
 		
 		<br/><br/>Drop us a line @ <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
-		<br/><br/>Last update: Sep 2 2005.
+		<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a>.
 	</div><!-- left -->
 	
 	<div class="middle">
@@ -237,9 +234,6 @@ function RemoveField(qid)
 		</form>
 	</div><!-- middle -->
 	<div class="right">
-	<a href="/plog" title="php object generator weblog">The POG Weblog (PLOG)</a>
-<br/><br/><br/><br/>
-
 	<script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
