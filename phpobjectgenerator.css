@@ -71,9 +71,9 @@ input.i, select.s
 
 .generate
 {
-	padding-left:280px;
+	padding-left:235px;
 	padding-top:10px;
-	width:145px;
+	width:190px;
 	height:50px;
 	background:url('./end.jpg') top left no-repeat;
 	float:left;
