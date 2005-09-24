@@ -1,5 +1,12 @@
 <?php
+session_cache_limiter('nocache');
+$cache_limiter = session_cache_limiter();
 session_start();
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); 
+header('Cache-Control: no-store, no-cache, must-revalidate'); 
+header('Cache-Control: post-check=0, pre-check=0', FALSE); 
+header('Pragma: no-cache'); 
+header('Expires: 0'); 
 if (isset($_SESSION['objectName']))
 {
 	$objectName = $_SESSION['objectName'];
@@ -56,8 +63,8 @@ function ResetFields()
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 <meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
-<META HTTP-EQUIV="expires" VALUE="Thu, 16 Mar 2000 11:00:00 GMT">
-<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0">
 </head>
 <body>
 <div class="main">
