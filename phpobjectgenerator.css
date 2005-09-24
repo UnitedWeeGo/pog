@@ -85,10 +85,20 @@ input.i, select.s
 	padding-left:280px;
 	padding-top:10px;
 	width:145px;
-	height:100px;
+	height:10px;
 	background:url('./end2.jpg') top left no-repeat;
 	float:left;
 	position:relative;
+}
+.restart
+{
+	width:370px;
+	height:100px;
+	padding-top:30px;
+	background-color:#333;
+	background:url('./restart.gif') top left no-repeat;
+	position:relative;
+	float:left;
 }
 
 .submit
