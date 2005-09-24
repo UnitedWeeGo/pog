@@ -115,6 +115,10 @@ if (IsPostback())
 			</div><!-- greybox -->
 			<div class="generate2">
 			</div><!-- generate -->
+			<div class="restart">
+				<a href="./index.php"><img src="./back1.gif" border="0"/></a><br/>
+				<a href="./restart.php"><img src="./back2.gif" border="0"/></a>
+			</div><!-- restart -->
 			</form>
 		</div><!-- middle -->
 		<div class="right2">
