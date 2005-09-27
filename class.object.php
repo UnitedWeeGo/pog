@@ -272,7 +272,7 @@ class Object
 		$this->string .= "\n\t\t{";
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\n\t\t\tcase \"$attribute\":";
+			$this->string .= "\n\t\t\tcase \"strtolower($attribute)\":";
 			$this->string .= "\n\t\t\t\tusort(\$".strtolower($this->objectName)."List, array(\"".$this->objectName."\",\"Compare".$this->objectName."By".$attribute."\"));";
 			$this->string .= "\n\t\t\t\tif (!\$ascending)";
 			$this->string .= "\n\t\t\t\t{";
