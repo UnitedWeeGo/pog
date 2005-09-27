@@ -64,7 +64,7 @@ class Object
 	function CreateGetFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Gets the object from the database",array(strtolower($this->objectName)."Id"),"object");
+		$this->string .= $this->CreateComments("Gets object from database",array("integer"),"object");
 		$this->string .="\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$query = \"select * from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
@@ -245,7 +245,7 @@ class Object
 	// -------------------------------------------------------------
 	function CreatePreface()
 	{
-		$this->string .= "//\tPOG v.1 (http://www.phpobjectgenerator.com)\n"; 
+		$this->string .= "//\tPOG 1.0 rev8 (http://www.phpobjectgenerator.com)\n"; 
 		$this->string .= "//\tFeel free to use the code for personal & commercial purposes. (Offered under the OpenBSD license)\n\n"; 
 		$this->string .= "//\tThis SQL query will create the table to store your object.\n";
 		$this->CreateSQLQuery();
@@ -256,8 +256,8 @@ class Object
 	function CreateGetAllFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Gets all objects from the database",'',"array of objects");
-		$this->string .= "\tstatic function Get".$this->objectName."List(\$field,\$comparator,\$fieldValue)\n\t{\n\t\t";
+		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("string","string","string","string","boolean"),"array of objects");
+		$this->string .= "\tstatic function Get".$this->objectName."List(\$field,\$comparator,\$fieldValue,\$sortBy=\"\",\$ascending=true)\n\t{\n\t\t";
 		$this->string .= "\n\t\t\$".strtolower($this->objectName)."List = Array();";
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$query = \"select ".strtolower($this->objectName)."id from ".strtolower($this->objectName)." where `\".\$field.\"`\".\$comparator.\"'\".\$Database->Escape(\$fieldValue).\"'\";";
@@ -268,8 +268,37 @@ class Object
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."->Get(\$Database->Result(\$i,\"".strtolower($this->objectName)."id\"));";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."List[] = $".strtolower($this->objectName).";";
 		$this->string .= "\n\t\t}";
+		$this->string .= "\n\t\tswitch(strtolower(\$sortBy))";
+		$this->string .= "\n\t\t{";
+		foreach ($this->attributeList as $attribute)
+		{
+			$this->string .= "\n\t\t\tcase \"$attribute\":";
+			$this->string .= "\n\t\t\t\tusort(\$".strtolower($this->objectName)."List, array(\"".$this->objectName."\",\"Compare".$this->objectName."By".$attribute."\"));";
+			$this->string .= "\n\t\t\t\tif (!\$ascending)";
+			$this->string .= "\n\t\t\t\t{";
+			$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)."List = array_reverse(\$".strtolower($this->objectName)."List);";
+			$this->string .= "\n\t\t\t\t}";
+			$this->string .= "\n\t\t\tbreak;";
+		}
+		$this->string .= "\n\t\t\tcase \"\":";
+		$this->string .= "\n\t\t\tdefault:";
+		$this->string .= "\n\t\t\tbreak;";
+		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\treturn \$".strtolower($this->objectName)."List;";
 		$this->string .= "\n\t}";
+	}
+	
+	// -------------------------------------------------------------
+	function CreateCompareFunctions()
+	{
+		foreach ($this->attributeList as $attribute)
+		{
+			$this->string .= "\n\t$this->separator\n\t";
+			$this->string .= $this->CreateComments("private function to sort an array of $this->objectName by $attribute",'',"+1 if attribute1 > attribute2, 0 if attribute1==attribute2 and -1 if attribute1 < attribute2");
+			$this->string .= "\tstatic function Compare".$this->objectName."By$attribute(\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2)\n\t{";
+			$this->string .= "\n\t\treturn strcmp(strtolower(\$".strtolower($this->objectName)."1->$attribute), strtolower(\$".strtolower($this->objectName)."2->$attribute));";
+			$this->string .= "\n\t}";
+		}
 	}
 }
 ?>

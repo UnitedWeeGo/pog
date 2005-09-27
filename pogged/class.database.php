@@ -102,6 +102,7 @@
 		return mysql_insert_id($this->connection);
 	}
 }
+
 Class Comparator 
 {
 	const Equal = "=";
@@ -109,6 +110,6 @@ Class Comparator
 	const GreaterThan = ">";
 	const GreaterThanEqual = ">=";
 	const LessThan = "<";
-	const LessThanEqaul = "<=";
+	const LessThanEqual = "<=";
 }
 ?>

@@ -32,6 +32,7 @@ if (IsPostback())
 	$object->CreateSaveFunction();
 	$object->CreateSaveNewFunction();
 	$object->CreateDeleteFunction();
+	$object->CreateCompareFunctions();
 	$object->CreateSQLQuery();
 	$object->EndObject();
 	
