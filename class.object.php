@@ -246,7 +246,7 @@ class Object
 	function CreatePreface()
 	{
 		$this->string .= "//\tPOG 1.0 rev8 (http://www.phpobjectgenerator.com)\n"; 
-		$this->string .= "//\tFeel free to use the code for personal & commercial purposes. (Offered under the OpenBSD license)\n\n"; 
+		$this->string .= "//\tFeel free to use the code for personal & commercial purposes. (Offered under the BSD license)\n\n"; 
 		$this->string .= "//\tThis SQL query will create the table to store your object.\n";
 		$this->CreateSQLQuery();
 		$this->string .= "/*\n".$this->sql."\n*/";
