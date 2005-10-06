@@ -95,7 +95,7 @@ if (IsPostback())
 	<body>
 	<div class="main">
 		<div class="left2">
-			<img src="./aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application. Over the years, we've come to realize that a large portion of a PHP programmer's time is wasted on coding the Database Access Layer of an application simply because every application requires different types of objects. 
+			<img src="./aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) automatically generates tested Object Oriented code that you can use for your PHP5 application. Over the years, we've come to realize that a large portion of a PHP programmer's time is wasted on coding the Database Access Layer of an application simply because every application requires different types of objects. 
 			
 			<br/><br/>By generating the Database Access Layer code for you, POG saves you time; Time you can spend on other areas of your project. The easiest way to understand how Php Object Generator works is to give it a try.
 			
