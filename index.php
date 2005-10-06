@@ -1,5 +1,6 @@
 <?php
 include "class.misc.php";
+$misc = new Misc(array());
 session_cache_limiter('nocache');
 $cache_limiter = session_cache_limiter();
 session_start();
@@ -86,7 +87,7 @@ function ConvertDDLToTextfield(id)
 }
 //]]>
 </script>
-<title>Php Object Generator (1.0 rev8): A free php object relational database code generator</title>
+<title>Php Object Generator (1.0 rev19): A free php object relational database code generator</title>
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 <meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
@@ -115,7 +116,7 @@ function ConvertDDLToTextfield(id)
 		</div><!-- objectname -->
 		<div class="greybox">
 			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/> <input  type="text" name="fieldattribute_1" class="i" value="<?=(isset($attributeList)&&isset($attributeList[0])?$attributeList[0]:'')?>"></input>  &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/>
-                <select class="s" style="display:<?=(!isset($typeList)||Misc::TypeIsKnown($typeList[0]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_1')" name="type_1" id="type_1">
+                <select class="s" style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[0]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_1')" name="type_1" id="type_1">
                 <option value="VARCHAR(255)" <?=(isset($typeList)&&isset($typeList[0])&&$typeList[0]=="VARCHAR(255)"?"selected":'')?>>VARCHAR(255)</option>
 				<option value="TINYINT" <?=(isset($typeList)&&isset($typeList[0])&&$typeList[0]=="TINYINT"?"selected":'')?>>TINYINT</option>
                 <option value="TEXT" <?=(isset($typeList)&&isset($typeList[0])&&$typeList[0]=="TEXT"?"selected":'')?>>TEXT</option>
@@ -142,9 +143,9 @@ function ConvertDDLToTextfield(id)
                 <option value="BINARY" <?=(isset($typeList)&&isset($typeList[0])&&$typeList[0]=="BINARY"?"selected":'')?>>BINARY</option>
                 <option value="OTHER">OTHER...</option>
                 </select>
-              	<input style="display:<?=(!isset($typeList)||Misc::TypeIsKnown($typeList[0])?"none":"inline")?>" type="text" name="ttype_1" class="i" id="type_1" value="<?=(isset($typeList)&&isset($typeList[0])?$typeList[0]:'')?>"></input></span><br/><br/>
+              	<input style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[0])?"none":"inline")?>" type="text" name="ttype_1" class="i" id="type_1" value="<?=(isset($typeList)&&isset($typeList[0])?$typeList[0]:'')?>"></input></span><br/><br/>
 			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_2" class="i" value="<?=(isset($attributeList)&&isset($attributeList[1])?$attributeList[1]:'')?>"></input> &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> 
-			<select class="s" style="display:<?=(!isset($typeList)||Misc::TypeIsKnown($typeList[1]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_2')" name="type_2" id="type_2">
+			<select class="s" style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[1]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_2')" name="type_2" id="type_2">
                 <option value="VARCHAR(255)" <?=(isset($typeList)&&isset($typeList[1])&&$typeList[1]=="VARCHAR(255)"?"selected":'')?>>VARCHAR(255)</option>
 				<option value="TINYINT" <?=(isset($typeList)&&isset($typeList[1])&&$typeList[1]=="TINYINT"?"selected":'')?>>TINYINT</option>
                 <option value="TEXT" <?=(isset($typeList)&&isset($typeList[1])&&$typeList[1]=="TEXT"?"selected":'')?>>TEXT</option>
@@ -171,9 +172,9 @@ function ConvertDDLToTextfield(id)
                 <option value="BINARY" <?=(isset($typeList)&&isset($typeList[1])&&$typeList[1]=="BINARY"?"selected":'')?>>BINARY</option>
                 <option value="OTHER">OTHER...</option>
                 </select>
-                <input style="display:<?=(!isset($typeList)||Misc::TypeIsKnown($typeList[1]) ?"none":"inline")?>" type="text" name="ttype_2" class="i" id="type_2" value="<?=(isset($typeList)&&isset($typeList[1])?$typeList[1]:'')?>"></input></span><br/><br/>
+                <input style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[1]) ?"none":"inline")?>" type="text" name="ttype_2" class="i" id="type_2" value="<?=(isset($typeList)&&isset($typeList[1])?$typeList[1]:'')?>"></input></span><br/><br/>
 			<span class="line"><img src="./object2.jpg" width="33" height="29" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_3" class="i" value="<?=(isset($attributeList)&&isset($attributeList[2])?$attributeList[2]:'')?>"></input> &nbsp;&nbsp;<img src="./type.jpg" width="36" height="18" alt="object attribute"/> 
-			<select class="s" style="display:<?=(!isset($typeList)||Misc::TypeIsKnown($typeList[2]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_3')" name="type_3" id="type_3">
+			<select class="s" style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[2]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_3')" name="type_3" id="type_3">
                 <option value="VARCHAR(255)" <?=(isset($typeList)&&isset($typeList[2])&&$typeList[2]=="VARCHAR(255)"?"selected":'')?>>VARCHAR(255)</option>
 				<option value="TINYINT" <?=(isset($typeList)&&isset($typeList[2])&&$typeList[2]=="TINYINT"?"selected":'')?>>TINYINT</option>
                 <option value="TEXT" <?=(isset($typeList)&&isset($typeList[2])&&$typeList[2]=="TEXT"?"selected":'')?>>TEXT</option>
@@ -200,7 +201,7 @@ function ConvertDDLToTextfield(id)
                 <option value="BINARY" <?=(isset($typeList)&&isset($typeList[2])&&$typeList[2]=="BINARY"?"selected":'')?>>BINARY</option>
                 <option value="OTHER">OTHER...</option>
                 </select>
-                <input style="display:<?=(!isset($typeList)||Misc::TypeIsKnown($typeList[2]) ?"none":"inline")?>" type="text" name="ttype_3" class="i" id="type_3" value="<?=(isset($typeList)&&isset($typeList[2])?$typeList[2]:'')?>"></input></span><br/>
+                <input style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[2]) ?"none":"inline")?>" type="text" name="ttype_3" class="i" id="type_3" value="<?=(isset($typeList)&&isset($typeList[2])?$typeList[2]:'')?>"></input></span><br/>
 		<?
 		if (isset($attributeList))
 		{
@@ -209,7 +210,7 @@ function ConvertDDLToTextfield(id)
 			{
 				echo '<div style="display:block" id="attribute_'.$j.'">
 					<br/><span class="line"><img src="./object2.jpg" alt="object attribute"/><img src="./attribute.jpg" alt="object attribute"/>  <input type="text" name="fieldattribute_'.$j.'" class="i" id="fieldattribute_'.$j.'" value="'.(isset($attributeList)&&isset($attributeList[$j-1])?$attributeList[$j-1]:'').'"/> &nbsp;&nbsp;<img src="./type.jpg" alt="object attribute"/> 
-				<select class="s" style="display:'.(!isset($typeList)||Misc::TypeIsKnown($typeList[$j-1])?"inline":"none").'" onchange="ConvertDDLToTextfield(\'type_'.$j.'\')" name="type_'.$j.'" id="type_'.$j.'">
+				<select class="s" style="display:'.(!isset($typeList)||$misc->TypeIsKnown($typeList[$j-1])?"inline":"none").'" onchange="ConvertDDLToTextfield(\'type_'.$j.'\')" name="type_'.$j.'" id="type_'.$j.'">
                 <option value="VARCHAR(255)" '.(isset($typeList)&&isset($typeList[$j-1])&&$typeList[$j-1]=="VARCHAR(255)"?"selected":'').'>VARCHAR(255)</option>
 				<option value="TINYINT" '.(isset($typeList)&&isset($typeList[$j-1])&&$typeList[$j-1]=="TINYINT"?"selected":'').'>TINYINT</option>
                 <option value="TEXT" '.(isset($typeList)&&isset($typeList[$j-1])&&$typeList[$j-1]=="TEXT"?"selected":'').'>TEXT</option>
@@ -236,7 +237,7 @@ function ConvertDDLToTextfield(id)
                 <option value="BINARY" '.(isset($typeList)&&isset($typeList[$j-1])&&$typeList[$j-1]=="BINARY"?"selected":'').'>BINARY</option>
                 <option value="OTHER">OTHER...</option>
                 </select>
-				<input style="display:'.(!isset($typeList)||Misc::TypeIsKnown($typeList[$j-1]) ?"none":"inline").'" type="text" id="type_'.$j.'"  name="ttype_'.$j.'" class="i" value="'.(isset($typeList)&&isset($typeList[$j-1])?$typeList[$j-1]:'').'"></input></span><br/>
+				<input style="display:'.(!isset($typeList)||$misc->TypeIsKnown($typeList[$j-1]) ?"none":"inline").'" type="text" id="type_'.$j.'"  name="ttype_'.$j.'" class="i" value="'.(isset($typeList)&&isset($typeList[$j-1])?$typeList[$j-1]:'').'"></input></span><br/>
 				</div>';
 				
 			}

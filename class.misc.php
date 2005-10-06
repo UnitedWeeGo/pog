@@ -56,7 +56,7 @@ class Misc
 		$this->string .= "\n\t}";
 	}
 	
-	public static function TypeIsKnown($type)
+	function TypeIsKnown($type)
 	{
 		if ($type=="VARCHAR(255)" 
 		|| $type=="TINYINT" 
