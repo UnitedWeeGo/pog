@@ -8,7 +8,7 @@ body
 	color:#828282;
 }
 
-input.i, select.s
+input.i
 {
 	height:13px;
 	width:98px;
@@ -19,6 +19,19 @@ input.i, select.s
 	vertical-align:middle;
 	border:1px solid #D1D1D1;
 	z-index:101;
+}
+select.s
+{
+	height:16px;
+	width:102px;
+	background-color:#EEEAEB;
+	color:#333;
+	font-weight:normal;
+	font-size:9px;
+	vertical-align:middle;
+	border:1px solid #D1D1D1;
+	z-index:101;
+	
 }
 .header
 {

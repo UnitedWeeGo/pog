@@ -20,7 +20,10 @@ if (IsPostback())
 		}
 		if (GetVariable(('type_'.$i)))
 		{
-			$typeList[] = GetVariable(('type_'.$i));
+			if (GetVariable(('type_'.$i)) != "OTHER"  && GetVariable(('ttype_'.$i)) == null)
+				$typeList[] = GetVariable(('type_'.$i));
+			else
+				$typeList[] = GetVariable(('ttype_'.$i));
 		}
 	}
 	$object = new Object($objectName,$attributeList,$typeList);

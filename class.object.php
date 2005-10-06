@@ -90,7 +90,7 @@ class Object
 	// -------------------------------------------------------------
 	function CreateSQLQuery()
 	{
-		$this->sql .= "\tCREATE TABLE `".strtolower($this->objectName)."` (\n`".strtolower($this->objectName)."id` int(11) auto_increment,";
+		$this->sql .= "\tCREATE TABLE `".strtolower($this->objectName)."` (\n\t`".strtolower($this->objectName)."id` int(11) auto_increment,";
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{

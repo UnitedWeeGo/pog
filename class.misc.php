@@ -55,5 +55,35 @@ class Misc
 		$this->string .= "\n\t\treturn null;";
 		$this->string .= "\n\t}";
 	}
+	
+	public static function TypeIsKnown($type)
+	{
+		if ($type=="VARCHAR(255)" 
+		|| $type=="TINYINT" 
+		|| $type=="TEXT"
+		|| $type=="DATE"
+		|| $type=="SMALLINT"
+		|| $type=="MEDIUMINT"
+		|| $type=="BIGINT"
+		|| $type=="FLOAT"
+		|| $type=="DOUBLE"
+		|| $type=="DECIMAL"
+		|| $type=="DATETIME"
+		|| $type=="TIMESTAMP"
+		|| $type=="TIME"
+		|| $type=="YEAR"
+		|| $type=="CHAR(255)"
+		|| $type=="TINYBLOB"
+		|| $type=="TINYTEXT"
+		|| $type=="BLOB"
+		|| $type=="MEDIUMBLOB"
+		|| $type=="MEDIUMTEXT"
+		|| $type=="LONGBLOB"
+		|| $type=="LONGTEXT"
+		|| $type=="BINARY")
+			return true;
+		else
+			return false;
+	}
 }
 ?>
