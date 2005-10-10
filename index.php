@@ -105,6 +105,8 @@ function ConvertDDLToTextfield(id)
 		
 		<br/><br/>Drop us a line @ <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
 		<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a>.
+		<br/><br/>Oh, there's also a <a href="http://www.faintlight.com/techinfo/pog">POG mirror site</a> if for some reason, this site is currently down.
+	
 	</div><!-- left -->
 	
 	<div class="middle">
