@@ -87,7 +87,7 @@ function ConvertDDLToTextfield(id)
 }
 //]]>
 </script>
-<title>Php Object Generator (1.0 rev19): A free php object relational database code generator</title>
+<title>Php Object Generator (1.0 rev22): A free php object relational database code generator</title>
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 <meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
