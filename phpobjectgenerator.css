@@ -87,10 +87,28 @@ select.s
 	padding-left:235px;
 	padding-top:10px;
 	width:190px;
-	height:50px;
-	background:url('./end.jpg') top left no-repeat;
+	height:40px;
+	background:url('./customize.jpg') top left no-repeat;
 	float:left;
 	position:relative;
+}
+
+.customize
+{
+	padding-left:150px;
+	padding-top:8px;
+	width:258px;
+	height:100px;
+	background:url('./customize2.jpg') top left no-repeat;
+	float:left;
+	position:relative;
+	z-index:99;
+}
+
+.customize img
+{
+	vertical-align:middle;
+	height:15px;
 }
 
 .generate2

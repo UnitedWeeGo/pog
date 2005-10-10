@@ -22,10 +22,10 @@ class Object
 		$this->string = "<?\n";
 		$this->string .= $this->CreatePreface();
 		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
-		$this->string.="public \$".strtolower($this->objectName)."Id;\n\t";
+		$this->string.="var \$".strtolower($this->objectName)."Id;\n\t";
 		foreach($this->attributeList as $attribute)
 		{
-			$this->string.="public $".$attribute.";\n\t";
+			$this->string.="var $".$attribute.";\n\t";
 		}
 	}
 	
@@ -64,7 +64,7 @@ class Object
 	function CreateGetFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Gets object from database",array("integer"),"object");
+		$this->string .= $this->CreateComments("Gets object from database",array("integer \$".strtolower($this->objectName)."Id"),"object \$".$this->objectName);
 		$this->string .="\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$query = \"select * from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
@@ -256,8 +256,8 @@ class Object
 	function CreateGetAllFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("string","string","string","string","boolean"),"array of objects");
-		$this->string .= "\tstatic function Get".$this->objectName."List(\$field,\$comparator,\$fieldValue,\$sortBy=\"\",\$ascending=true)\n\t{\n\t\t";
+		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("string \$field","string \$comparator","string \$fieldValue","string \$sortBy","boolean \$ascending"),"array \$".strtolower($this->objectName)."List");
+		$this->string .= "\tfunction Get".$this->objectName."List(\$field,\$comparator,\$fieldValue,\$sortBy=\"\",\$ascending=true)\n\t{\n\t\t";
 		$this->string .= "\n\t\t\$".strtolower($this->objectName)."List = Array();";
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$query = \"select ".strtolower($this->objectName)."id from ".strtolower($this->objectName)." where `\".\$field.\"`\".\$comparator.\"'\".\$Database->Escape(\$fieldValue).\"'\";";
@@ -295,7 +295,7 @@ class Object
 		{
 			$this->string .= "\n\t$this->separator\n\t";
 			$this->string .= $this->CreateComments("private function to sort an array of $this->objectName by $attribute",'',"+1 if attribute1 > attribute2, 0 if attribute1==attribute2 and -1 if attribute1 < attribute2");
-			$this->string .= "\tstatic function Compare".$this->objectName."By$attribute(\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2)\n\t{";
+			$this->string .= "\tfunction Compare".$this->objectName."By$attribute(\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2)\n\t{";
 			$this->string .= "\n\t\treturn strcmp(strtolower(\$".strtolower($this->objectName)."1->$attribute), strtolower(\$".strtolower($this->objectName)."2->$attribute));";
 			$this->string .= "\n\t}";
 		}

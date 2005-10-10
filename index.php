@@ -27,7 +27,7 @@ if (isset($_SESSION['$typeList']))
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP5 application.  " />
+<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
 <script type="text/javascript">
 //<![CDATA[
@@ -89,7 +89,7 @@ function ConvertDDLToTextfield(id)
 </script>
 <title>Php Object Generator (1.0 rev19): A free php object relational database code generator</title>
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
-<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP5 application.  " />
+<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META HTTP-EQUIV="Expires" CONTENT="0">
@@ -97,7 +97,7 @@ function ConvertDDLToTextfield(id)
 <body>
 <div class="main">
 	<div class="left">
-		<img src="./aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) automatically generates tested Object Oriented code that you can use for your PHP5 application. Over the years, we've come to realize that a large portion of a PHP programmer's time is wasted on coding the Database Access Layer of an application simply because every application requires different types of objects. 
+		<img src="./aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application. Over the years, we've come to realize that a large portion of a PHP programmer's time is wasted on coding the Database Access Layer of an application simply because every application requires different types of objects. 
 		
 		<br/><br/>By generating the Database Access Layer code for you, POG saves you time; Time you can spend on other areas of your project. The easiest way to understand how Php Object Generator works is to give it a try.
 		
@@ -322,6 +322,15 @@ function ConvertDDLToTextfield(id)
 		<div class="generate">
 			<a href="#" onclick="AddField()"><img src="./addattribute.jpg" border="0" alt="add attribute"/></a> <a href="#" onclick="ResetFields()"><img src="./resetfields.jpg" border="0" alt="reset fields"/></a>
 		</div><!-- generate -->
+		<div class="customize">
+			<select class="s" name="language">
+				<option value="php5" <?=(isset($_SESSION['language'])&& $_SESSION['language']=="php5"?"selected":"")?>>PHP 5</option>
+				<option value="php4" <?=(isset($_SESSION['language'])&& $_SESSION['language']=="php4"?"selected":"")?>>PHP 4</option>
+			</select><!--<a href="#"><img src="./whatsthedifference.jpg" border="0"/></a>--><br/><br/>
+			<select class="s" name="wrapper">
+				<option value="pog"  <?=(isset($_SESSION['wrapper'])&& $_SESSION['wrapper']=="pog"?"selected":"")?>>POG</option>
+			</select><a href="http://www.phpobjectgenerator.com/plog/article/8/database-wrappers-and-pog" target="_blank"><img src="./whatsthis.jpg" border="0"/></a>
+		</div><!-- customize -->
 		<div class="submit">
 			<input type="image"  src="./generate.jpg" alt="Generate!"/>
 		</div><!-- submit -->
