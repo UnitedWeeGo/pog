@@ -94,6 +94,7 @@ if (IsPostback())
 	<head>
 	<title>Php Object Generator: A free php object relational database code generator</title>
 	<link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	</head>
 	<body>
@@ -107,9 +108,8 @@ if (IsPostback())
 			
 			<br/><br/>Drop us a line @ <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
 		
-			<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a>.
+			<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/">RSS feed</a>.
 		</div><!-- left -->
-		
 		<div class="middle">
 			<div class="header2">
 				

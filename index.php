@@ -29,6 +29,7 @@ if (isset($_SESSION['$typeList']))
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
 <script type="text/javascript">
 //<![CDATA[
 function AddField()
@@ -104,7 +105,7 @@ function ConvertDDLToTextfield(id)
 		<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>. 
 		
 		<br/><br/>Drop us a line @ <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
-		<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a>.
+		<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/">RSS feed</a>.
 		<br/><br/>Oh, there's also a <a href="http://www.faintlight.com/techinfo/pog">POG mirror site</a> if for some reason, this site is currently down.
 	
 	</div><!-- left -->
