@@ -1,11 +1,20 @@
 <?
+/**
+* @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
+* @link  http://www.phpobjectgenerator.com
+* @version  1.5 revision 1
+* @copyright  Offered under the  BSD license
+* @abstract  Php Object Generator  automatically generates clean and tested Object Oriented code for your PHP4/PHP5 application. 
+*/
 session_start();
+include "configuration.php";
 include "class.zipfile.php";
 include "class.misc.php";
-include "pogged/misc.php";
+include "misc.php";
 
 if (IsPostback())
 {
+	$_GET = null;
 	$objectName = GetVariable('object');
 	$attributeList=Array();
 	$typeList=Array();
@@ -17,7 +26,7 @@ if (IsPostback())
 			$attributeList[] = GetVariable(('fieldattribute_'.$i));
 			$z++;
 		}
-		if (GetVariable(('type_'.$i)))
+		if (GetVariable(('type_'.$i)) && $z==$i)
 		{
 			if (GetVariable(('type_'.$i)) != "OTHER"  && GetVariable(('ttype_'.$i)) == null)
 				$typeList[] = GetVariable(('type_'.$i));
@@ -28,9 +37,16 @@ if (IsPostback())
 	
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
-	eval("include \"class.object".$language.".php\";");
-	
-	$object = new Object($objectName,$attributeList,$typeList);
+	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
+	if ($wrapper == " PDO")
+	{
+		eval("include \"class.object".$language.$wrapper.$pdoDriver.".php\";");
+	}
+	else 
+	{
+		eval("include \"class.object".$language."pogmysql.php\";");
+	}
+	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
 	
 	$object->BeginObject();
 	$object->CreateConstructor();
@@ -40,18 +56,17 @@ if (IsPostback())
 	$object->CreateSaveNewFunction();
 	$object->CreateDeleteFunction();
 	$object->CreateCompareFunctions();
-	$object->CreateSQLQuery();
 	$object->EndObject();
 	
 	$_SESSION['objectName'] = $objectName;
 	$_SESSION['attributeList'] = serialize($attributeList);
-	$_SESSION['$typeList'] = serialize($typeList);
+	$_SESSION['typeList'] = serialize($typeList);
 	
 	$objectList[]=$object->objectName;
 	
 	$zipfile = new zipfile();
 	// add the subdirectory ... important! 
-	$zipfile -> add_dir("./pogged/"); 
+	/*$zipfile -> add_dir("pogged/"); */
 	
 	
 	$filename = time().".php";
@@ -59,17 +74,44 @@ if (IsPostback())
 	fwrite ($filedata, $object -> string);
 	fclose ($filedata); 
 	
-	//read database file
-	$filedata = fopen("./pogged/class.database.php","r");
-	$data = fread($filedata, filesize("./pogged/class.database.php"));
-	fclose($filedata);
-	$zipfile -> add_file($data, "class.database.php");
-	
-	//read configuration file
-	$filedata = fopen("./pogged/configuration.php","r");
-	$data = fread($filedata, filesize("./pogged/configuration.php"));
-	fclose($filedata);
+	//read database file if not using PDO
+	if ($_SESSION['wrapper'] != "pdo")
+	{
+		if ($_SESSION['language'] == "php4")
+		{
+			$filedata = fopen("./pogged/class.database.php4.php","r");
+			$data = fread($filedata, filesize("./pogged/class.database.php4.php"));
+		}
+		else
+		{
+			$filedata = fopen("./pogged/class.database.php5.php","r");
+			$data = fread($filedata, filesize("./pogged/class.database.php5.php"));
+		}
+		fclose($filedata);
+		$zipfile -> add_file($data, "class.database.php");
+	}
+	//append PDO driver settings if PDO
+	if ($_SESSION['wrapper'] == "pdo")
+	{
+		$filedata = fopen("./pogged/configuration.".$pdoDriver.".php","r");
+		$data = fread($filedata, filesize("./pogged/configuration.".$pdoDriver.".php"));
+	}
+	else
+	{
+		$filedata = fopen("./pogged/configuration.php","r");
+		$data = fread($filedata, filesize("./pogged/configuration.php"));
+	}
 	$zipfile -> add_file($data, "configuration.php");
+	
+	/*//read INSTRUCTIONS
+	$filedata = fopen("./pogged/configuration.php","r");
+	$data = fread($filedata, filesize("./pogged/README.php"));
+	fclose($filedata);
+	//append PDO driver settings if PDO
+	if ($_SESSION['wrapper'] == "pdo")
+	{
+	}
+	$zipfile -> add_file($data, "configuration.php");*/
 	
 	//read object file;
 	$filedata = fopen("./pogged/$filename","r");
@@ -84,15 +126,14 @@ if (IsPostback())
 	$out = fwrite ($fd, $zipfile -> file()); 
 	fclose ($fd); 
 	
-	mail("joelwan@gmail.com", "POG", $object->string,"From:POG@PHPOBJECTGENERATOR.COM");
+	//mail("joelwan@gmail.com", "POG", $object->string,"From:POG@PHPOBJECTGENERATOR.COM");
 
 	?>
-	
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-	<title>Php Object Generator: A free php object relational database code generator</title>
+	<title>Php Object Generator (<?=$GLOBALS['configuration']['versionNumber']?> rev<?=$GLOBALS['configuration']['revisionNumber']?>) - Object Relational Mapping (ORM) PHP Code Generator</title>
 	<link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 	<link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -100,15 +141,32 @@ if (IsPostback())
 	<body>
 	<div class="main">
 		<div class="left2">
-			<img src="./aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application. Over the years, we've come to realize that a large portion of a PHP programmer's time is wasted on coding the Database Access Layer of an application simply because every application requires different types of objects. 
+			<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) is an open source <a href="http://www.phpobjectgenerator.com">PHP code generator</a> which automatically generates clean & tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects. 
+		
+			<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. But don't take our word for it, give it a try!
 			
-			<br/><br/>By generating the Database Access Layer code for you, POG saves you time; Time you can spend on other areas of your project. The easiest way to understand how Php Object Generator works is to give it a try.
+			<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
+			<br/>Generates clean & tested code
+			<br/>Generates CRUD methods
+	<!--		<br/>Generates Instructions-->
+			<br/>Compatible with PHP4 & PHP5
+			<br/>Compatible with PDO
+	<!--		<br/>Data validation & encoding
+			<br/>Even works without a database-->
+			<br/>Free for personal use
+			<br/>Free for commercial use
+			<br/>POG is Open Source software
+			<br/><br/><img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
+			<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/">RSS feed</a>.
+			<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
+			<br/><a href="http://www.faintlight.com/techinfo/pog">The POG mirror site</a>
+			<br/><a href="http://www.phpobjectgenerator.com/plog/version">The POG history log</a>
 			
 			<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>. 
 			
-			<br/><br/>Drop us a line @ <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
-		
-			<br/><br/>Want more? there's <a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">the POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/">RSS feed</a>.
+			
+			<br/><br/>Feedback, Feature Requests, Bugs to: <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
+			
 		</div><!-- left -->
 		<div class="middle">
 			<div class="header2">
@@ -116,16 +174,16 @@ if (IsPostback())
 			</div><!-- header -->
 			<form method="post" action="index.php">
 			<div class="result">
-				<a href="./pogged/<?=$outputFile?>" title="Download Code"><img src="./download.jpg" border="0"/></a>
+				<a href="./pogged/<?=$outputFile?>" title="Download Code"><img src="./images/download.jpg" border="0"/></a>
 			</div><!-- result -->
 			<div class="greybox2">
-				<textarea cols="200" rows="30"><?= $object->string;?></textarea>
+				<textarea cols="200" rows="30"><?=$object->string;?></textarea>
 			</div><!-- greybox -->
 			<div class="generate2">
 			</div><!-- generate -->
 			<div class="restart">
-				<a href="./index.php"><img src="./back1.gif" border="0"/></a><br/>
-				<a href="./restart.php"><img src="./back2.gif" border="0"/></a>
+				<a href="./index.php"><img src="./images/back1.gif" border="0"/></a><br/>
+				<a href="./restart.php"><img src="./images/back2.gif" border="0"/></a>
 			</div><!-- restart -->
 			</form>
 		</div><!-- middle -->

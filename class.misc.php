@@ -58,9 +58,10 @@ class Misc
 	
 	function TypeIsKnown($type)
 	{
-		if ($type=="VARCHAR(255)" 
+		if ($type=="VARCHAR(255)"	//mysql
 		|| $type=="TINYINT" 
 		|| $type=="TEXT"
+		|| $type=="INT"
 		|| $type=="DATE"
 		|| $type=="SMALLINT"
 		|| $type=="MEDIUMINT"
@@ -75,15 +76,67 @@ class Misc
 		|| $type=="CHAR(255)"
 		|| $type=="TINYBLOB"
 		|| $type=="TINYTEXT"
-		|| $type=="BLOB"
+		|| $type=="BLOB"	//firebird
 		|| $type=="MEDIUMBLOB"
 		|| $type=="MEDIUMTEXT"
 		|| $type=="LONGBLOB"
 		|| $type=="LONGTEXT"
-		|| $type=="BINARY")
+		|| $type=="BINARY"
+		|| $type=="BLOB"
+		|| $type=="CHAR"
+		|| $type=="CHAR(1)"
+		|| $type=="INT64"
+		|| $type=="INTEGER"
+		|| $type=="NUMERIC"
+		|| $type=="BIGSERIAL"	//postgresql
+		|| $type=="BIT"
+		|| $type=="BOOLEAN"
+		|| $type=="BOX"
+		|| $type=="BYTEA"
+		|| $type=="CIRCLE"
+		|| $type=="DOUBLE PRECISION"
+		|| $type=="INET"
+		|| $type=="LINE"
+		|| $type=="LSEG"
+		|| $type=="MACADDR"
+		|| $type=="MONEY"
+		|| $type=="OID"
+		|| $type=="PATH"
+		|| $type=="POINT"
+		|| $type=="REAL"
+		|| $type=="SERIAL"
+		|| $type=="MONEY"
+		|| $type=="IMAGE"	//odbc
+		|| $type=="NCHAR"
+		|| $type=="NTEXT"
+		|| $type=="NVARCHAR"
+		|| $type=="SMALLDATETIME"
+		|| $type=="SMALLINT"
+		|| $type=="SMALLMONEY"
+		|| $type=="UNIQUEIDENTIFIER"
+		|| $type=="VARBINARY"	
+		)
 			return true;
 		else
 			return false;
+	}
+	
+	// -------------------------------------------------------------
+	function GetVariable($variableName)
+	{
+		if (isset($_GET[$variableName]))
+		{
+			return $_GET[$variableName];
+		}
+		if (isset($_POST[$variableName]))
+		{
+			return $_POST[$variableName];
+		}
+		if (isset($_SESSION[$variableName]))
+		{
+			return $_SESSION[$variableName];
+		}
+		return null;
 	}
 }
 ?>

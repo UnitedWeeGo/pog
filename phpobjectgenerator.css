@@ -38,7 +38,7 @@ select.s
 	width:425px;
 	height:147px;
 	float:left;
-	background:url('./header.jpg') top left no-repeat;
+	background:url('./images/header.jpg') top left no-repeat;
 	position:relative;
 }
 
@@ -46,10 +46,10 @@ select.s
 {
 	float:left;
 	position:relative;
-	padding:47px 0 0 155px;
-	background:url('./body.jpg') top left no-repeat;
+	padding:45px 0 0 155px;
+	background:url('./images/body.jpg') top left no-repeat;
 	width:258px;
-	height:77px;
+	height:79px;
 	z-index:100;
 }
 
@@ -59,7 +59,7 @@ select.s
 	width:425px;
 	height:147px;
 	float:left;
-	background:url('./header2.jpg') top left no-repeat;
+	background:url('./images/header2.jpg') top left no-repeat;
 	position:relative;
 }
 
@@ -68,7 +68,7 @@ select.s
 	float:left;
 	position:relative;
 	padding:90px 0 0 0;
-	background:url('./body2.jpg') top left no-repeat;
+	background:url('./images/body2.jpg') top left no-repeat;
 	width:413px;
 	height:151px;
 	z-index:100;
@@ -87,22 +87,22 @@ select.s
 	padding-left:235px;
 	padding-top:10px;
 	width:190px;
-	height:40px;
-	background:url('./customize.jpg') top left no-repeat;
-	float:left;
+	height:56px;
+	background:url('./images/customize.jpg') top left no-repeat;
 	position:relative;
+	float:left;
 }
 
 .customize
 {
 	padding-left:150px;
-	padding-top:8px;
+	padding-top:38px;
 	width:258px;
-	height:100px;
-	background:url('./customize2.jpg') top left no-repeat;
-	float:left;
+	height:63px;
+	background:url('./images/customize2.jpg') top left no-repeat;
 	position:relative;
 	z-index:99;
+	float:left;
 }
 
 .customize img
@@ -117,7 +117,7 @@ select.s
 	padding-top:10px;
 	width:145px;
 	height:10px;
-	background:url('./end2.jpg') top left no-repeat;
+	background:url('./images/end2.jpg') top left no-repeat;
 	float:left;
 	position:relative;
 }
@@ -127,7 +127,7 @@ select.s
 	height:100px;
 	padding-top:30px;
 	background-color:#333;
-	background:url('./restart.gif') top left no-repeat;
+	background:url('./images/restart.gif') top left no-repeat;
 	position:relative;
 	float:left;
 }
@@ -185,7 +185,7 @@ label
 }
 .greybox
 {
-	background:url('./tile.jpg') repeat-y;
+	background:url('./images/tile.jpg') repeat-y;
 	padding:10px 0 10px 45px;
 	width:360px;
 	font-size:9px;
@@ -196,7 +196,7 @@ label
 
 .greybox2
 {
-	background:url('./tile2.jpg') repeat-y;
+	background:url('./images/tile2.jpg') repeat-y;
 	padding:5px 0 10px 60px;
 	width:360px;
 	font-size:9px;

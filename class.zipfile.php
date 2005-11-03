@@ -58,6 +58,10 @@ class zipfile
 
         // no "file data" segment for path
 
+        $crc = "";
+        $c_len = "";
+        $unc_len = "";
+        
         // "data descriptor" segment (optional but necessary if archive is not served as file)
         $fr .= pack("V",$crc); //crc32
         $fr .= pack("V",$c_len); //compressed filesize
