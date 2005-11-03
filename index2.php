@@ -126,7 +126,7 @@ if (IsPostback())
 	$out = fwrite ($fd, $zipfile -> file()); 
 	fclose ($fd); 
 	
-	//mail("joelwan@gmail.com", "POG", $object->string,"From:POG@PHPOBJECTGENERATOR.COM");
+	mail("joelwan@gmail.com", "POG", $object->string,"From:POG@PHPOBJECTGENERATOR.COM");
 
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
