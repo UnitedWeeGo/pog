@@ -44,7 +44,14 @@ if (IsPostback())
 	}
 	else 
 	{
-		eval("include \"class.object".$language."pogmysql.php\";");
+		if  ($language == "php4")
+		{
+			eval("include \"class.objectphp4pogmysql.php\";");
+		}
+		else
+		{
+			eval("include \"class.objectphp5pogmysql.php\";");
+		}
 	}
 	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
 	
