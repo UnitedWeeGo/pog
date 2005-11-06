@@ -252,6 +252,8 @@ a
 	margin:93px auto 0 600px;
 	position:absolute;
 	z-index:300;
+	font-weight:normal;
+	font-size:9px;
 }
 .right2
 {
@@ -260,6 +262,8 @@ a
 	margin:122px auto 0 540px;
 	position:absolute;
 	z-index:300;
+	font-weight:normal;
+	font-size:9px;
 }
 
 .middle

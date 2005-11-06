@@ -193,7 +193,7 @@ if (IsPostback())
 				<a href="./restart.php"><img src="./images/back2.gif" border="0"/></a>
 			</div><!-- restart -->
 			</form>
-		</div><!-- middle -->
+			</div><!-- middle -->
 		<div class="right2">
 		<script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";

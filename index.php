@@ -338,7 +338,7 @@ function GenerateSQLTypesForDriver(driver)
 		<br/>Even works without a database-->
 		<br/>Free for personal use
 		<br/>Free for commercial use
-		<br/>POG is Open Source software
+		<br/>Open Source
 		<br/><br/><img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
 		<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/">RSS feed</a>.
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
@@ -346,7 +346,7 @@ function GenerateSQLTypesForDriver(driver)
 		<br/><a href="http://www.phpobjectgenerator.com/plog/version">The POG history log</a>
 		<br/><a href="http://sourceforge.net/projects/phpobjgen">The POG source code</a>
 		
-		<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>. 
+		<br/><br/>Programmers:<br/><a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a><br/><a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a><br/>Designer:<br/><a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a><br/>Consultancy:<br/><a href="http://www.finessehosting.com" title="Finesse Hosting">Veemal Gungadin</a> 
 		
 		
 		<br/><br/>Feedback, Feature Requests, Bugs to: <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
