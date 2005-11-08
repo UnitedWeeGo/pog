@@ -38,9 +38,9 @@ if (IsPostback())
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
-	if ($wrapper == " PDO")
+	if (strtoupper($wrapper) == "PDO")
 	{
-		eval("include \"class.object".$language.$wrapper.$pdoDriver.".php\";");
+		eval("include \"class.object".$language.strtolower($wrapper).$pdoDriver.".php\";");
 	}
 	else 
 	{
@@ -82,7 +82,7 @@ if (IsPostback())
 	fclose ($filedata); 
 	
 	//read database file if not using PDO
-	if ($_SESSION['wrapper'] != "pdo")
+	if (strtoupper($_SESSION['wrapper']) != "PDO")
 	{
 		if ($_SESSION['language'] == "php4")
 		{
@@ -98,7 +98,7 @@ if (IsPostback())
 		$zipfile -> add_file($data, "class.database.php");
 	}
 	//append PDO driver settings if PDO
-	if ($_SESSION['wrapper'] == "pdo")
+	if (strtoupper($_SESSION['wrapper']) == "PDO")
 	{
 		$filedata = fopen("./pogged/configuration.".$pdoDriver.".php","r");
 		$data = fread($filedata, filesize("./pogged/configuration.".$pdoDriver.".php"));
@@ -206,8 +206,8 @@ google_ad_channel ="";
 google_color_border = "FFFFFF";
 google_color_bg = "FFFFFF";
 google_color_link = "716500";
-google_color_url = "B8B8B8";
-google_color_text = "CCC078";
+google_color_url = ["B8B8B8","CCC078"];
+google_color_text = ["CCC078","808080"];
 //--></script>
 <script type="text/javascript"
   src="http://pagead2.googlesyndication.com/pagead/show_ads.js">

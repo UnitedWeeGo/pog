@@ -76,7 +76,7 @@ class Object
 		$this->string .="\n\t\t\t{";
 		$this->string .="\n\t\t\t\twhile (\$row = \$stmt->fetch())";
 		$this->string .="\n\t\t\t\t{";
-		$this->string .="\n\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
+		$this->string .="\n\t\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
 		foreach ($this->attributeList as $attribute)
 		{
 			$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
@@ -122,7 +122,7 @@ class Object
 	function CreateSaveFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Saves the object to the database",'',"nothing");
+		$this->string .= $this->CreateComments("Saves the object to the database",'',"integer $".strtolower($this->objectName)."Id");
 		$this->string .= "\tfunction Save()\n\t{";
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
@@ -203,6 +203,7 @@ class Object
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$Database->lastInsertId();";
 		$this->string .= "\n\t\t\t}";
+		$this->string .= "\n\t\t\treturn \$this->".strtolower($this->objectName)."Id;";
 		$this->string .="\n\t\t}";
 		$this->string .="\n\t\tcatch (PDOException \$e)";
 		$this->string .="\n\t\t{";
@@ -216,10 +217,10 @@ class Object
 	function CreateSaveNewFunction()
 	{
 		$this->string .= "\n\t$this->separator\n\t";
-		$this->string .= $this->CreateComments("Clones the object and saves it to the database",'',"nothing");
+		$this->string .= $this->CreateComments("Clones the object and saves it to the database",'',"integer $".strtolower($this->objectName)."Id");
 		$this->string .="\tfunction SaveNew()\n\t{";
 		$this->string .= "\n\t\t\$this->".strtolower($this->objectName)."Id='';";
-		$this->string .= "\n\t\t\$this->Save();";
+		$this->string .= "\n\t\treturn \$this->Save();";
 		$this->string .= "\n\t}";
 	}
 	

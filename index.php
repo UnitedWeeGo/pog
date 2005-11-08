@@ -121,7 +121,7 @@ function FocusOnFirstField()
 function IsPDO()
 {
 	trs2=document.getElementById("wrapper");
-	if(trs2.value == "pdo")
+	if(trs2.value.toUpperCase() == "PDO")
 	{
 		
 		link=document.getElementById("disappear");
@@ -134,6 +134,7 @@ function IsPDO()
 	{
 		select=document.getElementById("PDOdriver");
 		select.style.display = "none";
+		GenerateSQLTypesForDriver('mysql');
 		link=document.getElementById("disappear");
 		link.style.display = "inline";
 	}
@@ -365,17 +366,17 @@ function GenerateSQLTypesForDriver(driver)
 			</select>
 			<br/><br/>
 			<select class="s" name="wrapper" id="wrapper" onchange="IsPDO()">
-				<option value="pog"  <?= ($misc->GetVariable('wrapper') != null&& $misc->GetVariable('wrapper')=="pog"?"selected":"")?>>POG</option>
+				<option value="POG"  <?= ($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="POG"?"selected":"")?>>POG</option>
 				<?
-				if (($misc->GetVariable('wrapper') != null&& $misc->GetVariable('wrapper')=="pdo"))
+				if (($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="PDO"))
 				{
 				?>
-					<option value="pdo" <?= ($misc->GetVariable('wrapper') != null&& $misc->GetVariable('wrapper')=="pdo"?"selected":"")?>>PDO</option>
+					<option value="PDO" <?= ($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="PDO"?"selected":"")?>>PDO</option>
 				<?
 				}
 				?>
 			</select>
-			<select class="s" name="pdoDriver" id="PDOdriver" style="display:<?= ($misc->GetVariable('wrapper') != null&& $misc->GetVariable('wrapper')=="pdo"?"inline":"none")?>" onchange="GenerateSQLTypesForDriver(this.value);">
+			<select class="s" name="pdoDriver" id="PDOdriver" style="display:<?= ($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="PDO"?"inline":"none")?>" onchange="GenerateSQLTypesForDriver(this.value);">
 				<option value="mysql" <?= ($misc->GetVariable('pdoDriver') != null&& $misc->GetVariable('pdoDriver')=="mysql"?"selected":"")?>>MYSQL</option>
 				<!--<option value="oci" <?= ($misc->GetVariable('pdoDriver') != null&& $misc->GetVariable('pdoDriver')=="oci"?"selected":"")?>>OCI</option>-->
 				<!--<option value="dblib" <?= ($misc->GetVariable('pdoDriver') != null&& $misc->GetVariable('pdoDriver')=="dblib"?"selected":"")?>>DBLIB</option>-->
@@ -386,7 +387,7 @@ function GenerateSQLTypesForDriver(driver)
 				<option value="sqlite" <?= ($misc->GetVariable('pdoDriver') != null&& $misc->GetVariable('pdoDriver')=="sqlite"?"selected":"")?>>SQLITE</option>
 			</select>	
 			
-			<a id="disappear" style="display:<?= ($misc->GetVariable('wrapper') != null&& $misc->GetVariable('wrapper')=="pdo"?"none":"inline")?>" href="http://www.phpobjectgenerator.com/plog/pdo" target="_blank"><img src="./images/whatsthis.jpg" border="0" alt="what's this?"/></a>
+			<a id="disappear" style="display:<?= ($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="PDO"?"none":"inline")?>" href="http://www.phpobjectgenerator.com/plog/pdo" target="_blank"><img src="./images/whatsthis.jpg" border="0" alt="what's this?"/></a>
 		</div><!-- customize -->
 		<div class="objectname">
 			<input type="text" name="object" class="i" value="<?=(isset($objectName)?$objectName:'')?>"/>
@@ -480,7 +481,7 @@ function GenerateSQLTypesForDriver(driver)
 		</form>
 	</div><!-- middle -->
 	<div class="right">
-	<script type="text/javascript"><!--
+<script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
 google_ad_width = 160;
@@ -491,8 +492,8 @@ google_ad_channel ="";
 google_color_border = "FFFFFF";
 google_color_bg = "FFFFFF";
 google_color_link = "716500";
-google_color_url = "B8B8B8";
-google_color_text = "CCC078";
+google_color_url = ["B8B8B8","CCC078"];
+google_color_text = ["CCC078","808080"];
 //--></script>
 <script type="text/javascript"
   src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
