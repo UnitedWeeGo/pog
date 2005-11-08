@@ -76,7 +76,7 @@ class Object
 		$this->string .="\n\t\t\t{";
 		$this->string .="\n\t\t\t\twhile (\$row = \$stmt->fetch())";
 		$this->string .="\n\t\t\t\t{";
-		$this->string .="\n\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
+		$this->string .="\n\t\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
 		foreach ($this->attributeList as $attribute)
 		{
 			$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
