@@ -110,15 +110,11 @@ if (IsPostback())
 	}
 	$zipfile -> add_file($data, "configuration.php");
 	
-	/*//read INSTRUCTIONS
-	$filedata = fopen("./pogged/configuration.php","r");
-	$data = fread($filedata, filesize("./pogged/README.php"));
+	//read INSTRUCTIONS
+	$filedata = fopen("./pogged/README.txt","r");
+	$data = fread($filedata, filesize("./pogged/README.txt"));
 	fclose($filedata);
-	//append PDO driver settings if PDO
-	if ($_SESSION['wrapper'] == "pdo")
-	{
-	}
-	$zipfile -> add_file($data, "configuration.php");*/
+	$zipfile -> add_file($data, "README.txt");
 	
 	//read object file;
 	$filedata = fopen("./pogged/$filename","r");
