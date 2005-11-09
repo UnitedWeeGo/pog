@@ -162,6 +162,7 @@ if (IsPostback())
 			<br/><br/><img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
 			<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/">RSS feed</a>.
 			<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
+			<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials (in progress)</a>
 			<br/><a href="http://www.faintlight.com/techinfo/pog">The POG mirror site</a>
 			<br/><a href="http://www.phpobjectgenerator.com/plog/version">The POG history log</a>
 			
