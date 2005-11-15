@@ -321,6 +321,12 @@ function GenerateSQLTypesForDriver(driver)
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 <meta name="description" content="Php Object Generator, (POG) is a PHP code generator which automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented" />
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-72762-1";
+urchinTracker();
+</script>
 </head>
 <body onload="FocusOnFirstField()">
 <div class="main">
