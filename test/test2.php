@@ -1,8 +1,8 @@
 <?php
 //include "testmysql.php";
 include "testphp4.php";
-include "pogged/class.database.php4.php";
-include "pogged/configuration.php";
+include "../pogged/class.database.php4.php";
+include "../pogged/configuration.php";
 $object= new Object();
 $object->var1 = "666";
 $object->var2 = "var2";
@@ -32,8 +32,8 @@ foreach ($objectList as $myObject)
 	echo $myObject->var2;
 	echo $myObject->var3;
 	echo "<br/>";
-	echo "deleting object...";
-	$myObject->Delete();
+	//echo "deleting object...";
+	//$myObject->Delete();
 }
 
 

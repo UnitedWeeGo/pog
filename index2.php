@@ -77,7 +77,7 @@ if (IsPostback())
 	
 	
 	$filename = time().".php";
-	$filedata = fopen("./pogged/$filename","w+");
+	$filedata = fopen("./generated_objects/$filename","w+");
 	fwrite ($filedata, $object -> string);
 	fclose ($filedata); 
 	
@@ -117,15 +117,15 @@ if (IsPostback())
 	$zipfile -> add_file($data, "README.txt");
 	
 	//read object file;
-	$filedata = fopen("./pogged/$filename","r");
-	$data = fread($filedata, filesize("./pogged/$filename"));
+	$filedata = fopen("./generated_objects/$filename","r");
+	$data = fread($filedata, filesize("./generated_objects/$filename"));
 	fclose($filedata);
 	
 	$zipfile -> add_file($data, $filename);
 	
 	// OR instead of doing that, you can write out the file to the loca disk like this: 
 	$outputFile = $filename.".zip"; 
-	$fd = fopen ("./pogged/$outputFile", "wb"); 
+	$fd = fopen ("./generated_objects/$outputFile", "wb"); 
 	$out = fwrite ($fd, $zipfile -> file()); 
 	fclose ($fd); 
 	
@@ -184,7 +184,7 @@ if (IsPostback())
 			</div><!-- header -->
 			<form method="post" action="index.php">
 			<div class="result">
-				<a href="./pogged/<?=$outputFile?>" title="Download Code"><img src="./images/download.jpg" border="0"/></a>
+				<a href="./generated_objects/<?=$outputFile?>" title="Download Code"><img src="./images/download.jpg" border="0"/></a>
 			</div><!-- result -->
 			<div class="greybox2">
 				<textarea cols="200" rows="30"><?=$object->string;?></textarea>
