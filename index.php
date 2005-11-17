@@ -352,7 +352,7 @@ urchinTracker();
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials (in progress)</a>
 		<br/><a href="http://www.faintlight.com/techinfo/pog">The POG mirror site</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/version">The POG history log</a>
-		<br/><a href="http://sourceforge.net/projects/phpobjgen">The POG source code</a>
+		<br/><a href="http://www.phpobjectgenerator.com/plog/article/51/pog-source-code-locations">The POG source code</a>
 		
 		<br/><br/>Programmers:<br/><a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a><br/><a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a><br/>Designer:<br/><a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a><br/>Consultancy:<br/><a href="http://www.finessehosting.com" title="Finesse Hosting">Veemal Gungadin</a> 
 		
