@@ -127,9 +127,7 @@ if (IsPostback())
 	$outputFile = $filename.".zip"; 
 	$fd = fopen ("./generated_objects/$outputFile", "wb"); 
 	$out = fwrite ($fd, $zipfile -> file()); 
-	fclose ($fd); 
-	
-	mail("joelwan@gmail.com", "POG", $object->string,"From:POG@PHPOBJECTGENERATOR.COM");
+	fclose ($fd);
 
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
