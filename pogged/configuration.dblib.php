@@ -12,7 +12,7 @@ $configuration['path'] = ''; //absolute path to root of web application
 $configuration['db'] = 'TEST'; //database name
 $configuration['host'] = 'localhost'; //database host 
 $configuration['user'] = 'sa'; //database user
-$configuration['pass'] = 'multipass'; //database password
+$configuration['pass'] = 'pass'; //database password
 
 //Data Encoding/Decoding settings
 $configuration['encode/decode'] = true;
