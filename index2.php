@@ -2,7 +2,6 @@
 /**
 * @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
 * @link  http://www.phpobjectgenerator.com
-* @version  1.5 revision 1
 * @copyright  Offered under the  BSD license
 * @abstract  Php Object Generator  automatically generates clean and tested Object Oriented code for your PHP4/PHP5 application. 
 */
@@ -63,6 +62,11 @@ if (IsPostback())
 	$object->CreateSaveNewFunction();
 	$object->CreateDeleteFunction();
 	$object->CreateCompareFunctions();
+	if(strtoupper($wrapper) == "PDO")
+	{
+		$object->CreateEscapeFunction();
+		$object->CreateUnescapeFunction();
+	}
 	$object->EndObject();
 	
 	$_SESSION['objectName'] = $objectName;
@@ -70,65 +74,76 @@ if (IsPostback())
 	$_SESSION['typeList'] = serialize($typeList);
 	
 	$objectList[]=$object->objectName;
+	$zipfile = new createZip;
+	$filename = "pog.".time();
+
+	//append PDO driver settings if PDO
+	if (strtoupper($_SESSION['wrapper']) == "PDO")
+	{
+		$data = file_get_contents("./pogged/configuration.".$pdoDriver.".php");
+	}
+	else
+	{
+		$data = file_get_contents("./pogged/configuration.php");
+	}
+	$zipfile -> addFile($data, "configuration.php");
 	
-	$zipfile = new zipfile();
-	// add the subdirectory ... important! 
-	/*$zipfile -> add_dir("pogged/"); */
-	
-	
-	$filename = time().".php";
-	$filedata = fopen("./generated_objects/$filename","w+");
-	fwrite ($filedata, $object -> string);
-	fclose ($filedata); 
 	
 	//read database file if not using PDO
+	$zipfile -> addDirectory("objects/");
 	if (strtoupper($_SESSION['wrapper']) != "PDO")
 	{
 		if ($_SESSION['language'] == "php4")
 		{
-			$filedata = fopen("./pogged/class.database.php4.php","r");
-			$data = fread($filedata, filesize("./pogged/class.database.php4.php"));
+			$data = file_get_contents("./pogged/class.database.php4.php");
 		}
 		else
 		{
-			$filedata = fopen("./pogged/class.database.php5.php","r");
-			$data = fread($filedata, filesize("./pogged/class.database.php5.php"));
+			$data = file_get_contents("./pogged/class.database.php5.php");
 		}
-		fclose($filedata);
-		$zipfile -> add_file($data, "class.database.php");
+		$zipfile -> addFile($data, "objects/class.database.php");
 	}
-	//append PDO driver settings if PDO
-	if (strtoupper($_SESSION['wrapper']) == "PDO")
+	$zipfile -> addFile($object -> string, "objects/class.".strtolower($objectName).".php");
+	
+	//adding setup files
+	if (strtoupper($wrapper) == "PDO")
 	{
-		$filedata = fopen("./pogged/configuration.".$pdoDriver.".php","r");
-		$data = fread($filedata, filesize("./pogged/configuration.".$pdoDriver.".php"));
+		$data = file_get_contents("./pogged/setup.pdo.php");
 	}
 	else
 	{
-		$filedata = fopen("./pogged/configuration.php","r");
-		$data = fread($filedata, filesize("./pogged/configuration.php"));
+		$data = file_get_contents("./pogged/setup.php");
 	}
-	$zipfile -> add_file($data, "configuration.php");
+	$zipfile -> addDirectory("setup/");
+	$zipfile -> addFile($data, "setup/index.php");
+	$zipfile -> addDirectory("setup/setup_images/");
+	$data = file_get_contents("./pogged/setup_files/setup.css");
+	$zipfile -> addFile($data, "setup/setup.css");
+	$zipfile -> addDirectory("setup/setup_library/");
+	$data = file_get_contents("./pogged/setup_files/setup_misc.php");
+	$zipfile -> addFile($data, "setup/setup_library/setup_misc.php");
+	$data = file_get_contents("./pogged/setup_files/inc.header.php");
+	$zipfile -> addFile($data, "setup/setup_library/inc.header.php");
+	$data = file_get_contents("./pogged/setup_files/inc.footer.php");
+	$zipfile -> addFile($data, "setup/setup_library/inc.footer.php");
+ 
+	//read all image files
+	$dir = opendir('./pogged/setup_files/setup_images/');    
+	while(($file = readdir($dir)) !== false)  
+	{  
+		if (substr(strtolower($file), strlen($file) - 4) === '.gif' || substr(strtolower($file), strlen($file) - 4) === '.jpg')
+		{  
+			$data = file_get_contents("./pogged/setup_files/setup_images/$file");
+			$zipfile -> addFile($data, "setup/setup_images/$file");
+		}
+	}  
+	closedir($dir);
 	
-	//read INSTRUCTIONS
-	$filedata = fopen("./pogged/README.txt","r");
-	$data = fread($filedata, filesize("./pogged/README.txt"));
-	fclose($filedata);
-	$zipfile -> add_file($data, "README.txt");
-	
-	//read object file;
-	$filedata = fopen("./generated_objects/$filename","r");
-	$data = fread($filedata, filesize("./generated_objects/$filename"));
-	fclose($filedata);
-	
-	$zipfile -> add_file($data, $filename);
-	
-	// OR instead of doing that, you can write out the file to the loca disk like this: 
+	//write zip file to disk
 	$outputFile = $filename.".zip"; 
 	$fd = fopen ("./generated_objects/$outputFile", "wb"); 
-	$out = fwrite ($fd, $zipfile -> file()); 
-	fclose ($fd);
-
+	$out = fwrite ($fd, $zipfile -> getZippedfile()); 
+	fclose ($fd); 
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -149,17 +164,14 @@ if (IsPostback())
 	<div class="main">
 		<div class="left2">
 			<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) is an open source <a href="http://www.phpobjectgenerator.com">PHP code generator</a> which automatically generates clean & tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects. 
-		
 			<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. But don't take our word for it, give it a try!
-			
 			<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
 			<br/>Generates clean & tested code
 			<br/>Generates CRUD methods
-	<!--		<br/>Generates Instructions-->
+			<br/>Generates Setup file
 			<br/>Compatible with PHP4 & PHP5
 			<br/>Compatible with PDO
-	<!--		<br/>Data validation & encoding
-			<br/>Even works without a database-->
+			<br/>Automatic data encoding
 			<br/>Free for personal use
 			<br/>Free for commercial use
 			<br/>POG is Open Source software
@@ -169,10 +181,7 @@ if (IsPostback())
 			<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials (in progress)</a>
 			<br/><a href="http://www.faintlight.com/techinfo/pog">The POG mirror site</a>
 			<br/><a href="http://www.phpobjectgenerator.com/plog/version">The POG history log</a>
-			
-			<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>. 
-			
-			
+			<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>.
 			<br/><br/>Feedback, Feature Requests, Bugs to: <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
 			
 		</div><!-- left -->

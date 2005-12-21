@@ -138,5 +138,39 @@ class Misc
 		}
 		return null;
 	}
+	
+	// -------------------------------------------------------------
+	function TypeIsNumeric($type)
+	{
+		if ($type=="TINYINT"	//mysql
+		|| $type=="INT"
+		|| $type=="DATE"
+		|| $type=="SMALLINT"
+		|| $type=="MEDIUMINT"
+		|| $type=="BIGINT"
+		|| $type=="FLOAT"
+		|| $type=="DOUBLE"
+		|| $type=="DECIMAL"
+		|| $type=="TIMESTAMP"
+		|| $type=="TIME"
+		|| $type=="YEAR"
+		|| $type=="INT64"
+		|| $type=="INTEGER"
+		|| $type=="NUMERIC"
+		|| $type=="BIGSERIAL"	//postgresql
+		|| $type=="DOUBLE PRECISION"
+		|| $type=="MONEY"
+		|| $type=="OID"
+		|| $type=="REAL"
+		|| $type=="SERIAL"
+		|| $type=="MONEY"
+		|| $type=="SMALLINT"
+		|| $type=="SMALLMONEY"
+		|| $type=="UNIQUEIDENTIFIER"
+		)
+			return true;
+		else
+			return false;
+	}
 }
 ?>

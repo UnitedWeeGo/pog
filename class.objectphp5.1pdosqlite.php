@@ -5,30 +5,41 @@ class Object
 	var $sql = "";
 	var $objectName = "";
 	var $attributeList = array();
-	var $optionList = array();
+	var $typeList = array();
 	var $separator = "\n\t";
 	var $pdoDriver = "";
 	
 	// -------------------------------------------------------------
-	function Object($objectName, $attributeList = '', $optionList ='', $pdoDriver='')
+	function Object($objectName, $attributeList = '', $typeList ='', $pdoDriver='')
 	{
 		$this->objectName = $objectName;
 		$this->attributeList = $attributeList;
-		$this->optionList = $optionList;
+		$this->typeList = $typeList;
 		$this->pdoDriver = $pdoDriver;
 	}
 	
 	// -------------------------------------------------------------
 	function BeginObject()
 	{
-		$this->string = "<?\n";
+		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();
 		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
 		$this->string.="public \$".strtolower($this->objectName)."Id;\n\t";
-		foreach($this->attributeList as $attribute)
+		foreach ($this->attributeList as $attribute)
 		{
 			$this->string.="public $".$attribute.";\n\t";
 		}
+		//	create attribute => type array map
+		//	needed for setup
+		$this->string .= "public \$pog_attribute_type = array(\n\t\t";
+		$x = 0;
+		foreach ($this->attributeList as $attribute)
+		{ 
+			$this->string .= "\"".$attribute."\" => \"".$this->typeList[$x]."\",\n\t\t";
+			$x++;
+		}
+		$this->string .= ");\n\t";
+		$this->string .= "public \$pog_query;";
 	}
 	
 	// -------------------------------------------------------------
@@ -42,7 +53,7 @@ class Object
 	{
 		$this->string .= "\n\t\n\tfunction ".$this->objectName."(";
 		$i = 0;
-		foreach($this->attributeList as $attribute)
+		foreach ($this->attributeList as $attribute)
 		{
 			if ($i == 0)
 			{
@@ -55,7 +66,7 @@ class Object
 			$i++;
 		}
 		$this->string .= ")\n\t{";
-		foreach($this->attributeList as $attribute)
+		foreach ($this->attributeList as $attribute)
 		{
 			$this->string .= "\n\t\t\$this->".$attribute." = $".$attribute.";";
 		}
@@ -67,28 +78,37 @@ class Object
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
 		$this->string .= $this->CreateComments("Gets object from database",array("integer \$".strtolower($this->objectName)."Id"),"object \$".$this->objectName);
-		$this->string .="\n\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
+		$this->string .="\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
 		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':'.\$GLOBALS['configuration']['sqliteDatabase']);";	
-		$this->string .="\n\t\t\t\$stmt = \$Database->prepare(\"select * from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id= ? LIMIT 1\");";
+		$this->string .="\n\t\t\t\$this->pog_query = \"select * from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id= ? LIMIT 1\";";
+		$this->string .="\n\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
 		$this->string .="\n\t\t\tif (\$stmt->execute(array(\$".strtolower($this->objectName)."Id)))";
 		$this->string .="\n\t\t\t{";
 		$this->string .="\n\t\t\t\twhile (\$row = \$stmt->fetch())";
 		$this->string .="\n\t\t\t\t{";
 		$this->string .="\n\t\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
+		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
+			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date")
+			{
+				$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
+			}
+			else
+			{
+				$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
+			}
+			$x++;
 		}
 		$this->string .="\n\t\t\t\t}";
 		$this->string .="\n\t\t\t}";
 		$this->string .="\n\t\t\treturn \$this;";
 		$this->string .="\n\t\t}";
-		$this->string .="\n\t\tcatch (PDOException \$e)";
+		$this->string .="\n\t\tcatch(PDOException \$e)";
 		$this->string .="\n\t\t{";
-		$this->string .="\n\t\t\tprint \"Error!: \" . \$e->getMessage() . \"<br/>\";";
-   		$this->string .="\n\t\t\tdie();";
+		$this->string .="\n\t\t\tthrow new Exception(\$e->getMessage());";
 		$this->string .="\n\t\t}";
 		$this->string .= "\n\t}";
 	}
@@ -103,13 +123,13 @@ class Object
 				$x=0;
 				foreach ($this->attributeList as $attribute)
 				{
-					if ($x == (count($this->optionList)-1))
+					if ($x == (count($this->typeList)-1))
 					{
-						$this->sql .= "\n\t".strtolower($attribute)." ".$this->optionList[$x];
+						$this->sql .= "\n\t".strtolower($attribute)." ".$this->typeList[$x];
 					}
 					else
 					{
-						$this->sql .= "\n\t".strtolower($attribute)." ".$this->optionList[$x].",";
+						$this->sql .= "\n\t".strtolower($attribute)." ".$this->typeList[$x].",";
 					}
 					$x++;
 				}
@@ -128,15 +148,15 @@ class Object
 		$this->string .="\n\t\t{";
 		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':'.\$GLOBALS['configuration']['sqliteDatabase']);";	
 		$this->string .= "\n\t\t\t\$count=0;";
-		$this->string .= "\n\t\t\t\$sql = \"select count(".strtolower($this->objectName)."id) as count from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id'\";";
-		$this->string .= "\n\t\t\tforeach (\$Database->query(\$sql) as \$row)";
+		$this->string .= "\n\t\t\t\$this->pog_query = \"select count(".strtolower($this->objectName)."id) as count from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id'\";";
+		$this->string .= "\n\t\t\tforeach (\$Database->query(\$this->pog_query) as \$row)";
 		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\t\$count=\$row['count'];";
+		$this->string .= "\n\t\t\t\t\$count = \$row['count'];";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\tif (\$count == 1)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t// update object";
-		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\"update ".strtolower($this->objectName)." set ";
+		$this->string .= "\n\t\t\t\t\$this->pog_query = (\"update ".strtolower($this->objectName)." set ";
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
@@ -151,18 +171,26 @@ class Object
 			$x++;
 		}
 		$this->string .= " where ".strtolower($this->objectName)."id=?\");";
-		$x=1;
+		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
+		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\n\t\t\t\t\$stmt->bindParam(".$x.", \$this->".$attribute.");";
+			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date")
+			{
+				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
+			}
+			else
+			{
+				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
+			}
 			$x++;
 		}
-		$this->string .= "\n\t\t\t\t\$stmt->bindParam(".$x.", \$this->".strtolower($this->objectName)."Id);";
+		$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($this->objectName)."Id);";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\telse";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t// insert object";
-		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\"insert into ".strtolower($this->objectName)." (";
+		$this->string .= "\n\t\t\t\t\$this->pog_query = (\"insert into ".strtolower($this->objectName)." (";
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
@@ -191,10 +219,18 @@ class Object
 			$x++;
 		}
 		$this->string .= ")\");";
-		$x=1;
+		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
+		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\n\t\t\t\t\$stmt->bindParam(".$x.", \$this->".$attribute.");";
+			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date")
+			{
+				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
+			}
+			else 
+			{
+				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
+			}
 			$x++;
 		}
 		$this->string .= "\n\t\t\t}";
@@ -205,10 +241,9 @@ class Object
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\treturn \$this->".strtolower($this->objectName)."Id;";
 		$this->string .="\n\t\t}";
-		$this->string .="\n\t\tcatch (PDOException \$e)";
+		$this->string .="\n\t\tcatch(PDOException \$e)";
 		$this->string .="\n\t\t{";
-		$this->string .="\n\t\t\tprint \"Error!: \" . \$e->getMessage() . \"<br/>\";";
-   		$this->string .="\n\t\t\tdie();";
+		$this->string .="\n\t\t\tthrow new Exception(\$e->getMessage());";
 		$this->string .="\n\t\t}";
 		$this->string .= "\n\t}";
 	}
@@ -219,7 +254,7 @@ class Object
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Clones the object and saves it to the database",'',"integer $".strtolower($this->objectName)."Id");
 		$this->string .="\tfunction SaveNew()\n\t{";
-		$this->string .= "\n\t\t\$this->".strtolower($this->objectName)."Id='';";
+		$this->string .= "\n\t\t\$this->".strtolower($this->objectName)."Id = '';";
 		$this->string .= "\n\t\treturn \$this->Save();";
 		$this->string .= "\n\t}";
 	}
@@ -234,7 +269,8 @@ class Object
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
 		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':'.\$GLOBALS['configuration']['sqliteDatabase']);";	
-		$this->string .= "\n\t\t\t\$affectedRows = \$Database->query(\"delete from object where objectid='\$this->".strtolower($this->objectName)."Id'\");";
+		$this->string .= "\n\t\t\t\$this->pog_query = \"delete from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id'\";";
+		$this->string .= "\n\t\t\t\$affectedRows = \$Database->query(\$this->pog_query);";
 		$this->string .= "\n\t\t\tif (\$affectedRows != null)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\treturn \$affectedRows;";
@@ -244,10 +280,9 @@ class Object
 		$this->string .= "\n\t\t\t\treturn 0;";
 		$this->string .= "\n\t\t\t}";
 		$this->string .="\n\t\t}";
-		$this->string .="\n\t\tcatch (PDOException \$e)";
+		$this->string .="\n\t\tcatch(PDOException \$e)";
 		$this->string .="\n\t\t{";
-		$this->string .="\n\t\t\tprint \"Error!: \" . \$e->getMessage() . \"<br/>\";";
-   		$this->string .="\n\t\t\tdie();";
+		$this->string .="\n\t\t\tthrow new Exception(\$e->getMessage());";
 		$this->string .="\n\t\t}";
 		$this->string .= "\n\t}";
 	}
@@ -275,12 +310,12 @@ class Object
 		$this->CreateSQLQuery();
 		$this->string .= "\n".$this->sql."\n*/";
 		$this->string .= "\n\n/**";
-		$this->string .= "\n* ".ucwords($this->objectName)." class with integrated CRUD methods.";
+		$this->string .= "\n* <b>".ucwords($this->objectName)."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
 		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." rev".$GLOBALS['configuration']['revisionNumber'];
 		$this->string .= "\n* @see http://www.phpobjectgenerator.com/plog/tutorials/38/pdo-sqlite";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
-		$this->string .= "\n* @link http://phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$_SESSION['pdoDriver']."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->optionList, true));;
+		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$_SESSION['pdoDriver']."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
 	}
 		
@@ -288,56 +323,106 @@ class Object
 	function CreateGetAllFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("string \$field","string \$comparator","string \$fieldValue","string \$sortBy","boolean \$ascending"),"array \$".strtolower($this->objectName)."List");
-		$this->string .= "\tstatic function Get".$this->objectName."List(\$field,\$comparator,\$fieldValue,\$sortBy=\"\",\$ascending=true,\$optionalConditions=\"\")\n\t{\n\t\t";
-		$this->string .= "\n\t\t\$".strtolower($this->objectName)."List = Array();";
-		$this->string .= "\n\t\ttry";
+		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","string \$sortBy","boolean \$ascending","string limit"),"array \$".strtolower($this->objectName)."List");
+		$this->string .= "\tstatic function GetList(\$fcv_array, \$sortBy='', \$ascending=true, \$limit='')\n\t{";
+		$this->string .= "\n\t\t\$limit = (\$limit != ''?\"LIMIT \$limit\":'');"; 
+		$this->string .= "\n\t\tif (sizeof(\$fcv_array) > 0)";
 		$this->string .= "\n\t\t{";
-		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':'.\$GLOBALS['configuration']['sqliteDatabase']);";	
-		$this->string .= "\n\t\t\t\$sql = \"select ".strtolower($this->objectName)."id from ".strtolower($this->objectName)." where \$field \$comparator '\$fieldValue'\";";
-		$this->string .= "\n\t\t\tforeach (\$Database->query(\$sql) as \$row)";
+		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."List = Array();";
+		$this->string .= "\n\t\t\ttry";
 		$this->string .= "\n\t\t\t{";
-      	$this->string .= "\n\t\t\t\t\$".strtolower($this->objectName)." = new ".$this->objectName."();";
-		$this->string .= "\n\t\t\t\t\$".strtolower($this->objectName)."->Get(\$row['".strtolower($this->objectName)."id']);";
-		$this->string .= "\n\t\t\t\t\$".strtolower($this->objectName)."List[] = \$".strtolower($this->objectName).";";
-   		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\tswitch(strtolower(\$sortBy))";
-		$this->string .= "\n\t\t\t{";
+		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':'.\$GLOBALS['configuration']['sqliteDatabase']);";	
+		$this->string .= "\n\t\t\t\t\$pog_query = \"select ".strtolower($this->objectName)."id from ".strtolower($this->objectName)." where \";";
+		$this->string .= "\n\t\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array)-1; \$i<\$c; \$i++)";
+		$this->string .= "\n\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\$pog_query .= strtolower(\$fcv_array[\$i][0]).\" \".\$fcv_array[\$i][1].\" '\".".$this->objectName."::Escape(\$fcv_array[\$i][2]).\"' AND \";";
+		$this->string .= "\n\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\$pog_query .= strtolower(\$fcv_array[\$i][0]).\" \".\$fcv_array[\$i][1].\" '\".".$this->objectName."::Escape(\$fcv_array[\$i][2]).\"' order by ".strtolower($this->objectName)."id asc \$limit\";";
+		$this->string .= "\n\t\t\t\tforeach (\$Database->query(\$pog_query) as \$row)";
+		$this->string .= "\n\t\t\t\t{";
+      	$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)." = new ".$this->objectName."();";
+		$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)."->Get(\$row['".strtolower($this->objectName)."id']);";
+		$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)."List[] = \$".strtolower($this->objectName).";";
+   		$this->string .= "\n\t\t\t\t}";
+		$this->string .= "\n\t\t\t\tswitch (strtolower(\$sortBy))";
+		$this->string .= "\n\t\t\t\t{";
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\n\t\t\t\tcase strtolower(\"$attribute\"):";
-			$this->string .= "\n\t\t\t\t\tusort(\$".strtolower($this->objectName)."List, array(\"".$this->objectName."\",\"Compare".$this->objectName."By".$attribute."\"));";
-			$this->string .= "\n\t\t\t\tif (!\$ascending)";
-			$this->string .= "\n\t\t\t\t\t{";
-			$this->string .= "\n\t\t\t\t\t\t\$".strtolower($this->objectName)."List = array_reverse(\$".strtolower($this->objectName)."List);";
-			$this->string .= "\n\t\t\t\t\t}";
-			$this->string .= "\n\t\t\t\tbreak;";
+			$this->string .= "\n\t\t\t\t\tcase strtolower(\"$attribute\"):";
+			$this->string .= "\n\t\t\t\t\t\tusort(\$".strtolower($this->objectName)."List, array(\"".$this->objectName."\", \"Compare".$this->objectName."By".ucfirst($attribute)."\"));";
+			$this->string .= "\n\t\t\t\t\tif (!\$ascending)";
+			$this->string .= "\n\t\t\t\t\t\t{";
+			$this->string .= "\n\t\t\t\t\t\t\t\$".strtolower($this->objectName)."List = array_reverse(\$".strtolower($this->objectName)."List);";
+			$this->string .= "\n\t\t\t\t\t\t}";
+			$this->string .= "\n\t\t\t\t\tbreak;";
 		}
-		$this->string .= "\n\t\t\t\tcase \"\":";
-		$this->string .= "\n\t\t\t\tdefault:";
-		$this->string .= "\n\t\t\t\tbreak;";
-		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\treturn \$".strtolower($this->objectName)."List;";
+		$this->string .= "\n\t\t\t\t\tcase \"\":";
+		$this->string .= "\n\t\t\t\t\tdefault:";
+		$this->string .= "\n\t\t\t\t\tbreak;";
+		$this->string .= "\n\t\t\t\t}";
+		$this->string .= "\n\t\t\t\treturn \$".strtolower($this->objectName)."List;";
+		$this->string .="\n\t\t\t}";
+		$this->string .="\n\t\t\tcatch(PDOException \$e)";
+		$this->string .="\n\t\t\t{";
+		$this->string .="\n\t\t\t\tthrow new Exception(\$e->getMessage());";
+   		$this->string .="\n\t\t\t}";
 		$this->string .="\n\t\t}";
-		$this->string .="\n\t\tcatch (PDOException \$e)";
-		$this->string .="\n\t\t{";
-		$this->string .="\n\t\t\tprint \"Error!: \" . \$e->getMessage() . \"<br/>\";";
-   		$this->string .="\n\t\t\tdie();";
-		$this->string .="\n\t\t}";
+		$this->string .="\n\t\treturn null;";
 		$this->string .= "\n\t}";
 	}
 	
 	// -------------------------------------------------------------
 	function CreateCompareFunctions()
 	{
+		
+		include_once("class.misc.php");
+		$misc = new Misc(array());
+		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
 			$this->string .= "\n\t$this->separator\n\t";
 			$this->string .= $this->CreateComments("private function to sort an array of $this->objectName by $attribute",'',"+1 if attribute1 > attribute2, 0 if attribute1==attribute2 and -1 if attribute1 < attribute2");
-			$this->string .= "\tstatic function Compare".$this->objectName."By$attribute(\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2)\n\t{";
-			$this->string .= "\n\t\treturn strcmp(strtolower(\$".strtolower($this->objectName)."1->$attribute), strtolower(\$".strtolower($this->objectName)."2->$attribute));";
+			$this->string .= "\tfunction Compare".$this->objectName."By".ucfirst($attribute)."(\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2)\n\t{";
+			if ($misc->TypeIsNumeric($this->typeList[$x]))
+			{
+				$this->string .= "\n\t\treturn \$".strtolower($this->objectName)."1->$attribute > \$".strtolower($this->objectName)."2->$attribute;";
+			}
+			else
+			{
+				$this->string .= "\n\t\treturn strcmp(strtolower(\$".strtolower($this->objectName)."1->$attribute), strtolower(\$".strtolower($this->objectName)."2->$attribute));";
+			}
 			$this->string .= "\n\t}";
+			$x++;
 		}
+	}
+	
+	// -------------------------------------------------------------
+	function CreateEscapeFunction()
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("This function will always try to encode \$text to base64, except when \$text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.",array(1=>"string \$text"),"base64_encoded \$text");
+		$this->string .= "\tfunction Escape(\$text)"; 
+		$this->string .= "\n\t{";
+		$this->string .= "\n\t\tif (!is_numeric(\$text))";
+		$this->string .= "\n\t\t{";
+		$this->string .= "\n\t\t\treturn base64_encode(\$text);";
+		$this->string .= "\n\t\t}";
+		$this->string .= "\n\t\treturn \$text;";
+		$this->string .= "\n\t}";
+	}
+	
+	// -------------------------------------------------------------
+	function CreateUnescapeFunction()
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= "function Unescape(\$text)"; 
+		$this->string .= "\n\t{";
+		$this->string .= "\n\t\tif (!is_numeric(\$text))";
+		$this->string .= "\n\t\t{";
+		$this->string .= "\n\t\t\treturn base64_decode(\$text);";
+		$this->string .= "\n\t\t}";
+		$this->string .= "\n\t\treturn \$text;";
+		$this->string .= "\n\t}";
 	}
 }
 ?>

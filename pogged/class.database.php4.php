@@ -12,9 +12,15 @@
 		$serverName = $GLOBALS['configuration']['host'];		
 		$databaseUser = $GLOBALS['configuration']['user'];		
 		$databasePassword = $GLOBALS['configuration']['pass'];	
-
-		$this->connection = mysql_connect ($serverName, $databaseUser, $databasePassword) or die ('I cannot connect to the database.');
-		mysql_select_db ($this->databaseName);
+		$this->connection = mysql_connect ($serverName, $databaseUser, $databasePassword);
+		if ($this->connection)
+		{
+			mysql_select_db ($this->databaseName);
+		}
+		else
+		{
+			throw new Exception('cannot connect to the database. check configuration.');
+		}
 	}
 	
 	// -------------------------------------------------------------
@@ -33,7 +39,7 @@
 	{	
 		$this->result = mysql_query($query,$this->connection);
 		if (!$this->result) {
-			die('Invalid query: '.mysql_error());
+			throw  new Exception(mysql_errno().":".mysql_error());
 		}
 		return $this->result;
 	}

@@ -2,7 +2,6 @@
 /**
 * @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
 * @link  http://www.phpobjectgenerator.com
-* @version  1.5 revision 1
 * @copyright  Offered under the  BSD license
 * @abstract  Php Object Generator  automatically generates clean and tested Object Oriented code for your PHP4/PHP5 application. 
 */
@@ -33,7 +32,7 @@ if ($misc->GetVariable('typeList') != null)
 {
 	if (isset($_GET['typeList']))
 	{
-		$typeList = stripcslashes((urldecode($_GET['typeList'])));
+		$typeList = urldecode($_GET['typeList']);
 		eval ("\$typeList =".trim($typeList).";");
 	}
 	else
@@ -51,276 +50,14 @@ $pdoDriver = ($misc->GetVariable('pdoDriver')!=null?$misc->GetVariable('pdoDrive
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta name="description" content="Php Object Generator, (POG) automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
-<meta name="keywords" content="php, code, generator, classes, object-oriented" />
 <link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
-<script type="text/javascript">
-//<![CDATA[
-function AddField()
-{
-	trs=document.getElementsByTagName("div");
-	for(var w=0;w<trs.length;w++)
-	{
-		if(trs[w].style.display == "none")
-		{
-			trs[w].style.display="block";
-			var control = document.getElementById("field"+trs[w].id);
-			try
-			{ 
-				control.focus();
-			}
-			catch(e)
-			{
-			}
-			break;
-		}
-	}
-}
-function ResetFields()
-{
-	trs=document.getElementsByTagName("input")
-	for(var w=0;w<trs.length;w++)
-	{
-		trs[w].value= "";
-	}
-}
-function ConvertDDLToTextfield(id)
-{
-	var thisId = id;
-	trs=document.getElementsByTagName("select");
-	for(var w=0;w<trs.length;w++)
-	{
-		if(trs[w].id == thisId)
-		{
-			
-			if (trs[w].value == "OTHER")
-			{
-				trs[w].style.display="none";
-				trs2=document.getElementsByTagName("input");
-				for(var v=0;v<trs2.length;v++)
-				{
-					if(trs2[v].id == "t"+thisId)
-					{
-						trs2[v].style.display="inline";
-						trs2[v].focus();
-						break;
-					}
-				}
-			}
-			break;
-		}
-	}
-}
-function FocusOnFirstField()
-{
-	trs2=document.getElementById("FirstField");
-	trs2.focus();
-}
-
-function IsPDO()
-{
-	trs2=document.getElementById("wrapper");
-	if(trs2.value.toUpperCase() == "PDO")
-	{
-		
-		link=document.getElementById("disappear");
-		link.style.display = "none";
-		trs2=document.getElementById("PDOdriver");
-		trs2.value = "mysql";
-		trs2.style.display = "inline";
-	}
-	else
-	{
-		select=document.getElementById("PDOdriver");
-		select.style.display = "none";
-		GenerateSQLTypesForDriver('mysql');
-		link=document.getElementById("disappear");
-		link.style.display = "inline";
-	}
-}
-function CascadePhpVersion()
-{
-	trs2=document.getElementById("FirstField");
-	select=document.getElementById("wrapper");
-	select.length=0;
-	if(trs2.value == "php5.1")
-	{
-		optionsArray = new Array("PDO", 
-								"POG");
-	}
-	else
-	{
-		optionsArray = new Array("POG");
-	}
-	for (var i=0; i<optionsArray.length; i++)     
-	{
-		NewOpt =  new Option;
-		NewOpt.value = optionsArray[i].toLowerCase();
-		NewOpt.text = optionsArray[i];
-		select.options[i] =  NewOpt;
-	}
-	IsPDO();
-	GenerateSQLTypesForDriver('mysql');
-}
-function GenerateSQLTypesForDriver(driver)
-{
-	for (var j=1; j<50; j++)
-	{
-		ddlist = document.getElementById("type_"+j);
-		ddlist.length=0;
-		switch (driver)
-		{
-			case "mysql":
-				optionsArray = new Array("VARCHAR(255)", 
-										"TINYINT",
-										"TEXT",
-										"DATE",
-										"SMALLINT",
-										"MEDIUMINT",
-										"INT",
-										"BIGINT",
-										"FLOAT",
-										"DOUBLE",
-										"DECIMAL",
-										"DATETIME",
-										"TIMESTAMP",
-										"TIME",
-										"YEAR",
-										"CHAR(255)",
-										"TINYBLOB",
-										"TINYTEXT",
-										"BLOB",
-										"MEDIUMBLOB",
-										"MEDIUMTEXT",
-										"LONGBLOB",
-										"LONGTEXT",
-										"BINARY",
-										"OTHER");
-			break;
-			case "oci":
-			break;
-			case "dblib":
-				optionsArray = new Array("BIGINT",
-										"BINARY", 
-										"BIT", 
-										"CHAR",
-										"DATETIME",
-										"DECIMAL", 
-										"FLOAT", 
-										"IMAGE",
-										"INT",
-										"MONEY",
-										"NCHAR",
-										"NTEXT",
-										"NUMERIC",
-										"NVARCHAR",
-										"REAL",
-										"SMALLDATETIME",
-										"SMALLINT",
-										"SMALLMONEY",
-										"TEXT",
-										"TIMESTAMP",
-										"TINYINT",
-										"UNIQUEIDENTIFIER",
-										"VARBINARY",
-										"VARCHAR(255)",
-										"OTHER");
-			break;
-			case "firebird":
-				optionsArray = new Array("BLOB",
-										"CHAR", 
-										"CHAR(1)", 
-										"TIMESTAMP",
-										"DECIMAL",
-										"DOUBLE", 
-										"FLOAT", 
-										"INT64",
-										"INTEGER",
-										"NUMERIC",
-										"SMALLINT",
-										"VARCHAR(255)",
-										"OTHER");
-			break;
-			case "odbc":
-				optionsArray = new Array("BIGINT",
-										"BINARY", 
-										"BIT", 
-										"CHAR",
-										"DATETIME",
-										"DECIMAL", 
-										"FLOAT", 
-										"IMAGE",
-										"INT",
-										"MONEY",
-										"NCHAR",
-										"NTEXT",
-										"NUMERIC",
-										"NVARCHAR",
-										"REAL",
-										"SMALLDATETIME",
-										"SMALLINT",
-										"SMALLMONEY",
-										"TEXT",
-										"TIMESTAMP",
-										"TINYINT",
-										"UNIQUEIDENTIFIER",
-										"VARBINARY",
-										"VARCHAR(255)",
-										"OTHER");
-			break;
-			case "pgsql":
-				optionsArray = new Array("BIGINT",
-										"BIGSERIAL",
-										"BIT",
-										"BOOLEAN",
-										"BOX",
-										"BYTEA",
-										"CIDR",
-										"CIRCLE",
-										"DATE",
-										"DOUBLE PRECISION",
-										"INET",
-										"INTEGER",
-										"LINE",
-										"LSEG",
-										"MACADDR",
-										"MONEY",
-										"OID",
-										"PATH",
-										"POINT",
-										"POLYGON",
-										"REAL",
-										"SMALLINT",
-										"SERIAL",
-										"TEXT",
-										"VARCHAR(255)",
-										"OTHER");
-			break;
-			case "sqlite":
-				optionsArray = new Array("TEXT",
-										"NUMERIC",
-										"INTEGER",
-										"BLOB",
-										"OTHER");
-			break;
-		}
-	    for (var i=0; i<optionsArray.length; i++)     
-		{
-			NewOpt =  new Option;
-			NewOpt.value = optionsArray[i];
-			NewOpt.text = optionsArray[i];
-			ddlist.options[i] =  NewOpt;
-		}
-	}
-	//document.DynamicForm.DynamicSelect.options[0].selected = true;    //make the first option selected
-}
-//]]>
-</script>
-<title>Php Object Generator (v<?=$GLOBALS['configuration']['versionNumber']?> rev<?=$GLOBALS['configuration']['revisionNumber']?>) - Open Source Object Relational Mapping PHP Code Generator</title>
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
+<title>Php Object Generator (v<?=$GLOBALS['configuration']['versionNumber']?> rev<?=$GLOBALS['configuration']['revisionNumber']?>) - Open Source Object Relational Mapping PHP Code Generator</title>
 <meta name="description" content="Php Object Generator, (POG) is a PHP code generator which automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
-<meta name="keywords" content="php, code, generator, classes, object-oriented" />
+<meta name="keywords" content="php, code, generator, classes, object-oriented, CRUD" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script src="./pog.js" type="text/javascript">
+</script>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
@@ -334,15 +71,13 @@ urchinTracker();
 		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) is an open source <a href="http://www.phpobjectgenerator.com">PHP code generator</a> which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects. 
 		
 		<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. But don't take our word for it, give it a try!
-		
 		<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
 		<br/>Generates clean &amp; tested code
 		<br/>Generates CRUD methods
-<!--		<br/>Generates Instructions-->
+		<br/>Generates Setup file
 		<br/>Compatible with PHP4 &amp; PHP5
 		<br/>Compatible with PDO
-<!--		<br/>Data validation &amp;amp; encoding
-		<br/>Even works without a database-->
+		<br/>Automatic data encoding
 		<br/>Free for personal use
 		<br/>Free for commercial use
 		<br/>Open Source
@@ -401,29 +136,29 @@ urchinTracker();
 		</div><!-- objectname -->
 		<div class="greybox">
 			<span class="line"><img src="./images/object2.jpg" width="33" height="29" alt="object attribute"/><img src="./images/attribute.jpg" alt="object attribute" width="56" height="18"/> <input  type="text" name="fieldattribute_1" class="i" value="<?=(isset($attributeList)&&isset($attributeList[0])?$attributeList[0]:'')?>"></input>  &nbsp;&nbsp;<img src="./images/type.jpg" width="36" height="18" alt="object attribute"/>
-                <select class="s" style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[0]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_1')" name="type_1" id="type_1">
+                <select class="s" style="display:<?=(!isset($typeList[0])||$misc->TypeIsKnown($typeList[0]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_1')" name="type_1" id="type_1">
                 	<?
                 		$dataTypeIndex = 0;
 						eval("include \"datatype.".$pdoDriver.".inc.php\";");
 					?>
                 </select>
-              	<input style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[0])?"none":"inline")?>" type="text" name="ttype_1" class="i" id="ttype_1" value="<?=(isset($typeList)&&isset($typeList[0])&&!$misc->TypeIsKnown($typeList[0])?$typeList[0]:'')?>"></input></span><br/><br/>
+              	<input style="display:<?=(!isset($typeList[0])||$misc->TypeIsKnown($typeList[0])?"none":"inline")?>" type="text" name="ttype_1" class="i" id="ttype_1" value="<?=(isset($typeList)&&isset($typeList[0])&&!$misc->TypeIsKnown($typeList[0])?$typeList[0]:'')?>"></input></span><br/><br/>
 			<span class="line"><img src="./images/object2.jpg" width="33" height="29" alt="object attribute"/><img src="./images/attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_2" class="i" value="<?=(isset($attributeList)&&isset($attributeList[1])?$attributeList[1]:'')?>"></input> &nbsp;&nbsp;<img src="./images/type.jpg" width="36" height="18" alt="object attribute"/> 
-			<select class="s" style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[1]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_2')" name="type_2" id="type_2">
+			<select class="s" style="display:<?=(!isset($typeList[1])||$misc->TypeIsKnown($typeList[1]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_2')" name="type_2" id="type_2">
               		<?
                 		$dataTypeIndex = 1;
 						eval("include \"datatype.".$pdoDriver.".inc.php\";");
 					?>
                 </select>
-                <input style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[1]) ?"none":"inline")?>" type="text" name="ttype_2" class="i" id="ttype_2" value="<?=(isset($typeList)&&isset($typeList[1])&&!$misc->TypeIsKnown($typeList[1])?$typeList[1]:'')?>"></input></span><br/><br/>
+                <input style="display:<?=(!isset($typeList[1])||$misc->TypeIsKnown($typeList[1]) ?"none":"inline")?>" type="text" name="ttype_2" class="i" id="ttype_2" value="<?=(isset($typeList)&&isset($typeList[1])&&!$misc->TypeIsKnown($typeList[1])?$typeList[1]:'')?>"></input></span><br/><br/>
 			<span class="line"><img src="./images/object2.jpg" width="33" height="29" alt="object attribute"/><img src="./images/attribute.jpg" alt="object attribute" width="56" height="18"/>  <input type="text" name="fieldattribute_3" class="i" value="<?=(isset($attributeList)&&isset($attributeList[2])?$attributeList[2]:'')?>"></input> &nbsp;&nbsp;<img src="./images/type.jpg" width="36" height="18" alt="object attribute"/> 
-			<select class="s" style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[2]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_3')" name="type_3" id="type_3">
+			<select class="s" style="display:<?=(!isset($typeList[2])||$misc->TypeIsKnown($typeList[2]) ?"inline":"none")?>" onchange="ConvertDDLToTextfield('type_3')" name="type_3" id="type_3">
                 	<?
                 		$dataTypeIndex = 2;
 						eval("include \"datatype.".$pdoDriver.".inc.php\";");
 					?>
 			</select>
-                <input style="display:<?=(!isset($typeList)||$misc->TypeIsKnown($typeList[2]) ?"none":"inline")?>" type="text" name="ttype_3" class="i" id="ttype_3" value="<?=(isset($typeList)&&isset($typeList[2])&&!$misc->TypeIsKnown($typeList[2])?$typeList[2]:'')?>"></input></span><br/>
+                <input style="display:<?=(!isset($typeList[2])||$misc->TypeIsKnown($typeList[2]) ?"none":"inline")?>" type="text" name="ttype_3" class="i" id="ttype_3" value="<?=(isset($typeList)&&isset($typeList[2])&&!$misc->TypeIsKnown($typeList[2])?$typeList[2]:'')?>"></input></span><br/>
 		<?
 		if (isset($attributeList))
 		{
@@ -432,13 +167,13 @@ urchinTracker();
 			{
 				echo '<div style="display:block" id="attribute_'.$j.'">
 					<br/><span class="line"><img src="./images/object2.jpg" alt="object attribute"/><img src="./images/attribute.jpg" alt="object attribute"/>  <input type="text" name="fieldattribute_'.$j.'" class="i" id="fieldattribute_'.$j.'" value="'.(isset($attributeList)&&isset($attributeList[$j-1])?$attributeList[$j-1]:'').'"/> &nbsp;&nbsp;<img src="./images/type.jpg" alt="object attribute"/> 
-					<select class="s" style="display:'.(!isset($typeList)||$misc->TypeIsKnown($typeList[$j-1])?"inline":"none").'" onchange="ConvertDDLToTextfield(\'type_'.$j.'\')" name="type_'.$j.'" id="type_'.$j.'">';
+					<select class="s" style="display:'.(!isset($typeList[$j-1])||$misc->TypeIsKnown($typeList[$j-1])?"inline":"none").'" onchange="ConvertDDLToTextfield(\'type_'.$j.'\')" name="type_'.$j.'" id="type_'.$j.'">';
 				
 				$dataTypeIndex = $j-1;
 				eval("include \"datatype.".$pdoDriver.".inc.php\";");
 				
 				echo '</select>;
-                <input style="display:'.(!isset($typeList)||$misc->TypeIsKnown($typeList[$j-1]) ?"none":"inline").'" type="text" id="ttype_'.$j.'"  name="ttype_'.$j.'" class="i" value="'.(isset($typeList)&&isset($typeList[$j-1])&&!$misc->TypeIsKnown($typeList[$j-1])?$typeList[$j-1]:'').'"></input></span><br/>
+                <input style="display:'.(!isset($typeList[$j-1])||$misc->TypeIsKnown($typeList[$j-1]) ?"none":"inline").'" type="text" id="ttype_'.$j.'"  name="ttype_'.$j.'" class="i" value="'.(isset($typeList)&&isset($typeList[$j-1])&&!$misc->TypeIsKnown($typeList[$j-1])?$typeList[$j-1]:'').'"></input></span><br/>
 				</div>';				
 			}
 			$max++;
@@ -479,7 +214,7 @@ urchinTracker();
 		?>
 		</div><!-- greybox -->
 		<div class="generate">
-			<a href="#" onclick="AddField()"><img src="./images/addattribute.jpg" border="0" alt="add attribute"/></a> <a href="#" onclick="ResetFields()"><img src="./images/resetfields.jpg" border="0" alt="reset fields"/></a>
+			<a href="#" onclick="AddField();return false;"><img src="./images/addattribute.jpg" border="0" alt="add attribute"/></a> <a href="#" onclick="ResetFields();return false"><img src="./images/resetfields.jpg" border="0" alt="reset fields"/></a>
 		</div><!-- generate -->
 		
 		<div class="submit">
@@ -507,6 +242,5 @@ google_color_text = ["CCC078","808080"];
 </script>
 	</div>
 </div><!-- main -->
-
 </body>
 </html>
