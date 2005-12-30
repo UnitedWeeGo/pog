@@ -503,14 +503,28 @@ else
 	</div>
 	<div class="middle">
 		<div id="tabs">
-			<img src="./setup_images/tab_setup_on.gif"/>
-			<img src="./setup_images/tab_separator.gif"/>
-			<img src="./setup_images/tab_diagnosticresults.gif"/>
-			<img src="./setup_images/tab_separator.gif"/>
-			<img src="./setup_images/tab_manageobjects.gif"/>
-		</div><img src="./setup_images/setup_middle1.jpg"/><img src="./setup_images/setup_middle2.gif"/><input type="image" src="./setup_images/setup_pogmeup.gif" name="submit"/>
+			<img src="./setup_images/tab_setup_on.gif" height="20px" width="70px"/>
+			<img src="./setup_images/tab_separator.gif" height="20px" width="17px"/>
+			<img src="./setup_images/tab_diagnosticresults.gif" height="20px" width="137px"/>
+			<img src="./setup_images/tab_separator.gif" height="20px" width="17px"/>
+			<img src="./setup_images/tab_manageobjects.gif" height="20px" width="129px"/>
 		</div>
-		
+		<div id="nifty">
+			<div style="height:500px">
+			<img src="./setup_images/setup_welcome.jpg" height="47px" width="617px"/>
+			<div class="col1"><img src="./setup_images/pog_setup_closed.jpg"/><div class="gold">What is POG?</div>POG generates PHP objects with integrated CRUD methods to dramatically accelerate web application development in PHP. <br/>
+			<br/>POG allows developers to easily map object attributes onto columns of a database table without having to write SQL queries. More information at:</div>
+			<div class="col2"><img src="./setup_images/pog_setup_open.jpg"/><div class="gold">What is POG Setup?</div>You've generated one or more objects using Php Object Generator ... Now what?<br/>
+			<br/>POG SETUP is an answer to this question and takes the POG experience one step further. The Setup process automates <b>table creation</b>, <b>unit testing</b> and provides a light <b>scaffolding</b> environment.</div>
+			<div class="col3">
+			<div class="gold">If you are ready to get POG'd up, click on thebutton below to proceed. Doing this will:</div>
+			<br/>1. Establish a database connection.<br/>
+			2. Create table(s) for your objec(s), if required.<br/>
+			3. Perform diagnostics tests on your object(s).<br/>
+			4. Provide you with the test results.<br/><input type="image" src="./setup_images/setup_pogmeup.gif" name="submit"/></div>
+			</div>
+			<b class="rbottom"><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></b>
+		</div>
 	</div>
 </div>
 <?php	
