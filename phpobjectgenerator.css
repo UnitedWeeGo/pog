@@ -29,3 +29,5 @@ a {text-decoration:none;color:#837E3C;z-index:300}
 .right2 {width:170px;float:left;margin:122px auto 0 540px;position:absolute;z-index:300;font-weight:normal;font-size:9px}
 .middle {position:absolute;float:left;padding-left:175px;width:500px}
 textarea {width:267px;height:379px;color:#333;font-weight:bold;font-size:9px}
+.news {color:#837E3C;font-weight:bold;padding-bottom:30px}
+.news a {text-decoration:underline}

@@ -259,3 +259,13 @@ textarea
 	font-weight:bold;
 	font-size:9px;
 }
+.news
+{
+	color:#837E3C;
+	font-weight:bold;
+	padding-bottom:30px;
+}
+.news a
+{
+	text-decoration:underline;
+}
