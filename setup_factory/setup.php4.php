@@ -126,15 +126,19 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					$attributeList = array_keys(get_object_vars($instance));
 					
   					foreach($attributeList as $attribute)
-						{ 							
-							if (isset($instance->pog_attribute_type[$attribute]))
-							{
+					{ 							
+						if (isset($instance->pog_attribute_type[$attribute]))
+						{
   							if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
   							{
  								$instance->{$attribute} = $type_value[$instance->pog_attribute_type[$attribute]];
   							}
-							}
+  							else
+  							{
+  								$instance->{$attribute} = "1";
+  							}
 						}
+					}
   					//Test Save()
 						$instanceId = $instance->Save();
   					if(!$instanceId)

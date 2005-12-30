@@ -134,6 +134,10 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 	  							{
 	 								$instance->{$attribute} = $type_value[$instance->pog_attribute_type[$attribute]];
 	  							}
+	  							else
+	  							{
+	  								$instance->{$attribute} = "1";
+	  							}
   							}
   						}
       					//Test Save()

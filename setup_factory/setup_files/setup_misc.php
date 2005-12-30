@@ -34,20 +34,21 @@
 	// -------------------------------------------------------------
 	function ConvertAttributeToHtml($attributeName, $attributeType, $attributeValue='', $objectId='')
 	{
-		switch ($attributeType)
+		$attributeTypeParts = explode("(",$attributeType);
+		switch (strtoupper($attributeTypeParts[0]))
 		{
 			case "TEXT":
 			case "BLOB":
 				$html = "<textarea class='t' name='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."'>".($attributeValue != ''?$attributeValue:'')."</textarea>";
 			break;
 			case "BIGINT":
-			case "VARCHAR(255)":
+			case "VARCHAR":
 			case "INT":
 			case "YEAR":
 				$html = "<input class='i' name='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."' value='".($attributeValue != ''?$attributeValue:'')."' />";
 			break;
 			default:
-				$html = $attributeValue;
+				$html = substr($attributeValue,0,20)."...";
 			break;
 		}
 		return $html;

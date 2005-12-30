@@ -122,156 +122,160 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 						{
 							$instance->{$attribute} = $type_value[$instance->pog_attribute_type[$attribute]];
 						}
+						else
+						{
+							$instance->{$attribute} = "1";
+						}
 					}
 				}
-					//Test Save()
-					try
+				//Test Save()
+				try
+				{
+					$instanceId = $instance->Save();
+					if(!$instanceId)
 					{
-						$instanceId = $instance->Save();
-						if(!$instanceId)
+						if ($GLOBALS['configuration']['pdoDriver'] == 'odbc')
 						{
-							if ($GLOBALS['configuration']['pdoDriver'] == 'odbc')
+							$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
+						}
+						else if ($GLOBALS['configuration']['pdoDriver'] != 'firebird' && $GLOBALS['configuration']['pdoDriver'] != 'sqlite')
+						{
+							$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+						}
+						if ($GLOBALS['configuration']['pdoDriver'] != 'firebird' && $GLOBALS['configuration']['pdoDriver'] != 'sqlite')
+						{
+							$Database->query($instance->pog_query);
+							if (substr($Database->errorCode(),0,2) == "42" || substr($Database->errorCode(),0,2) == "00")
 							{
-								$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
-							}
-							else if ($GLOBALS['configuration']['pdoDriver'] != 'firebird' && $GLOBALS['configuration']['pdoDriver'] != 'sqlite')
-							{
-								$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-							}
-							if ($GLOBALS['configuration']['pdoDriver'] != 'firebird' && $GLOBALS['configuration']['pdoDriver'] != 'sqlite')
-							{
-								$Database->query($instance->pog_query);
-								if (substr($Database->errorCode(),0,2) == "42" || substr($Database->errorCode(),0,2) == "00")
+								try 
 								{
-									try 
+									$Database->Query($sql);
+									$diagnostics .= "Created Table $className successfully\n";
+									eval('$instance = new '.$className.'();');
+								
+									if (sizeof($attributeList) > 0)
 									{
-										$Database->Query($sql);
-										$diagnostics .= "Created Table $className successfully\n";
-										eval('$instance = new '.$className.'();');
-									
-										if (sizeof($attributeList) > 0)
-										{
-											foreach($attributeList as $attribute)
-											{ 							
-												if (isset($instance->pog_attribute_type[$attribute]))
+										foreach($attributeList as $attribute)
+										{ 							
+											if (isset($instance->pog_attribute_type[$attribute]))
+											{
+												if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
 												{
-													if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
-													{
-														$instance->{$attribute} = $type_value[$instance->pog_attribute_type[$attribute]];
-													}
+													$instance->{$attribute} = $type_value[$instance->pog_attribute_type[$attribute]];
 												}
-											} 
-										}
-										$instanceId = $instance->Save();
-					  					if(!$instanceId)
-					  					{
-					  						$diagnostics .= "ERROR: Save() could not be performed\n";
-					  						$diagnostics .= $instance->pog_query."\n";
-					  						$errors++;
-					  					}
-					  					else
-					  					{
-					  						$diagnostics .= "Testing Save()....OK\n";
-					  					}
+											}
+										} 
 									}
-									catch (Exception $e)
-									{
-										$diagnostics .= "Could not create table.";
-									}	
+									$instanceId = $instance->Save();
+				  					if(!$instanceId)
+				  					{
+				  						$diagnostics .= "ERROR: Save() could not be performed\n";
+				  						$diagnostics .= $instance->pog_query."\n";
+				  						$errors++;
+				  					}
+				  					else
+				  					{
+				  						$diagnostics .= "Testing Save()....OK\n";
+				  					}
 								}
-							}
-							else
-							{
-								$diagnostics .= "Please create a database first.\n";
+								catch (Exception $e)
+								{
+									$diagnostics .= "Could not create table.";
+								}	
 							}
 						}
 						else
 						{
-							$diagnostics .= "Testing Save()....OK\n";
+							$diagnostics .= "Please create a database first.\n";
 						}
-					}
-					catch(Exception $e)
-					{	
-							
-						if(strpos($e->getMessage(), "Access denied") != false)
-						{
-							echo "Please edit configuration.php with the right information.";
-							$_SESSION['diagnosticsSuccessful'] = null;
-							exit;
-						}
-					}
-					
-					//Test SaveNew()
-					if(!$instance->SaveNew())
-					{
-						$diagnostics .= "ERROR: SaveNew() could not be performed</div>";
-						$diagnostics .= $instance->pog_query."\n";
-						$errors++;
 					}
 					else
 					{
-						$diagnostics .= "Testing SaveNew()....OK\n";
+						$diagnostics .= "Testing Save()....OK\n";
 					}
-					
-					//Test GetList();
-					//GetList() implicitly tests Get()
-					//Multiple Conditions, 
-					//Like
-					$instanceList = $instance->GetList(array(array(strtolower($className)."Id",">",0)));
-					if($instanceList == null)
+				}
+				catch(Exception $e)
+				{	
+						
+					if(strpos($e->getMessage(), "Access denied") != false)
 					{
-						$diagnostics .= "ERROR: GetList() could not be performed</div>";
+						echo "Please edit configuration.php with the right information.";
+						$_SESSION['diagnosticsSuccessful'] = null;
+						exit;
+					}
+				}
+				
+				//Test SaveNew()
+				if(!$instance->SaveNew())
+				{
+					$diagnostics .= "ERROR: SaveNew() could not be performed</div>";
+					$diagnostics .= $instance->pog_query."\n";
+					$errors++;
+				}
+				else
+				{
+					$diagnostics .= "Testing SaveNew()....OK\n";
+				}
+				
+				//Test GetList();
+				//GetList() implicitly tests Get()
+				//Multiple Conditions, 
+				//Like
+				$instanceList = $instance->GetList(array(array(strtolower($className)."Id",">",0)));
+				if($instanceList == null)
+				{
+					$diagnostics .= "ERROR: GetList() could not be performed</div>";
+					$diagnostics .= $instance->pog_query."\n";
+					$errors++;
+				}
+				else 
+				{
+					$diagnostics .= "Testing Get()....OK\n";
+					$diagnostics .= "Testing GetList()....OK\n";
+					$oldCount = count($instanceList);
+					$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+1)), $className."Id", false, 2);
+					foreach ($instanceList as $instance)
+					{
+						$attributeList = array_keys(get_object_vars($instance));
+						foreach ($attributeList as $attribute)
+						{
+      					if (isset($instance->pog_attribute_type[$attribute]))
+							{
+  							if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
+  							{
+  								if ($instance->{$attribute} != $type_value[$instance->pog_attribute_type[$attribute]])
+  								{
+  									$diagnostics .= "WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$instance->pog_attribute_type[$attribute]]."`; found `".$instance->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$instance->pog_attribute_type[$attribute]."`\n";
+  								}
+  							}
+							}
+						}
+						$instance->Delete();
+					}
+					$instanceList = $instance->GetList(array(array(strtolower($className)."Id",">",0)));
+					if ($instanceList == null)
+					{
+						$instanceList = array();
+					}
+					$newCount = count($instanceList);
+					if($oldCount-2 == $newCount)
+					{
+						$diagnostics .= "Testing Delete()....OK\n";
+					}
+					else
+					{
+						$diagnostics .= "ERROR: Delete() could not be performed\n";
 						$diagnostics .= $instance->pog_query."\n";
 						$errors++;
 					}
-					else 
-					{
-						$diagnostics .= "Testing Get()....OK\n";
-						$diagnostics .= "Testing GetList()....OK\n";
-						$oldCount = count($instanceList);
-						$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+1)), $className."Id", false, 2);
-						foreach ($instanceList as $instance)
-						{
-							$attributeList = array_keys(get_object_vars($instance));
-							foreach ($attributeList as $attribute)
-							{
-	      					if (isset($instance->pog_attribute_type[$attribute]))
-								{
-	  							if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
-	  							{
-	  								if ($instance->{$attribute} != $type_value[$instance->pog_attribute_type[$attribute]])
-	  								{
-	  									$diagnostics .= "WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$instance->pog_attribute_type[$attribute]]."`; found `".$instance->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$instance->pog_attribute_type[$attribute]."`\n";
-	  								}
-	  							}
-								}
-							}
-							$instance->Delete();
-						}
-						$instanceList = $instance->GetList(array(array(strtolower($className)."Id",">",0)));
-						if ($instanceList == null)
-						{
-							$instanceList = array();
-						}
-						$newCount = count($instanceList);
-						if($oldCount-2 == $newCount)
-						{
-							$diagnostics .= "Testing Delete()....OK\n";
-						}
-						else
-						{
-							$diagnostics .= "ERROR: Delete() could not be performed\n";
-							$diagnostics .= $instance->pog_query."\n";
-							$errors++;
-						}
-					}
-					if ($errors == 0)
-					{
-						$diagnostics .= $className."....OK\n-----\n";
-						$_SESSION['links'][$className] = $link;
-					}
-					$className = null;
-					$contentParts2 = null;
+				}
+				if ($errors == 0)
+				{
+					$diagnostics .= $className."....OK\n-----\n";
+					$_SESSION['links'][$className] = $link;
+				}
+				$className = null;
+				$contentParts2 = null;
 			}
 		}
 		$diagnostics .= "\nFOUND & CHECKED ".count($objectNameList)." OBJECT(S)\n";
