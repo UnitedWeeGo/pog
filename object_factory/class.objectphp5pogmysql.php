@@ -78,7 +78,7 @@ class Object
 		$this->string .= $this->CreateComments("Gets object from database",array("integer \$".strtolower($this->objectName)."Id"),"object \$".$this->objectName);
 		$this->string .="\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
-		$this->string .= "\n\t\t\$this->pog_query = \"select * from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
+		$this->string .= "\n\t\t\$this->pog_query = \"select * from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".intval(\$".strtolower($this->objectName)."Id).\"' LIMIT 1\";";
 		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
 		$this->string .= "\n\t\t\$this->".strtolower($this->objectName)."Id = \$Database->Result(0, \"".strtolower($this->objectName)."id\");";
 		$x = 0;
@@ -267,7 +267,7 @@ class Object
 		$this->string .= "\n\n/**";
 		$this->string .= "\n* <b>".ucwords($this->objectName)."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
-		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." rev".$GLOBALS['configuration']['revisionNumber'];
+		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber'];
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
 		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5&wrapper=pog&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
