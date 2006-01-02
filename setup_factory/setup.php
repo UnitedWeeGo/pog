@@ -512,7 +512,7 @@ else
 			<div style="height:500px">
 			<img src="./setup_images/setup_welcome.jpg" height="47px" width="617px"/>
 			<div class="col1"><img src="./setup_images/pog_setup_closed.jpg"/><div class="gold">What is POG?</div>POG generates PHP objects with integrated CRUD methods to dramatically accelerate web application development in PHP. <br/>
-			<br/>POG allows developers to easily map object attributes onto columns of a database table without having to write SQL queries. More information at:</div>
+			<br/>POG allows developers to easily map object attributes onto columns of a database table without having to write SQL queries.</div>
 			<div class="col2"><img src="./setup_images/pog_setup_open.jpg"/><div class="gold">What is POG Setup?</div>You've generated one or more objects using Php Object Generator ... Now what?<br/>
 			<br/>POG SETUP is an answer to this question and takes the POG experience one step further. The Setup process automates <b>table creation</b>, <b>unit testing</b> and provides a light <b>scaffolding</b> environment.</div>
 			<div class="col3">
