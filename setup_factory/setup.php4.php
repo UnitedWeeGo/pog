@@ -323,7 +323,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	}
 	?>
 	</ul>
-	</div></div><div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><input type='image' src='./setup_images/setup_deleteall.jpg' alt='delete all' name='thrashall' value='thrashall'/></a></div><div class="middle3">
+	</div></div><div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="./?thrashall=true" title="Delete everything"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a></div><div class="middle3">
 	<?php
 	//is there an action to perform?
 
