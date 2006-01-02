@@ -361,56 +361,60 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	<?php
 	//is there an action to perform?
 
-	$keys = array_keys($_POST);
-	foreach ($keys as $key)
+	if (isset($_GET['thrashall']))
 	{
-		if (substr($key, 0, 3) == "add")
+		eval('$instance = new '.$objectName.'();');
+		$instanceId = strtolower(get_class($instance))."Id";
+		$instanceList = $instance->GetList(array(array($instanceId, ">", "0")));
+		foreach ($instanceList as $instance)
 		{
-			eval('$instance = new '.$objectName.'();');
-			foreach ($_POST as $attribute)
-			{
-				if ($attribute != "add")
-				{
-					$instance->{key($_POST)} = "$attribute";
-					next($_POST);
-				}
-			}
-			$instance->Save();
-			break;
-		}
-		else if (substr($key, 0, 6) == "delete")
-		{
-			eval('$instance = new '.$objectName.'();');
-			$instanceId = substr($key, 6);
-			$instance->Get($instanceId);
 			$instance->Delete();
-			break;
 		}
-		else if (substr($key, 0, 6) == "update")
+		$_GET = null;
+	}
+	else
+	{
+		$keys = array_keys($_POST);
+		foreach ($keys as $key)
 		{
-			eval('$instance = new '.$objectName.'();');
-			$instanceIdParts = explode("_", $key);
-			$instanceId = substr($instanceIdParts[0], 6); // very important. when using images as submit button, "_x" & "_y" is automatically added by the browser. 
-			$instance->Get($instanceId);
-			foreach ($keys as $key2)
+			if (substr($key, 0, 3) == "add")
 			{
-				$keyParts = explode("_", $key2);
-				if (count($keyParts) > 1 && $keyParts[1]==$instanceId)
+				eval('$instance = new '.$objectName.'();');
+				foreach ($_POST as $attribute)
 				{
-					$instance->{$keyParts[0]} = $_POST[$key2];
+					if ($attribute != "add")
+					{
+						$instance->{key($_POST)} = "$attribute";
+						next($_POST);
+					}
 				}
+				$instance->Save();
+				break;
 			}
-			$instance->Save();
-			break;
-		}
-		else if (substr($key, 0, 9) == "thrashall")
-		{
-			eval('$instance = new '.$objectName.'();');
-			$instanceId = strtolower(get_class($instance))."Id";
-			$instanceList = $instance->GetList(array(array($instanceId, ">", "0")));
-			foreach ($instanceList as $instance)
+			else if (substr($key, 0, 6) == "delete")
 			{
+				eval('$instance = new '.$objectName.'();');
+				$instanceId = substr($key, 6);
+				$instance->Get($instanceId);
 				$instance->Delete();
+				break;
+			}
+			else if (substr($key, 0, 6) == "update")
+			{
+				eval('$instance = new '.$objectName.'();');
+				$instanceIdParts = explode("_", $key);
+				$instanceId = substr($instanceIdParts[0], 6); // very important. when using images as submit button, "_x" & "_y" is automatically added by the browser. 
+				$instance->Get($instanceId);
+				foreach ($keys as $key2)
+				{
+					$keyParts = explode("_", $key2);
+					if (count($keyParts) > 1 && $keyParts[1]==$instanceId)
+					{
+						$instance->{$keyParts[0]} = $_POST[$key2];
+					}
+				}
+				$instance->Save();
+				break;
 			}
 		}
 	}
