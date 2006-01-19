@@ -21,7 +21,7 @@ if (isset($_SESSION['objectString']))
 	//append PDO driver settings if PDO
 	if (strtoupper($_SESSION['wrapper']) == "PDO")
 	{
-		$data = file_get_contents("./configuration_factory/configuration.".$pdoDriver.".php");
+		$data = file_get_contents("./configuration_factory/configuration.".$_SESSION['pdoDriver'].".php");
 	}
 	else
 	{
