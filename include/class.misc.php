@@ -6,7 +6,7 @@ class Misc
 	var $attributeList;
 	var $optionList;
 	var $separator = "\n\t// -------------------------------------------------------------";
-	
+
 	// -------------------------------------------------------------
 	function Misc($objectList, $attributeList = '', $optionList ='')
 	{
@@ -14,52 +14,17 @@ class Misc
 		$this->attributeList = $attributeList;
 		$this->optionList = $optionList;
 	}
-	
-	// -------------------------------------------------------------
-	function CreateGetAllFunction()
-	{
-		foreach ($this->objectList as $object)
-		{
-			$this->string .= "\n\t".$this->separator."\n\tfunction Get".$object."List()\n\t{\n\t\t";
-			$this->string .= "\n\t\t\$".strtolower($object)."List = Array();";
-			$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
-			$this->string .= "\n\t\t\$query = \"select id from $object\";";
-			$this->string .= "\n\t\t\$Database->Query(\$query);";
-			$this->string .= "\n\t\tfor (\$i=0; \$i < \$Database->Rows(); \$i++)";
-			$this->string .= "\n\t\t{";
-			$this->string .= "\n\t\t\t\$".strtolower($object)." = new $object();";
-			$this->string .= "\n\t\t\t\$".strtolower($object)."->Get(\$Database->Result(\$i,\"id\"));";
-			$this->string .= "\n\t\t\t\$".strtolower($object)."List[] = $".$object.";";
-			$this->string .= "\n\t\t}";
-			$this->string .= "\n\t\treturn \$".strtolower($object)."List;";
-			$this->string .= "\n\t}";
-		}
-	}
-	
-	// -------------------------------------------------------------
-	function CreateGetVariableFunction()
-	{
-		$this->string .= "\n\t".$this->separator."\n\tfunction GetVariable(\$variableName)\n\t{\n\t\t";
-		$this->string .= "if (isset(\$_GET[\$variableName]))";
-		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\treturn \$_GET[\$variableName];";
-		$this->string .= "\n\t\t}";
-		$this->string .= "if (isset(\$_POST[\$variableName]))";
-		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\treturn \$_POST[\$variableName];";
-		$this->string .= "\n\t\t}";
-		$this->string .= "if (isset(\$_SESSION[\$variableName]))";
-		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\treturn \$_SESSION[\$variableName];";
-		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\treturn null;";
-		$this->string .= "\n\t}";
-	}
-	
+
+	/**
+	 * Used by POG web interface to render attribute as either drop down list or text field
+	 *
+	 * @param string $type
+	 * @return bool
+	 */
 	function TypeIsKnown($type)
 	{
 		if ($type=="VARCHAR(255)"	//mysql
-		|| $type=="TINYINT" 
+		|| $type=="TINYINT"
 		|| $type=="TEXT"
 		|| $type=="INT"
 		|| $type=="DATE"
@@ -114,14 +79,19 @@ class Misc
 		|| $type=="SMALLINT"
 		|| $type=="SMALLMONEY"
 		|| $type=="UNIQUEIDENTIFIER"
-		|| $type=="VARBINARY"	
+		|| $type=="VARBINARY"
 		)
-			return true;
+		return true;
 		else
-			return false;
+		return false;
 	}
-	
-	// -------------------------------------------------------------
+
+	/**
+	 * Gets specified variable from 3 main variable spaces, in order of precedence: $_GET, $_POST and $_SESSION)
+	 *
+	 * @param string $variableName
+	 * @return mixed
+	 */
 	function GetVariable($variableName)
 	{
 		if (isset($_GET[$variableName]))
@@ -138,10 +108,17 @@ class Misc
 		}
 		return null;
 	}
-	
-	// -------------------------------------------------------------
+
+	/**
+	 * Determines whether or not SQL datatype is numeric
+	 *
+	 * @param string $type
+	 * @return bool
+	 */
 	function TypeIsNumeric($type)
 	{
+		$attributeTypeParts = explode("(",$type);
+		$type = strtoupper(trim($attributeTypeParts[0]));
 		if ($type=="TINYINT"	//mysql
 		|| $type=="INT"
 		|| $type=="DATE"
@@ -168,9 +145,100 @@ class Misc
 		|| $type=="SMALLMONEY"
 		|| $type=="UNIQUEIDENTIFIER"
 		)
-			return true;
+		return true;
 		else
-			return false;
+		return false;
+	}
+
+	/**
+	 * Determines whether or not SQL datatype is a set
+	 *
+	 * @param string $type
+	 * @return bool
+	 */
+	function TypeIsSet($type)
+	{
+		$attributeTypeParts = explode("(",$type);
+		$type = strtoupper(trim($attributeTypeParts[0]));
+		if ($type=="ENUM"	//mysql
+		|| $type=="SET"
+		)
+		return true;
+		else
+		return false;
+	}
+
+	/**
+	 * Gets the SQL type
+	 * These types are used by POG Setup (unit tests)
+	 * For example:
+	 * VARCHAR(255) is recognized as VARCHAR
+	 * DECIMAL(12,2) is recognized as DECIMAL
+	 *
+	 * @param string $type
+	 * @return string
+	 */
+	function GetAttributeType($type)
+	{
+		$attributeTypeParts = explode("(",$type);
+		return $type = strtoupper(trim($attributeTypeParts[0]));
+	}
+
+	/**
+	 * Transforms SQL type into POG's understanding of types
+	 * The interpreted types are used by:
+	 * GetList() (sorting)
+	 * Todo: Escape and Unescape should take these into account to escape more intelligently
+	 *
+	 * Type Rules:
+	 * NUMERIC - sorting performed by comparing values numerically
+	 * TEXT - sorting performed by comparing values textually
+	 * SET - sorting performed by comparing values textually
+	 *
+	 * @param string $type
+	 * @return string
+	 */
+	function InterpretType($type)
+	{
+		if ($this->TypeIsNumeric($type))
+		{
+			return "NUMERIC";
+		}
+		else if ($this->TypeIsSet($type))
+		{
+			return "SET";
+		}
+		else
+		{
+			return "TEXT";
+		}
+	}
+
+	/**
+	 * Interprets and returns the length limit on a particular attribute.
+	 * The interpreted lengths are used by:
+	 * POG Setup (unit testing)
+	 * Todo: Save() could use this for validation
+	 *
+	 * @param unknown_type $type
+	 * @return unknown
+	 */
+	function InterpretLength($type)
+	{
+		$typeParts = explode('(', $type);
+		if (count($typeParts) > 1)
+		{
+			$typeParts = explode(')', $typeParts[1]);
+			if (strpos($typeParts[0], ')') === false && trim($typeParts[0]) != '')
+			{
+				return $typeParts[0];
+			}
+			else
+			{
+				return null;
+			}
+		}
+
 	}
 }
 ?>

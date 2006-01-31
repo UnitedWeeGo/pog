@@ -8,7 +8,7 @@ class Object
 	var $typeList = array();
 	var $separator = "\n\t";
 	var $pdoDriver = "";
-	
+
 	// -------------------------------------------------------------
 	function Object($objectName, $attributeList = '', $typeList ='', $pdoDriver='')
 	{
@@ -17,10 +17,12 @@ class Object
 		$this->typeList = $typeList;
 		$this->pdoDriver = $pdoDriver;
 	}
-	
+
 	// -------------------------------------------------------------
 	function BeginObject()
 	{
+		include_once("./include/class.misc.php");
+		$misc = new Misc(array());
 		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();
 		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
@@ -32,22 +34,23 @@ class Object
 		//	create attribute => type array map
 		//	needed for setup
 		$this->string .= "public \$pog_attribute_type = array(\n\t\t";
+		$this->string .= "\"".strtolower($this->objectName)."id\" => array(\"NUMERIC\", \"INT\"),\n\t\t";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
-		{ 
-			$this->string .= "\"".$attribute."\" => \"".$this->typeList[$x]."\",\n\t\t";
+		{
+			$this->string .= "\"".$attribute."\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
 			$x++;
 		}
 		$this->string .= ");\n\t";
 		$this->string .= "public \$pog_query;";
 	}
-	
+
 	// -------------------------------------------------------------
 	function EndObject()
 	{
 		$this->string .= "\n}\n?>";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateConstructor()
 	{
@@ -72,7 +75,7 @@ class Object
 		}
 		$this->string .= "\n\t}";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateGetFunction()
 	{
@@ -89,7 +92,7 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date")
+			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
 			{
 				$this->string .="\n\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
 			}
@@ -97,7 +100,7 @@ class Object
 			{
 				$this->string .="\n\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
 			}
-			
+
 		}
 		$this->string .="\n\t\t\t}";
 		$this->string .="\n\t\t\treturn \$this;";
@@ -108,7 +111,7 @@ class Object
 		$this->string .="\n\t\t}";
 		$this->string .= "\n\t}";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateSQLQuery()
 	{
@@ -133,7 +136,7 @@ class Object
 				break;
 		}
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateSaveFunction()
 	{
@@ -172,7 +175,7 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date")
+			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
 			{
 				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$$attribute);";
 				$this->string .= "\n\t\t\t\t\$$attribute = \$this->".$attribute;
@@ -196,7 +199,7 @@ class Object
 		{
 			if ($x == (count($this->attributeList)-1))
 			{
-				$this->string .= strtolower($attribute); 
+				$this->string .= strtolower($attribute);
 			}
 			else
 			{
@@ -223,7 +226,7 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date")
+			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
 			{
 				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$$attribute);";
 				$this->string .= "\n\t\t\t\t\$$attribute = \$this->".$attribute;
@@ -254,7 +257,7 @@ class Object
 		$this->string .="\n\t\t}";
 		$this->string .= "\n\t}";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateSaveNewFunction()
 	{
@@ -265,8 +268,8 @@ class Object
 		$this->string .= "\n\t\treturn \$this->Save();";
 		$this->string .= "\n\t}";
 	}
-	
-	
+
+
 	// -------------------------------------------------------------
 	function CreateDeleteFunction()
 	{
@@ -293,7 +296,7 @@ class Object
 		$this->string .="\n\t\t}";
 		$this->string .= "\n\t}";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateComments($description='', $parameterDescriptionArray='', $returnType='')
 	{
@@ -309,7 +312,7 @@ class Object
 	     $this->string .= "\t* @return $returnType\n"
 	     ."\t*/\n";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreatePreface()
 	{
@@ -325,12 +328,12 @@ class Object
 		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$_SESSION['pdoDriver']."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateGetAllFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","string \$sortBy","boolean \$ascending","string limit"),"array \$".strtolower($this->objectName)."List");
+		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","string \$sortBy","boolean \$ascending","int limit"),"array \$".strtolower($this->objectName)."List");
 		$this->string .= "\tstatic function GetList(\$fcv_array, \$sortBy='', \$ascending=true, \$limit='')\n\t{";
 		$this->string .= "\n\t\t\$sqlLimit = (\$limit != '' && \$sortBy == ''?\"TOP \$limit\":'');";
 		$this->string .= "\n\t\tif (sizeof(\$fcv_array) > 0)";
@@ -351,70 +354,45 @@ class Object
 		$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)."->Get(\$row['".strtolower($this->objectName)."id']);";
 		$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)."List[] = \$".strtolower($this->objectName).";";
    		$this->string .= "\n\t\t\t\t}";
-		$this->string .= "\n\t\t\t\tswitch (strtolower(\$sortBy))";
+		$this->string .= "\n\t\t\t\tif (\$sortBy != '')";
 		$this->string .= "\n\t\t\t\t{";
-		foreach ($this->attributeList as $attribute)
-		{
-			$this->string .= "\n\t\t\t\t\tcase strtolower(\"$attribute\"):";
-			$this->string .= "\n\t\t\t\t\t\tusort(\$".strtolower($this->objectName)."List, array(\"".$this->objectName."\", \"Compare".$this->objectName."By".ucfirst($attribute)."\"));";
-			$this->string .= "\n\t\t\t\t\tif (!\$ascending)";
-			$this->string .= "\n\t\t\t\t\t\t{";
-			$this->string .= "\n\t\t\t\t\t\t\t\$".strtolower($this->objectName)."List = array_reverse(\$".strtolower($this->objectName)."List);";
-			$this->string .= "\n\t\t\t\t\t\t}";
-			$this->string .= "\n\t\t\t\t\tbreak;";
-		}
-		$this->string .= "\n\t\t\t\t\tcase \"\":";
-		$this->string .= "\n\t\t\t\t\tdefault:";
-		$this->string .= "\n\t\t\t\t\tbreak;";
+		$this->string .= "\n\t\t\t\t\t\$f = '';";
+		$this->string .= "\n\t\t\t\t\t\$".strtolower($this->objectName)." = new $this->objectName();";
+		$this->string .= "\n\t\t\t\t\tif (isset(\$".strtolower($this->objectName)."->pog_attribute_type[strtolower(\$sortBy)]) && \$".strtolower($this->objectName)."->pog_attribute_type[strtolower(\$sortBy)][0] == \"NUMERIC\")";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$f = 'return \$".strtolower($this->objectName)."1->'.\$sortBy.' > \$".strtolower($this->objectName)."2->'.\$sortBy.';';";
+		$this->string .= "\n\t\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\telse if (isset(\$".strtolower($this->objectName)."->pog_attribute_type[strtolower(\$sortBy)]))";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$f = 'return strcmp(strtolower(\$".strtolower($this->objectName)."1->'.\$sortBy.'), strtolower(\$".strtolower($this->objectName)."2->'.\$sortBy.'));';";
+		$this->string .= "\n\t\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\tusort(\$".strtolower($this->objectName)."List, create_function('\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2', \$f));";
+		$this->string .= "\n\t\t\t\t\tif (!\$ascending)";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$".strtolower($this->objectName)."List = array_reverse(\$".strtolower($this->objectName)."List);";
+		$this->string .= "\n\t\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\tif (\$limit != '')";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, 0, \$limit);";
+		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
-		$this->string .= "\n\t\t\t\tif (\$limit != '' && \$sortBy != '')";
-		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, 0, \$limit);";
-		$this->string .= "\n\t\t\t\t}";
-		$this->string .= "\n\t\t\t\telse";
-		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\treturn \$".strtolower($this->objectName)."List;";
-		$this->string .= "\n\t\t\t\t}";
-		$this->string .="\n\t\t\t}";
-		$this->string .="\n\t\t\tcatch(PDOException \$e)";
-		$this->string .="\n\t\t\t{";
-		$this->string .="\n\t\t\t\tthrow new Exception(\$e->getMessage());";
-   		$this->string .="\n\t\t\t}";
-		$this->string .="\n\t\t}";
-		$this->string .="\n\t\treturn null;";
+		$this->string .= "\n\t\t\t\treturn \$".strtolower($this->objectName)."List;";
+		$this->string .= "\n\t\t\t}";
+		$this->string .= "\n\t\t\tcatch(PDOException \$e)";
+		$this->string .= "\n\t\t\t{";
+		$this->string .= "\n\t\t\t\tthrow new Exception(\$e->getMessage());";;
+		$this->string .= "\n\t\t\t}";
+		$this->string .= "\n\t\t}";
+		$this->string .= "\n\t\treturn null;";
 		$this->string .= "\n\t}";
 	}
-	
-	// -------------------------------------------------------------
-	function CreateCompareFunctions()
-	{
-		include_once("./include/class.misc.php");
-		$misc = new Misc(array());
-		$x = 0;
-		foreach ($this->attributeList as $attribute)
-		{
-			$this->string .= "\n\t$this->separator\n\t";
-			$this->string .= $this->CreateComments("private function to sort an array of $this->objectName by $attribute",'',"+1 if attribute1 > attribute2, 0 if attribute1==attribute2 and -1 if attribute1 < attribute2");
-			$this->string .= "\tfunction Compare".$this->objectName."By".ucfirst($attribute)."(\$".strtolower($this->objectName)."1, \$".strtolower($this->objectName)."2)\n\t{";
-			if ($misc->TypeIsNumeric($this->typeList[$x]))
-			{
-				$this->string .= "\n\t\treturn \$".strtolower($this->objectName)."1->$attribute > \$".strtolower($this->objectName)."2->$attribute;";
-			}
-			else
-			{
-				$this->string .= "\n\t\treturn strcmp(strtolower(\$".strtolower($this->objectName)."1->$attribute), strtolower(\$".strtolower($this->objectName)."2->$attribute));";
-			}
-			$this->string .= "\n\t}";
-			$x++;
-		}
-	}
-	
+
 	// -------------------------------------------------------------
 	function CreateEscapeFunction()
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("This function will always try to encode \$text to base64, except when \$text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.",array(1=>"string \$text"),"base64_encoded \$text");
-		$this->string .= "\tfunction Escape(\$text)"; 
+		$this->string .= "\tfunction Escape(\$text)";
 		$this->string .= "\n\t{";
 		$this->string .= "\n\t\tif (!is_numeric(\$text))";
 		$this->string .= "\n\t\t{";
@@ -423,12 +401,12 @@ class Object
 		$this->string .= "\n\t\treturn \$text;";
 		$this->string .= "\n\t}";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateUnescapeFunction()
 	{
 		$this->string .= "\n\t$this->separator\n\t";
-		$this->string .= "function Unescape(\$text)"; 
+		$this->string .= "function Unescape(\$text)";
 		$this->string .= "\n\t{";
 		$this->string .= "\n\t\tif (!is_numeric(\$text))";
 		$this->string .= "\n\t\t{";

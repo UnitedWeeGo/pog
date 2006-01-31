@@ -2,9 +2,9 @@
 /**
 * @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
 * @link  http://www.phpobjectgenerator.com
-* @copyright  Offered under the  BSD license 
+* @copyright  Offered under the  BSD license
 *
-* This setup file does the following: 
+* This setup file does the following:
 * 1. Checks if configuration file is present
 * 2. Checks if the data in the configuration file is correct
 * 3. Checks if the database and table exist
@@ -34,6 +34,8 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 <meta name="keywords" content="php, code, generator, classes, object-oriented, CRUD" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="./setup.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="./setup_library/xPandMenu.css"/>
+<script src="./setup_library/xPandMenu.js"></script>
 </head>
 <body>
 <div class="header">
@@ -49,10 +51,10 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 <div class="container">
 <div class="left">
 	<div class="logo2"></div>
-	<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike. 
+	<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike.
 	<br/><br/>POG Setup is a 3 step process which:<br/><br/>
 	1. Creates tables for your generated objects.<br/><br/>
-	2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/> 
+	2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/>
 	3. Provides a light interface to your object tables.</div>
 </div>
 <div class="middle">
@@ -64,13 +66,12 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		<img src="./setup_images/tab_manageobjects.gif"/>
 	</div><div class="subtabs">&nbsp;</div><a href="./index.php?step=diagnostics"><img src="./setup_images/setup_recheck.jpg" border="0"/></a><div class="middle2">
 <?php
-	$type_value = InitializeTestValues();
 	//perform diagnostics
 	if (isset($GLOBALS['configuration']['pdoDriver']))
 	{
-		
+
 	}
-	else 
+	else
 	{
 		if(file_exists("../objects/class.database.php"))
 		{
@@ -81,15 +82,15 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				$database = new DatabaseConnection();
 				//success
 				//scan for generated objects.
-				$dir = opendir('../objects/');  
-				$objects = array();  
-				while(($file = readdir($dir)) !== false)  
-				{  
-					if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php")  
-					{  
-						$objects[] = $file;  
-					}  
-				}  
+				$dir = opendir('../objects/');
+				$objects = array();
+				while(($file = readdir($dir)) !== false)
+				{
+					if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php")
+					{
+						$objects[] = $file;
+					}
+				}
 				closedir($dir);
 				$objectNameList = array();
 				$errors = 0;
@@ -111,7 +112,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					{
 						$diagnostics .= "TESTING $className...\n";
 						$objectNameList[] = $className;
-												
+
 						//get sql
 						$sqlParts = split(";",$contentParts[0]);
 						$sqlPart = split("CREATE",$sqlParts[0]);
@@ -119,21 +120,22 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 
 						$linkParts1 = split("\*\/", $contentParts[1]);
 						$linkParts2 = split("\@link", $linkParts1[0]);
-						$link = $linkParts2[1]; 
+						$link = $linkParts2[1];
 
 						include("../objects/{$object}");
 						eval('$instance = new '.$className.'();');
-						
+
 						$attributeList = array_keys(get_object_vars($instance));
-						
+						$type_value = InitializeTestValues($instance->pog_attribute_type);
+
       					foreach($attributeList as $attribute)
-  						{ 							
+  						{
   							if (isset($instance->pog_attribute_type[$attribute]))
   							{
-	  							if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
-	  							{
-	 								$instance->{$attribute} = $type_value[$instance->pog_attribute_type[$attribute]];
-	  							}
+	  							if (isset($type_value[$attribute]))
+		  						{
+		 							$instance->{$attribute} = $type_value[$attribute];
+								}
 	  							else
 	  							{
 	  								$instance->{$attribute} = "1";
@@ -162,7 +164,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
       							//table doesn't exist
       							//try to create table
       							$database = new DatabaseConnection();
-      							try 
+      							try
       							{
       								$database->Query($sql);
       								$diagnostics .= "Created Table $className successfully\n";
@@ -184,7 +186,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		      					}
       						}
       					}
-      					
+
       					//Test SaveNew()
       					if(!$instance->SaveNew())
       					{
@@ -194,12 +196,12 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
       					}
       					else
       					{
+      						$instance->SaveNew();
       						$diagnostics .= "Testing SaveNew()....OK\n";
       					}
-      					
+
       					//Test GetList();
-      					//GetList() implicitly tests Get()
-      					//Multiple Conditions, 
+      					//GetList() implicitly tests Get(),
       					$instanceList = $instance->GetList(array(array(strtolower($className)."Id",">",0)));
       					if($instanceList == null)
       					{
@@ -207,30 +209,63 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
       						$diagnostics .= $instance->pog_query."\n";
       						$errors++;
       					}
-      					else 
+      					else
       					{
-      						$diagnostics .= "Testing Get()....OK\n";
-      						$diagnostics .= "Testing GetList()....OK\n";
-      						$oldCount = count($instanceList);
-      						$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+1)), $className."Id", false, 2);
-      						foreach ($instanceList as $instance)
-      						{
-      							$attributeList = array_keys(get_object_vars($instance));
-      							foreach ($attributeList as $attribute)
-      							{
-			      					if (isset($instance->pog_attribute_type[$attribute]))
+	  						$diagnostics .= "Testing Get()....OK\n";
+	  						$diagnostics .= "Testing GetList()....\n";
+	  						$oldCount = count($instanceList);
+	  						//Test Multiple Conditions
+	  						$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+1)), strtolower($className)."Id", false, 2);
+	  						$diagnostics .= "\tTesting Limit....";
+	  						if (sizeof($instanceList) != 2)
+	  						{
+	  							//Test Limit
+	  							$diagnostics .= "ERROR: GetList() :sizeof(list) != \$limit\n";
+		  						$diagnostics .= $instance->pog_query."\n";
+		  						$errors++;
+	  						}
+	  						else
+	  						{
+	  							$diagnostics .= "OK\n";
+	  						}
+	  						$diagnostics .= "\tTesting Sorting....";
+	  						if ($instanceList[1]->{strtolower($className)."Id"} > $instanceList[0]->{strtolower($className)."Id"})
+	  						{
+	  							//Test Sorting
+	  							$diagnostics .= "ERROR: GetList() :list is not properly sorted\n";
+		  						$diagnostics .= $instance->pog_query."\n";
+		  						$errors++;
+	  						}
+	  						else
+	  						{
+	  							$diagnostics .= "OK\n";
+	  						}
+	  						if ($errors == 0)
+	  						{
+	  							$diagnostics .= "Testing GetList()....OK\n";
+		  						foreach ($instanceList as $instance)
+		  						{
+		  							$attributeList = array_keys(get_object_vars($instance));
+		  							foreach ($attributeList as $attribute)
 		  							{
-			  							if (isset($type_value[$instance->pog_attribute_type[$attribute]]))
+				      					if (isset($instance->pog_attribute_type[$attribute]))
 			  							{
-		      								if ($instance->{$attribute} != $type_value[$instance->pog_attribute_type[$attribute]])
-		      								{
-		      									$diagnostics .= "WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$instance->pog_attribute_type[$attribute]]."`; found `".$instance->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$instance->pog_attribute_type[$attribute]."`\n";
-		      								}
+				  							if (isset($type_value[$attribute]))
+				  							{
+			      								if ($instance->{$attribute} != $type_value[$attribute])
+			      								{
+			      									$diagnostics .= "WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$instance->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$instance->pog_attribute_type[$attribute][1]."`\n";
+			      								}
+				  							}
 			  							}
 		  							}
-      							}
-      							$instance->Delete();
-      						}
+	  								$instance->Delete();
+		  						}
+	  						}
+	  						else
+	  						{
+	  							$diagnostics .= "Testing GetList()....Failed\n";
+	  						}
       						$instanceList = $instance->GetList(array(array(strtolower($className)."Id",">",0)));
       						if ($instanceList == null)
       						{
@@ -256,7 +291,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
    						$contentParts2 = null;
 						$className = null;
 					}
-					
+
 				}
 				$diagnostics .= "\nFOUND & CHECKED ".count($objectNameList)." OBJECT(S)\n";
 				$_SESSION['fileNames'] = serialize($objects);
@@ -272,7 +307,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					$diagnostics .= "FOUND $errors ERROR(S)\n";
 					//echo "<input type='submit' name='submit' value='Retry'/>";
 				}
-				
+
 			}
 			catch (Exception $e)
 			{
@@ -295,10 +330,10 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 <div class="container">
 	<div class="left">
 		<div class="logo3"></div>
-		<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike. 
+		<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike.
 		<br/><br/>POG Setup is a 3 step process which:<br/><br/>
 		1. Creates tables for your generated objects.<br/><br/>
-		2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/> 
+		2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/>
 		3. Provides a light interface to your object tables.</div>
 	</div>
 <div class="middle33">
@@ -311,6 +346,8 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	</div><div class="subtabs">
 <?php
 	//provide interface to the database
+	include "./setup_library/xPandMenu.php";
+	$root = new XMenu();
 	if(file_exists("configuration.php"))
 	{
 		include "../configuration.php";
@@ -319,7 +356,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	{
 		include "../objects/class.database.php";
 	}
-	
+
 	$fileNames = unserialize($_SESSION['fileNames']);
 	foreach($fileNames as $filename)
 	{
@@ -331,7 +368,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 		$_SESSION['objectName'] = $_GET['objectName'];
 	}
 	$objectName = (isset($_SESSION['objectName'])?$_SESSION['objectName']:$objectNameList[0]);
-	
+
 	?>
 	<div id="header">
   	<ul>
@@ -348,10 +385,11 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	}
 	?>
 	</ul>
-	</div></div><div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="./?thrashall=true" title="Delete everything"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a></div><div class="middle3">
+	</div><!--header-->
+	</div><!--subtabs-->
+	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" alt="regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="./?thrashall=true" title="Delete everything"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a></div><div class="middle3">
 	<?php
 	//is there an action to perform?
-	
 	if (isset($_GET['thrashall']))
 	{
 		eval('$instance = new '.$objectName.'();');
@@ -363,141 +401,25 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 		}
 		$_GET = null;
 	}
-	else
-	{
-		$keys = array_keys($_POST);
-		foreach ($keys as $key)
-		{
-			if (substr($key, 0, 3) == "add")
-			{
-				eval('$instance = new '.$objectName.'();');
-				foreach ($_POST as $attribute)
-				{
-					if ($attribute != "add")
-					{
-						$instance->{key($_POST)} = "$attribute";
-						next($_POST);
-					}
-				}
-				$instance->Save();
-				break;
-			}
-			else if (substr($key, 0, 6) == "delete")
-			{
-				eval('$instance = new '.$objectName.'();');
-				$instanceId = substr($key, 6);
-				$instance->Get($instanceId);
-				$instance->Delete();
-				break;
-			}
-			else if (substr($key, 0, 6) == "update")
-			{
-				eval('$instance = new '.$objectName.'();');
-				$instanceIdParts = explode("_", $key);
-				$instanceId = substr($instanceIdParts[0], 6); // very important. when using images as submit button, "_x" & "_y" is automatically added by the browser. 
-				$instance->Get($instanceId);
-				foreach ($keys as $key2)
-				{
-					$keyParts = explode("_", $key2);
-					if (count($keyParts) > 1 && $keyParts[1]==$instanceId)
-					{
-						$instance->{$keyParts[0]} = $_POST[$key2];
-					}
-				}
-				$instance->Save();
-				break;
-			}
-		}
-	}
-	eval('$instance = new '.$objectName.'();');
-	$attributeList = array_keys(get_object_vars($instance));
-	$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0)));
-	$table =  "<table border='0'><tr>";
-	$x = 0;
-	foreach($attributeList as $attribute)
-	{
-		if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
-		{
-			if ($x == 0)
-			{
-				$table .= "<td width='75'>$attribute</td>";
-			}
-			else
-			{
-				$table .= "<td>$attribute</td>";
-			}
-			$x++;
-		}
-	}
-	$table .= "<td></td></tr>";
-	$table .= "<tr>";
-	foreach($attributeList as $attribute)
-	{
-		if ($attribute == strtolower($objectName).'Id')
-		{
-			$table .= "<td width='75'>";
-			$table .= "</td>";
-		}
-		else if ($attribute != "pog_attribute_type" && $attribute!= "pog_query" && $attribute!= strtolower($objectName).'Id')
-		{
-			$table .= "<td>";
-			$table .= ConvertAttributeToHtml($attribute,$instance->pog_attribute_type[$attribute]);
-			$table .= "</td>";
-		}
-	}
-	$table .= "<td><input type='image' src='./setup_images/button_add.gif' alt='add' name='add' value='add'/></td></tr>";
-	if ($instanceList != null)
-	{
-		foreach($instanceList as $instance)
-		{
-			$table .= "<tr>";
-			$x = 0;
-			foreach($attributeList as $attribute)
-			{
-				if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
-				{
-					if ($x == 0)
-					{
-						$table .= "<td class='id'>".$instance->{$attribute}."</td>";
-					}
-					else
-					{
-						$table .= "<td>";
-						if (isset($instance->pog_attribute_type[$attribute]))
-						{
-							$table .= ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]});
-						}
-						else 
-						{
-							$table .= $instance->{$attribute};
-						}
-						$table .= "</td>";
-					}
-					$x++;
-				}
-			}
-			$table .= "<td><input type='image' src='./setup_images/button_update.gif' alt='update' value='update' name='update".$instance->{$attributeList[0]}."'/> <input type='image'  src='./setup_images/button_delete.gif' alt='delete' name='delete".$instance->{$attributeList[0]}."' value='delete'/></td></tr>";
-		}
-	}
-	$table .= "</table>";
-	echo $table;
+	echo "<script>sndReq('GetList', '', '$objectName', '', '', '');</script>";
+	echo '<div id="container"></div>';
 	$_SESSION['fileNames'] = serialize($fileNames);
 	$_SESSION['objectNameList'] = serialize($objectNameList);
 ?>
 </div><div class="bottom3"><img src="./setup_images/setup_bottom3.jpg"/></div></div></div>
 <?php
 }
-else 
+else
 {
 	//welcome screen
 ?>
 <div class="container">
 	<div class="left">
 		<div class="logo"></div>
-		<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike. 
+		<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike.
 		<br/><br/>POG Setup is a 3 step process which:<br/><br/>
 		1. Creates tables for your generated objects.<br/><br/>
-		2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/> 
+		2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/>
 		3. Provides a light interface to your object tables.</div>
 	</div>
 	<div class="middle">
@@ -526,7 +448,7 @@ else
 		</div>
 	</div>
 </div>
-<?php	
+<?php
 }
 ini_set("error_reporting", $errorLevel);
 ?>

@@ -1,54 +1,123 @@
 <?php
 
-	// -------------------------------------------------------------
-	function InitializeTestValues()
+	/**
+	 * Specifies what test data is used during unit testing (step 2 of the setup process)
+	 * Todo: Can be improved but satisfatory for now
+	 * @return array
+	 */
+	function InitializeTestValues($pog_attribute_type)
 	{
-		return array(
-					"VARCHAR(255)" => "Lorem Ipsum",
-					"TINYINT" => "1",
-					"TEXT" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"DATE" => "1997-12-15",
-					"SMALLINT" => "1234",
-					"MEDIUMINT" => "12345",
-					"INT" => "99",
-					"BIGINT" => "12345678",
-					"FLOAT" => "1234.5678",
-					"DOUBLE" => "1234.5678",
-					"DECIMAL" => "1234.5678",
-					"DATETIME" => "1997-12-15 23:50:26",
-					"TIMESTAMP" => "20050517120000",
-					"TIME" => "23:50:26",
-					"YEAR" => "1997",
-					"CHAR(255)" => "Lorem Ipsum",
-					"TINYBLOB" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"TINYTEXT" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"BLOB" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"MEDIUMBLOB" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"MEDIUMTEXT" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"LONGBLOB" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"LONGTEXT" => "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-					"BINARY(1)" => "d",				
-					);
+		$DATETIME = '1997-12-15 23:50:26';
+		$DATE = '1997-12-15';
+		$TIMESTAMP = '1997-12-15 23:50:26';
+		$TIME = '23:50:26';
+		$YEAR = '1997';
+		$DECIMAL =
+		$DOUBLE =
+		$FLOAT =
+		$BIGINT =
+		$INT = '12345678';
+		$SMALLINT = '1234';
+		$MEDIUMINT = '12345';
+		$TINYINT = '1';
+		$CHAR = 'L';
+		$VARCHAR =
+		$TEXT =
+		$TINYBLOB =
+		$TINYTEXT =
+		$BLOB =
+		$MEDIUMBLOB =
+		$MEDIUMTEXT =
+		$LONGBLOB =
+		$LONGTEXT =
+		$BINARY = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry';
+		$attribute_testValues = array();
+		array_shift($pog_attribute_type); //get rid of objectid
+		foreach ($pog_attribute_type as $attribute => $property)
+		{
+			if (isset($property[2]))
+			//length is specified, for e.g. if attribute = VARCHAR(255), $property[2]=255
+			{
+				$limit =  explode(',', $property[2]);
+				//field is limited
+				if (intval($limit[0]) > 0)
+				{
+					if (isset($limit[1]) && intval($limit[1]) > 0)
+					{
+						//decimal, enum, set
+						$attribute_testValues[$attribute] = substr(${$property[1]}, 0, ceil($limit[0]*0.6)).".".substr(${$property[1]}, 0, $limit[1]);
+					}
+					else
+					{
+						$attribute_testValues[$attribute] = substr(${$property[1]}, 0, ceil($limit[0] * 0.6));
+					}
+				}
+			}
+			else
+			//length not specified, but we still need to account for default mysql behavior
+			//for eg, FLOAT(X), if X isn't specified, mysql defaults to (10,2).
+			{
+				if ($property[1] == "FLOAT" || $property[1] == "DOUBLE")
+				{
+					$attribute_testValues[$attribute] = "1234.56";
+				}
+				else
+				{
+					$attribute_testValues[$attribute] = ${$property[1]};
+				}
+			}
+		}
+		return $attribute_testValues;
 	}
-	
-	// -------------------------------------------------------------
-	function ConvertAttributeToHtml($attributeName, $attributeType, $attributeValue='', $objectId='')
+
+	/**
+	 * Specifies how object attributes are rendered during scaffolding (step 3 of the setup process)
+	 * Todo: Can be improved but satisfactory for now
+	 * @param string $attributeName
+	 * @param string $attributeType
+	 * @param string $attributeValue
+	 * @param int $objectId
+	 * @return string $html
+	 */
+	function ConvertAttributeToHtml($attributeName, $attributeProperties, $attributeValue='', $objectId='')
 	{
-		$attributeTypeParts = explode("(",$attributeType);
-		switch (strtoupper($attributeTypeParts[0]))
+		switch ($attributeProperties[1])
 		{
 			case "TEXT":
-			case "BLOB":
-				$html = "<textarea class='t' name='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."'>".($attributeValue != ''?$attributeValue:'')."</textarea>";
-			break;
-			case "BIGINT":
+			case "MEDIUMBLOB":
+			case "LONGBLOB":
+			case "LONGTEXT":
+			case "BINARY":
+			case "MEDIUMTEXT":
+			case "TINYTEXT":
 			case "VARCHAR":
+			case "TINYBLOB":
+			case "BLOB":
+				$html = "<textarea class='t' id='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."'>".($attributeValue != ''?$attributeValue:'')."</textarea>";
+			break;
+			case "DATETIME":
+			case "DATE":
+			case "TIMESTAMP":
+			case "TIME":
+			case "YEAR":
+			case "DECIMAL":
+			case "DOUBLE":
+			case "FLOAT":
+			case "BIGINT":
 			case "INT":
 			case "YEAR":
-				$html = "<input class='i' name='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."' value='".($attributeValue != ''?$attributeValue:'')."' />";
+			case "SMALLINT":
+			case "MEDIUMINT":
+			case "TINYINT":
+			case "CHAR":
+				$html = "<input class='i' id='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."' value='".($attributeValue != ''?$attributeValue:'')."' />";
 			break;
 			default:
-				$html = substr($attributeValue,0,20)."...";
+				$html = substr($attributeValue, 0, 500);
+				if (strlen($attributeValue) > 500)
+				{
+					$html .= "...";
+				}
 			break;
 		}
 		return $html;

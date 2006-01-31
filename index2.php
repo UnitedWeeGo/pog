@@ -3,7 +3,7 @@
 * @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
 * @link  http://www.phpobjectgenerator.com
 * @copyright  Offered under the  BSD license
-* @abstract  Php Object Generator  automatically generates clean and tested Object Oriented code for your PHP4/PHP5 application. 
+* @abstract  Php Object Generator  automatically generates clean and tested Object Oriented code for your PHP4/PHP5 application.
 */
 session_start();
 include "./include/configuration.php";
@@ -32,7 +32,7 @@ if (IsPostback())
 				$typeList[] = GetVariable(('ttype_'.$i));
 		}
 	}
-	
+
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
@@ -40,7 +40,7 @@ if (IsPostback())
 	{
 		eval("include \"./object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php\";");
 	}
-	else 
+	else
 	{
 		if  ($language == "php4")
 		{
@@ -52,7 +52,7 @@ if (IsPostback())
 		}
 	}
 	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
-	
+
 	$object->BeginObject();
 	$object->CreateConstructor();
 	$object->CreateGetFunction();
@@ -60,18 +60,17 @@ if (IsPostback())
 	$object->CreateSaveFunction();
 	$object->CreateSaveNewFunction();
 	$object->CreateDeleteFunction();
-	$object->CreateCompareFunctions();
 	if(strtoupper($wrapper) == "PDO")
 	{
 		$object->CreateEscapeFunction();
 		$object->CreateUnescapeFunction();
 	}
 	$object->EndObject();
-	
+
 	$_SESSION['objectName'] = $objectName;
 	$_SESSION['attributeList'] = serialize($attributeList);
 	$_SESSION['typeList'] = serialize($typeList);
-	
+
 	$objectList[]=$object->objectName;
 	$_SESSION['objectString'] = $object->string;
 	?>
@@ -79,7 +78,7 @@ if (IsPostback())
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-	<title>Php Object Generator (<?=$GLOBALS['configuration']['versionNumber']?> <?=$GLOBALS['configuration']['revisionNumber']?>) - Object Relational Mapping (ORM) PHP Code Generator</title>
+	<title>Php Object Generator (<?=$GLOBALS['configuration']['versionNumber']?> <?=$GLOBALS['configuration']['revisionNumber']?>) - Open Source PHP Code Generator</title>
 	<link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
 	<link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -93,7 +92,7 @@ if (IsPostback())
 	<body>
 	<div class="main">
 		<div class="left2">
-			<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) is an open source <a href="http://www.phpobjectgenerator.com">PHP code generator</a> which automatically generates clean & tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects. 
+			<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com">POG</a>) is an open source <a href="http://www.phpobjectgenerator.com">PHP code generator</a> which automatically generates clean & tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
 			<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. But don't take our word for it, give it a try!
 			<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
 			<br/>Generates clean & tested code
@@ -112,12 +111,12 @@ if (IsPostback())
 			<br/><a href="http://www.faintlight.com/techinfo/pog">The POG mirror site</a>
 			<br/><a href="http://www.phpobjectgenerator.com/plog/version">The POG history log</a>
 			<br/><br/>POG was written by <a href="http://www.philosophicallies.com" title="Philosophic Allies">Joel Wan</a> and <a href="http://www.faintlight.com" title="Faint Light">Mark Slemko</a>. Designs by <a href="http://www.designyouwill.com" title="Design You Will">Jonathan Easton</a>.
-			<br/><br/>Feedback, Feature Requests, Bugs to: <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>	
-			
+			<br/><br/>Feedback, Feature Requests, Bugs to: <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>
+
 		</div><!-- left -->
 		<div class="middle">
 			<div class="header2">
-				
+
 			</div><!-- header -->
 			<form method="post" action="index3.php">
 			<div class="result">
