@@ -215,7 +215,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 	  						$diagnostics .= "Testing GetList()....\n";
 	  						$oldCount = count($instanceList);
 	  						//Test Multiple Conditions
-	  						$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+1)), strtolower($className)."Id", false, 2);
+	  						$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+2)), strtolower($className)."Id", false, 2);
 	  						$diagnostics .= "\tTesting Limit....";
 	  						if (sizeof($instanceList) != 2)
 	  						{
@@ -243,7 +243,8 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 	  						if ($errors == 0)
 	  						{
 	  							$diagnostics .= "Testing GetList()....OK\n";
-		  						foreach ($instanceList as $instance)
+		  						$instanceList = $instance->GetList(array(array(strtolower($className)."Id", ">=",$instanceId), array(strtolower($className)."Id", "<=", $instanceId+2)), strtolower($className)."Id", false, 3);
+	  							foreach ($instanceList as $instance)
 		  						{
 		  							$attributeList = array_keys(get_object_vars($instance));
 		  							foreach ($attributeList as $attribute)
@@ -272,7 +273,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
       							$instanceList = array();
       						}
       						$newCount = count($instanceList);
-      						if($oldCount-2 == $newCount)
+      						if($oldCount-3 == $newCount)
       						{
       							$diagnostics .= "Testing Delete()....OK\n";
       						}
