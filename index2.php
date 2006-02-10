@@ -105,7 +105,22 @@ if (IsPostback())
 		<br/>Free for personal use
 		<br/>Free for commercial use
 		<br/>Open Source
-		<br/><br/><img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
+		<br/><br/>
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_xclick">
+		<input type="hidden" name="business" value="pogguys@phpobjectgenerator.com">
+		<input type="hidden" name="item_name" value="PHP Object Generator Donation">
+		<input type="hidden" name="page_style" value="PayPal">
+		<input type="hidden" name="no_shipping" value="1">
+		<input type="hidden" name="return" value="http://www.phpobjectgenerator.com">
+		<input type="hidden" name="cancel_return" value="http://www.phpobjectgenerator.com">
+		<input type="hidden" name="cn" value="Thanks for making a donation!">
+		<input type="hidden" name="currency_code" value="USD">
+		<input type="hidden" name="tax" value="0">
+		<input type="hidden" name="bn" value="PP-DonationsBF">
+		<input type="image" src="http://www.phpobjectgenerator.com/images/php_code_generator_donate.gif" border="0" name="submit" alt="Thank you!">
+		</form>
+		<img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
 		<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/" title="POG RSS feed">RSS feed</a>.
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials (in progress)</a>
