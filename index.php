@@ -83,7 +83,7 @@ urchinTracker();
 		<br/>Free for commercial use
 		<br/>Open Source
 		<br/><br/>
-		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<form class="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post">
 		<input type="hidden" name="cmd" value="_xclick">
 		<input type="hidden" name="business" value="pogguys@phpobjectgenerator.com">
 		<input type="hidden" name="item_name" value="PHP Object Generator Donation">
@@ -96,8 +96,7 @@ urchinTracker();
 		<input type="hidden" name="tax" value="0">
 		<input type="hidden" name="bn" value="PP-DonationsBF">
 		<input type="image" src="http://www.phpobjectgenerator.com/images/php_code_generator_donate.gif" border="0" name="submit" alt="Thank you!">
-		</form>
-		<img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
+		</form><br/><br/><img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
 		<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/" title="POG RSS feed">RSS feed</a>.
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials (in progress)</a>
