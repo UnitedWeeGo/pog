@@ -68,7 +68,7 @@ urchinTracker();
 <body>
 <div class="main">
 	<div class="left">
-		<div class="news"><a href="http://www.phpobjectgenerator.com/plog/article/70/pog-is-growing-up" title="Version 1.6 is released">NEW! Version 1.6 just released</a></div>
+		<div class="news"><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="No thrills introduction to POG">Code Generator Whitepaper</a></div>
 		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com" title="PHP Object Generator">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com" title="POG">POG</a>) is an open source <h1><a href="http://www.phpobjectgenerator.com" title="PHP code generator">PHP code generator</a></h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
 
 		<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. But don't take our word for it, give it a try!
