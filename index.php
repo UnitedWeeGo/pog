@@ -68,10 +68,10 @@ urchinTracker();
 <body>
 <div class="main">
 	<div class="left">
-		<div class="news"><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="No thrills introduction to POG">Code Generator Whitepaper</a></div>
+		<img src="./images/php_code_generator_counter.gif" alt="PHP Object Generator counter"/><br/><br/>
 		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/><a href="http://www.phpobjectgenerator.com" title="PHP Object Generator">Php Object Generator</a>, (<a href="http://www.phpobjectgenerator.com" title="POG">POG</a>) is an open source <h1><a href="http://www.phpobjectgenerator.com" title="PHP code generator">PHP code generator</a></h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
 
-		<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. But don't take our word for it, give it a try!
+		<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project and saves you from writing and testing SQL queries. The time you save can be spent on more interesting areas of your project. <a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="extended introduction to pog">Read more</a> &#8250;&#8250;
 		<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
 		<br/>Generates clean &amp; tested code
 		<br/>Generates CRUD methods
@@ -103,13 +103,7 @@ urchinTracker();
 		<br/><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/version" title="POG history log">The POG history log</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/article/51/pog-source-code-locations" title="POG source code location">The POG source code</a>
-
-		<br/><br/>Programmers:<br/><a href="http://www.philosophicallies.com" title="Joel Wan">Joel Wan</a><br/><a href="http://www.faintlight.com" title="Mark Slemko">Mark Slemko</a><br/>Designer:<br/><a href="http://www.designyouwill.com" title="Jonathan Easton">Jonathan Easton</a><br/>Consultancy:<br/><a href="http://www.finessehosting.com" title="Veemal Gungadin">Veemal Gungadin</a>
-
-
-		<br/><br/>Feedback, Feature Requests, Bugs to: <a href="mailto:pogguys@phpobjectgenerator.com" title="Drop us a line">pogguys@phpobjectgenerator.com</a>
-
-	</div><!-- left -->
+		</div><!-- left -->
 
 	<div class="middle">
 		<div class="header">
