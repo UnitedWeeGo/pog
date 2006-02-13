@@ -24,10 +24,16 @@ class Object
 		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();
 		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
-		$this->string.="var \$".strtolower($this->objectName)."Id;\n\t";
+		$this->string.="var \$".strtolower($this->objectName)."Id;\n\n\t";
+		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
+			$this->string .="/**\n\t";
+			$this->string .=" * @var ".$this->typeList[$x]."\n\t";
+			$this->string .=" */\n\t";
 			$this->string.="var $".$attribute.";\n\t";
+			$this->string.="\n\t";
+			$x++;
 		}
 		//	create attribute => type array map
 		//	needed for setup
