@@ -371,7 +371,14 @@ class Object
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\tif (\$limit != '')";
 		$this->string .= "\n\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, 0, \$limit);";
+		$this->string .= "\n\t\t\t\t\t\tif (sizeof(\$limitParts) > 1)";
+		$this->string .= "\n\t\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, \$limitParts[0], \$limitParts[1]);";
+		$this->string .= "\n\t\t\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\t\telse";
+		$this->string .= "\n\t\t\t\t\t\t{";		
+		$this->string .= "\n\t\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, 0, \$limit);";
+		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t\treturn \$".strtolower($this->objectName)."List;";
