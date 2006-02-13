@@ -68,9 +68,8 @@ urchinTracker();
 <body>
 <div class="main">
 	<div class="left">
-		<img src="./images/php_code_generator_counter.gif" alt="PHP Object Generator counter"/><br/><br/>
-		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/>PHP Object Generator, (POG) is an open source <h1>PHP code generator</h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects. <br/><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="extended introduction to pog">Read more &#8250;&#8250;</a>
-
+		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/>PHP Object Generator, (POG) is an open source <h1>PHP code generator</h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
+		<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project. The time you save can be spent on more interesting areas of your project.<br/><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="extended introduction to pog">Read more &#8250;&#8250;</a>
 		<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
 		<br/>Generates clean &amp; tested code
 		<br/>Generates CRUD methods
@@ -231,6 +230,7 @@ urchinTracker();
 		</form>
 	</div><!-- middle -->
 	<div class="right">
+	<img src="./images/php_code_generator_counter.gif" alt="PHP Object Generator counter"/><br/><br/>
 <script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
