@@ -202,3 +202,35 @@ NewOpt=new Option
 NewOpt.value=optionsArray[i]
 NewOpt.text=optionsArray[i]
 ddlist.options[i]=NewOpt}}}
+function Reposition(field,evt){
+var keyCode=
+document.layers ? evt.which :
+document.all ? event.keyCode :
+document.getElementById ? evt.keyCode : 0
+var r=''
+var fieldNameParts=field.name.split("_")
+if(keyCode==40){
+Swap(field.name,"fieldattribute_"+(parseInt(fieldNameParts[1])+1))}
+else if(keyCode==38){
+Swap(field.name,"fieldattribute_"+(parseInt(fieldNameParts[1])-1))}
+return false}
+function Swap(fieldName1,fieldName2){
+var fieldNameParts=fieldName1.split("_")
+var attribute1=document.getElementsByName("fieldattribute_"+fieldNameParts[1])
+var type1=document.getElementsByName("type_"+fieldNameParts[1])
+fieldNameParts=fieldName2.split("_")
+var attribute2=document.getElementsByName("fieldattribute_"+fieldNameParts[1])
+var type2=document.getElementsByName("type_"+fieldNameParts[1])
+var temp1=attribute1[0].value
+var temp2=type1[0].value
+attribute1[0].value=attribute2[0].value
+attribute2[0].value=temp1
+for(var w=0;w<type1[0].length;w++){
+if(type1[0].options[w].value==type2[0].value){
+type1[0].selectedIndex=w
+break}}
+for(var w=0;w<type2[0].length;w++){
+if(type2[0].options[w].value==temp2){
+type2[0].selectedIndex=w
+break}}
+attribute2[0].focus()}
