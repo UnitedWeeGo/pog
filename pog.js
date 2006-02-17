@@ -230,6 +230,7 @@ else{
 var temp2=type1[0].value}
 attribute1[0].value=attribute2[0].value
 attribute2[0].value=temp1
+var temp3=cf1[0].value
 if(cf2[0].value !=""){
 cf1[0].value=cf2[0].value
 type1[0].style.display="none"
@@ -239,9 +240,10 @@ for(var w=0;w<type1[0].length;w++){
 if(type1[0].options[w].value==type2[0].value){
 type1[0].selectedIndex=w
 break}}
-cf1[0].style.display="none"
-type1[0].style.display="inline"}
-if(cf1[0].value !=""){
+type1[0].style.display="inline"
+cf1[0].value=""
+cf1[0].style.display="none"}
+if(temp3 !=""){
 cf2[0].value=temp2
 type2[0].style.display="none"
 cf2[0].style.display="inline"}
@@ -250,10 +252,7 @@ for(var w=0;w<type2[0].length;w++){
 if(type2[0].options[w].value==temp2){
 type2[0].selectedIndex=w
 break}}
-cf2[0].style.display="none"
-type2[0].style.display="inline"}
-if(type1[0].style.display=="inline"){
-cf1[0].value=""}
-if(type2[0].style.display=="inline"){
-cf2[0].style.display=""}
+type2[0].style.display="inline"
+cf2[0].value=""
+cf2[0].style.display="none"}
 attribute2[0].focus()}
