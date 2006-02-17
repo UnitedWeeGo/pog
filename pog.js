@@ -217,20 +217,43 @@ return false}
 function Swap(fieldName1,fieldName2){
 var fieldNameParts=fieldName1.split("_")
 var attribute1=document.getElementsByName("fieldattribute_"+fieldNameParts[1])
+var cf1=document.getElementsByName("ttype_"+fieldNameParts[1])
 var type1=document.getElementsByName("type_"+fieldNameParts[1])
 fieldNameParts=fieldName2.split("_")
 var attribute2=document.getElementsByName("fieldattribute_"+fieldNameParts[1])
+var cf2=document.getElementsByName("ttype_"+fieldNameParts[1])
 var type2=document.getElementsByName("type_"+fieldNameParts[1])
 var temp1=attribute1[0].value
-var temp2=type1[0].value
+if(cf1[0].value !=""){
+var temp2=cf1[0].value}
+else{
+var temp2=type1[0].value}
 attribute1[0].value=attribute2[0].value
 attribute2[0].value=temp1
+if(cf2[0].value !=""){
+cf1[0].value=cf2[0].value
+type1[0].style.display="none"
+cf1[0].style.display="inline"}
+else{
 for(var w=0;w<type1[0].length;w++){
 if(type1[0].options[w].value==type2[0].value){
 type1[0].selectedIndex=w
 break}}
+cf1[0].style.display="none"
+type1[0].style.display="inline"}
+if(cf1[0].value !=""){
+cf2[0].value=temp2
+type2[0].style.display="none"
+cf2[0].style.display="inline"}
+else{
 for(var w=0;w<type2[0].length;w++){
 if(type2[0].options[w].value==temp2){
 type2[0].selectedIndex=w
 break}}
+cf2[0].style.display="none"
+type2[0].style.display="inline"}
+if(type1[0].style.display=="inline"){
+cf1[0].value=""}
+if(type2[0].style.display=="inline"){
+cf2[0].style.display=""}
 attribute2[0].focus()}
