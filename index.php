@@ -95,9 +95,9 @@ urchinTracker();
 		<input type="hidden" name="bn" value="PP-DonationsBF">
 		<input type="image" src="http://www.phpobjectgenerator.com/images/php_code_generator_donate.gif" border="0" name="submit" alt="Thank you!">
 		</form><br/><br/><img src="./images/wantmorepog.jpg" alt="Want more Php Object Generator?"/>
-		<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/" title="POG RSS feed">RSS feed</a>.
+		<br/><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/" title="POG RSS feed">RSS feed</a>
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
-		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials</a>
+		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and code samples">The POG tutorials &amp; code samples</a>
 		<br/><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/version" title="POG history log">The POG history log</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/article/51/pog-source-code-locations" title="POG source code location">The POG source code</a>
@@ -136,7 +136,7 @@ urchinTracker();
 				<option value="sqlite" <?= ($misc->GetVariable('pdoDriver') != null&& $misc->GetVariable('pdoDriver')=="sqlite"?"selected":"")?>>SQLITE</option>
 			</select>
 
-			<a id="disappear" style="display:<?= ($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="PDO"?"none":"inline")?>" href="http://www.phpobjectgenerator.com/plog/pdo" target="_blank"><img src="./images/whatsthis.jpg" border="0" alt="what's this?"/></a>
+			<a id="disappear" style="display:<?= ($misc->GetVariable('wrapper') != null&& strtoupper($misc->GetVariable('wrapper'))=="PDO"?"none":"inline")?>" href="http://www.phpobjectgenerator.com/php_code_generator/php_code_generator_wrapper.php" target="_blank"><img src="./images/whatsthis.jpg" border="0" alt="what's this?"/></a>
 		</div><!-- customize -->
 		<div class="objectname">
 			<input type="text" name="object" class="i" value="<?=(isset($objectName)?$objectName:'')?>"/>
