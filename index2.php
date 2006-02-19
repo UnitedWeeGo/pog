@@ -123,8 +123,7 @@ if (IsPostback())
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials</a>
 		<br/><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
-		<br/><a href="http://www.phpobjectgenerator.com/plog/version" title="POG history log">The POG history log</a>
-
+		
 		</div><!-- left -->
 		<div class="middle">
 			<div class="header2">

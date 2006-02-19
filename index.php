@@ -99,7 +99,6 @@ urchinTracker();
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and code samples">The POG tutorials/code samples</a>
 		<br/><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
-		<br/><a href="http://www.phpobjectgenerator.com/plog/version" title="POG history log">The POG history log</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/article/51/pog-source-code-locations" title="POG source code location">The POG source code</a>
 		</div><!-- left -->
 
