@@ -229,7 +229,7 @@ urchinTracker();
 		</form>
 	</div><!-- middle -->
 	<div class="right">
-	<img src="./images/php_code_generator_counter.gif" alt="PHP Object Generator counter" height="53" width="151"/>
+	<img src="./images/php_code_generator_counter.gif" alt="PHP Object Generator counter"/>
 <script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
