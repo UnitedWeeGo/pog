@@ -32,7 +32,14 @@ if ($misc->GetVariable('typeList') != null)
 {
 	if (isset($_GET['typeList']))
 	{
-		$typeList = stripcslashes(urldecode($_GET['typeList']));
+		if (ini_get('magic_quotes_gpc') == true)
+		{
+			$typeList = stripcslashes(urldecode($_GET['typeList']));
+		}
+		else
+		{
+			$typeList = urldecode($_GET['typeList']);
+		}
 		eval ("\$typeList =".trim($typeList).";");
 	}
 	else
