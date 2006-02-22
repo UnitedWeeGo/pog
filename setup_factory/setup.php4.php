@@ -142,14 +142,15 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 						}
 					}
   					//Test Save()
-						$instanceId = $instance->Save();
+  					$instanceId = false;
+					$instanceId = $instance->Save();
   					if(!$instanceId)
   					{
   						//table doesn't exist
-							//try to create table
-							$database = new DatabaseConnection();
-							$database->Query($sql);
-							$instanceId = $instance->Save();
+						//try to create table
+						$database = new DatabaseConnection();
+						$database->Query($sql);
+						$instanceId = $instance->Save();
       					if(!$instanceId)
       					{
       						$diagnostics .= "Could not create table.";

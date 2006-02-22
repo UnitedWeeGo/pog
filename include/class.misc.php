@@ -229,9 +229,9 @@ class Misc
 		if (count($typeParts) > 1)
 		{
 			$typeParts = explode(')', $typeParts[1]);
-			if (strpos($typeParts[0], ')') === false && trim($typeParts[0]) != '')
+			if (strpos($typeParts[0], ')') === false && stripcslashes(trim($typeParts[0])) != '')
 			{
-				return $typeParts[0];
+				return stripcslashes(trim($typeParts[0]));
 			}
 			else
 			{

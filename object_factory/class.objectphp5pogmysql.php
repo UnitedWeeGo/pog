@@ -29,7 +29,7 @@ class Object
 		foreach ($this->attributeList as $attribute)
 		{
 			$this->string .="/**\n\t";
-			$this->string .=" * @var ".$this->typeList[$x]."\n\t";
+			$this->string .=" * @var ".stripcslashes($this->typeList[$x])."\n\t";
 			$this->string .=" */\n\t";
 			$this->string .="public $".$attribute.";\n\t";
 			$this->string .="\n\t";
@@ -42,7 +42,7 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\"".$attribute."\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			$this->string .= "\"".strtolower($attribute)."\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
 			$x++;
 		}
 		$this->string .= ");\n\t";
@@ -117,11 +117,11 @@ class Object
 		{
 			if ($x == (count($this->typeList)-1))
 			{
-				$this->sql .= "\n\t`".strtolower($attribute)."` ".$this->typeList[$x].",";
+				$this->sql .= "\n\t`".strtolower($attribute)."` ".stripcslashes($this->typeList[$x]).",";
 			}
 			else
 			{
-				$this->sql .= "\n\t`".strtolower($attribute)."` ".$this->typeList[$x].",";
+				$this->sql .= "\n\t`".strtolower($attribute)."` ".stripcslashes($this->typeList[$x]).",";
 			}
 			$x++;
 		}

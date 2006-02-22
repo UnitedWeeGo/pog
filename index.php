@@ -41,6 +41,10 @@ if ($misc->GetVariable('typeList') != null)
 			$typeList = urldecode($_GET['typeList']);
 		}
 		eval ("\$typeList =".trim($typeList).";");
+		for($i=0; $i<sizeof($typeList); $i++)
+		{
+			$typeList[$i] = stripcslashes($typeList[$i]);
+		}
 	}
 	else
 	{

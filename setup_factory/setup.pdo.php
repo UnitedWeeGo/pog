@@ -133,6 +133,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				//Test Save()
 				try
 				{
+					$instanceId = false;
 					$instanceId = $instance->Save();
 					if(!$instanceId)
 					{
