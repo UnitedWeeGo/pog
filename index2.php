@@ -34,8 +34,8 @@ if (IsPostback())
 	}
 
 	$_SESSION['objectName'] = $objectName;
-	$_SESSION['attributeList'] = $attributeList;
-	$_SESSION['typeList'] = $typeList;
+	$_SESSION['attributeList'] = serialize($attributeList);
+	$_SESSION['typeList'] = serialize($typeList);
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');

@@ -15,10 +15,12 @@ if (isset($_SESSION['objectString']))
 {
 	$_GET = null;
 	$client = new soapclient($GLOBALS['configuration']['soap']);
+	$attributeList = unserialize($_SESSION['attributeList']);
+	$typeList = unserialize($_SESSION['typeList']);
 	$params = array(
 		    'objectName' 	=> $_SESSION['objectName'],
-		    'attributeList' => $_SESSION['attributeList'],
-		    'typeList'      => $_SESSION['typeList'],
+		    'attributeList' => $attributeList,
+		    'typeList'      => $typeList,
 		    'language'      => $_SESSION['language'],
 		    'wrapper'       => $_SESSION['wrapper'],
 		    'pdoDriver'     => $_SESSION['pdoDriver']
