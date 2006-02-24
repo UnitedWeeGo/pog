@@ -19,7 +19,6 @@ class Object
 	// -------------------------------------------------------------
 	function BeginObject()
 	{
-		include_once("./include/class.misc.php");
 		$misc = new Misc(array());
 		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();

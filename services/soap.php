@@ -3,7 +3,6 @@ include_once("../include/configuration.php");
 include_once("../include/class.misc.php");
 include_once("../include/misc.php");
 include_once("nusoap.php");
-include_once("generator.php");
 
 $server = new soap_server;
 $server -> register('GetGeneratorVersion');
