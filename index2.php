@@ -6,9 +6,9 @@
 * @abstract  Php Object Generator  automatically generates clean and tested Object Oriented code for your PHP4/PHP5 application.
 */
 session_start();
-include "./include/configuration.php";
-include "./include/class.misc.php";
 include "./include/misc.php";
+include "./include/configuration.php";
+include "./services/nusoap.php";
 
 if (IsPostback())
 {
@@ -33,46 +33,24 @@ if (IsPostback())
 		}
 	}
 
+	$_SESSION['objectName'] = $objectName;
+	$_SESSION['attributeList'] = $attributeList;
+	$_SESSION['typeList'] = $typeList;
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
-	if (strtoupper($wrapper) == "PDO")
-	{
-		eval("include \"./object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php\";");
-	}
-	else
-	{
-		if  ($language == "php4")
-		{
-			eval("include \"./object_factory/class.objectphp4pogmysql.php\";");
-		}
-		else
-		{
-			eval("include \"./object_factory/class.objectphp5pogmysql.php\";");
-		}
-	}
-	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
 
-	$object->BeginObject();
-	$object->CreateConstructor();
-	$object->CreateGetFunction();
-	$object->CreateGetAllFunction();
-	$object->CreateSaveFunction();
-	$object->CreateSaveNewFunction();
-	$object->CreateDeleteFunction();
-	if(strtoupper($wrapper) == "PDO")
-	{
-		$object->CreateEscapeFunction();
-		$object->CreateUnescapeFunction();
-	}
-	$object->EndObject();
-
-	$_SESSION['objectName'] = $objectName;
-	$_SESSION['attributeList'] = serialize($attributeList);
-	$_SESSION['typeList'] = serialize($typeList);
-
-	$objectList[]=$object->objectName;
-	$_SESSION['objectString'] = $object->string;
+	$client = new soapclient($GLOBALS['configuration']['soap']);
+	$params = array(
+		    'objectName' 	=> $objectName,
+		    'attributeList' => $attributeList,
+		    'typeList'      => $typeList,
+		    'language'      => $language,
+		    'wrapper'       => $wrapper,
+		    'pdoDriver'     => $pdoDriver
+		);
+	$object = base64_decode($client->call('GenerateObject', $params));
+	$_SESSION['objectString'] = $object;
 	?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -123,7 +101,7 @@ if (IsPostback())
 		<br/><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials</a>
 		<br/><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
-		
+
 		</div><!-- left -->
 		<div class="middle">
 			<div class="header2">
@@ -134,7 +112,7 @@ if (IsPostback())
 				<input type="image" src="./images/download.jpg"/>
 			</div><!-- result -->
 			<div class="greybox2">
-				<textarea cols="200" rows="30"><?=$object->string;?></textarea>
+				<textarea cols="200" rows="30"><?=$object;?></textarea>
 			</div><!-- greybox -->
 			<div class="generate2">
 			</div><!-- generate -->

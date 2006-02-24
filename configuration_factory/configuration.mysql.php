@@ -4,7 +4,6 @@ if (!isset($_SESSION))
 	session_start();
 }
 global $configuration;
-
 //	PDO related settings
 $configuration['pdoDriver']= 'mysql';
 $configuration['db'] = 'test';
