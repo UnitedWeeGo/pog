@@ -43,14 +43,7 @@ function GetGeneratorVersion()
  */
 function GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver)
 {
-	if (strlen($objectName) > 0 &&
-		sizeof($attributeList) > 0 &&
-		sizeof($typeList) > 0 &&
-		strlen($language) > 0 &&
-		strlen($wrapper) > 0 &&
-		strlen($pdoDriver) > 0)
-		{
-			if (strtoupper($wrapper) == "PDO")
+	if (strtoupper($wrapper) == "PDO")
 			{
 				eval("include \"../object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php\";");
 			}
@@ -81,7 +74,6 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 			}
 			$object->EndObject();
 			return base64_encode($object->string);
-		}
 }
 
 /**
