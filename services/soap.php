@@ -17,6 +17,17 @@ $server -> register('GeneratePackage');
 function Shelter()
 {
 	//to do later
+	
+	// examples:
+	// 1) log each attempt to use the service with the IP and Method-called
+	// 2) count each attempts over from an IP and auto close any over a certain number
+	//   a) daily maximum
+	//   b) monthly maximum
+	//   c) lifetime maximum
+	// 3) check for banned IP addresses or ranges
+	// 4) use a membership model - i.e. sign-in
+	
+	// MS: I think that 1, 2b, and 3 are applicable to this service
 }
 
 /**
