@@ -43,7 +43,6 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 </div>
 <form action="./index.php" method="POST">
 <?php
-$errorLevel =  ini_get("error_reporting");
 ini_set("error_reporting", 0);
 if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 {
@@ -452,7 +451,6 @@ else
 </div>
 <?php
 }
-ini_set("error_reporting", $errorLevel);
 ?>
 </form>
 <div class="footer">
