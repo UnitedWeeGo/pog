@@ -3,7 +3,7 @@
 /**
  * Class to dynamically create a zip file (archive)
  *
- * @author Rochak Chauhan
+ * @author Rochak Chauhan. Extended by Joel Wan & Mark Slemko
  */
 
 class createZip  {
@@ -174,6 +174,12 @@ class createZip  {
 
 	 }
 
+	/**
+	 * Generates zip file from POG package.
+	 *
+	 * @param multi-d array $package
+	 * @param array $paths
+	 */
 	function addPOGPackage($package, $paths=array())
 	{
 		$i = 0;
