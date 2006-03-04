@@ -243,7 +243,6 @@ urchinTracker();
 	<img src="./images/php_code_generator_counter.gif" alt="PHP Object Generator counter"/>
 <script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
-google_alternate_color = "FFFFFF";
 google_ad_width = 160;
 google_ad_height = 600;
 google_ad_format = "160x600_as";

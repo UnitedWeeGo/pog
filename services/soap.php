@@ -1,12 +1,10 @@
 <?php
-include_once("../include/configuration.php");
-include_once("../include/class.misc.php");
-include_once("../include/misc.php");
 include_once("nusoap.php");
 
 $server = new soap_server;
 $server -> register('GetGeneratorVersion');
 $server -> register('GenerateObject');
+$server -> register('GenerateObjectFromLink');
 $server -> register('GenerateConfiguration');
 $server -> register('GeneratePackage');
 
@@ -17,7 +15,7 @@ $server -> register('GeneratePackage');
 function Shelter()
 {
 	//to do later
-	
+
 	// examples:
 	// 1) log each attempt to use the service with the IP and Method-called
 	// 2) count each attempts over from an IP and auto close any over a certain number
@@ -26,7 +24,7 @@ function Shelter()
 	//   c) lifetime maximum
 	// 3) check for banned IP addresses or ranges
 	// 4) use a membership model - i.e. sign-in
-	
+
 	// MS: I think that 1, 2b, and 3 are applicable to this service
 }
 
@@ -37,12 +35,12 @@ function Shelter()
  */
 function GetGeneratorVersion()
 {
-	include("../include/configuration.php");
+	require("../include/configuration.php");
 	return base64_encode($GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber']);
 }
 
 /**
- * Generates the appropriate object
+ * Generates the appropriate object from supplied attributeList, typeList etc.
  *
  * @param string $objectName
  * @param array $attributeList
@@ -54,37 +52,92 @@ function GetGeneratorVersion()
  */
 function GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver)
 {
-	if (strtoupper($wrapper) == "PDO")
-			{
-				eval("include \"../object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php\";");
-			}
-			else
-			{
-				if  ($language == "php4")
-				{
-					eval("include \"../object_factory/class.objectphp4pogmysql.php\";");
-				}
-				else
-				{
-					eval("include \"../object_factory/class.objectphp5pogmysql.php\";");
-				}
-			}
-			$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
+	require ("../include/configuration.php");
+	require ("../include/class.misc.php");
 
-			$object->BeginObject();
-			$object->CreateConstructor();
-			$object->CreateGetFunction();
-			$object->CreateGetAllFunction();
-			$object->CreateSaveFunction();
-			$object->CreateSaveNewFunction();
-			$object->CreateDeleteFunction();
-			if(strtoupper($wrapper) == "PDO")
-			{
-				$object->CreateEscapeFunction();
-				$object->CreateUnescapeFunction();
-			}
-			$object->EndObject();
-			return base64_encode($object->string);
+	//added these so that POG would still generate something even if invalid variables are passed
+	//this is so that users see something being generated even if they don't fill in the object fields
+	if ($objectName == null)
+	{
+		$objectName = '';
+	}
+	if ($attributeList == null)
+	{
+		$attributeList = array();
+	}
+	if ($typeList == null)
+	{
+		$attributeList = array();
+	}
+	if ($language == null)
+	{
+		$language = '';
+	}
+	if ($wrapper == null)
+	{
+		$wrapper = '';
+	}
+	if ($pdoDriver == null)
+	{
+		$pdoDriver = '';
+	}
+
+	if (strtoupper($wrapper) == "PDO")
+	{
+		require "../object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php";
+	}
+	else
+	{
+
+		if  ($language == "php4")
+		{
+			require "../object_factory/class.objectphp4pogmysql.php";
+		}
+		else
+		{
+			require "../object_factory/class.objectphp5pogmysql.php";
+		}
+	}
+	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
+	$object->BeginObject();
+	$object->CreateConstructor();
+	$object->CreateGetFunction();
+	$object->CreateGetAllFunction();
+	$object->CreateSaveFunction();
+	$object->CreateSaveNewFunction();
+	$object->CreateDeleteFunction();
+	if(strtoupper($wrapper) == "PDO")
+	{
+		$object->CreateEscapeFunction();
+		$object->CreateUnescapeFunction();
+	}
+	$object->EndObject();
+	return base64_encode($object->string);
+}
+
+/**
+ * Generates the appropriate object from `proprietary format` of @link
+ * An @link looks like this: http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=alliever&attributeList=array (  0 => 'firstName',  1 => 'lastName',  2 => 'description',  3 => 'gender',  4 => 'Country',  5 => 'over18',)&typeList=array (  0 => 'VARCHAR(255)',  1 => 'VARCHAR(255)',  2 => 'TEXT',  3 => 'enum(\\\'male\\\',\\\'female\\\')',  4 => 'enum(\\\'Mauritius\\\', \\\'Canada\\\', \\\'Singapore\\\')',  5 => 'enum(\\\'yes\\\')',)
+ * @param (urlencoded)string $link
+ * @return base64 encoded string
+ */
+function GenerateObjectFromLink($link)
+{
+	$link = explode('?', $link);
+
+	$linkParts = explode('&', $link[1]);
+	for ($i = 0; $i < sizeof($linkParts); $i++)
+	{
+		$arguments = split('[^ ]=', $linkParts[$i]);
+
+		eval ("\$".$arguments[0]." =". stripcslashes(urldecode($arguments[1])).";");
+	}
+	for($i=0; $i<sizeof($typeLis); $i++)
+	{
+		$typeLis[$i] = stripcslashes($typeLis[$i]);
+	}
+	$string = GenerateObject($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
+	return $string;
 }
 
 /**
