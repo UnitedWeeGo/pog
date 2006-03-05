@@ -14,7 +14,7 @@ include "./services/nusoap.php";
 if (isset($_SESSION['objectString']))
 {
 	$_GET = null;
-	$client = new soapclient($GLOBALS['configuration']['soap']);
+	$client = new soapclient($GLOBALS['configuration']['soap'], true);
 	$attributeList = unserialize($_SESSION['attributeList']);
 	$typeList = unserialize($_SESSION['typeList']);
 	$params = array(
@@ -25,7 +25,7 @@ if (isset($_SESSION['objectString']))
 		    'wrapper'       => $_SESSION['wrapper'],
 		    'pdoDriver'     => $_SESSION['pdoDriver']
 		);
-	$package = $client->call('GeneratePackage', $params);
+	$package = unserialize($client->call('GeneratePackage', $params));
 	$zipfile = new createZip();
 	$zipfile -> addPOGPackage($package);
 	$zipfile -> forceDownload("pog.".time().".zip");

@@ -40,8 +40,7 @@ if (IsPostback())
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
-
-	$client = new soapclient($GLOBALS['configuration']['soap']);
+	$client = new soapclient($GLOBALS['configuration']['soap'], true);
 	$params = array(
 		    'objectName' 	=> $objectName,
 		    'attributeList' => $attributeList,
@@ -50,6 +49,7 @@ if (IsPostback())
 		    'wrapper'       => $wrapper,
 		    'pdoDriver'     => $pdoDriver
 		);
+
 	$object = base64_decode($client->call('GenerateObject', $params));
 	$_SESSION['objectString'] = $object;
 ?>

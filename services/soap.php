@@ -1,12 +1,77 @@
 <?php
 include_once("nusoap.php");
 
-$server = new soap_server;
-$server -> register('GetGeneratorVersion');
-$server -> register('GenerateObject');
-$server -> register('GenerateObjectFromLink');
-$server -> register('GenerateConfiguration');
-$server -> register('GeneratePackage');
+$server = new soap_server();
+$server -> configureWSDL('pogwsdl', 'urn:pogwsdl');
+$server -> wsdl -> addComplexType(
+    'StringArray',
+    'complexType',
+    'array',
+    '',
+    'SOAP-ENC:Array',
+    array(),
+    array(
+        array('ref'=>'SOAP-ENC:arrayType','wsdl:arrayType'=>'xsd:string')
+    ),
+    'xsd:string'
+);
+
+
+$server -> register('GetGeneratorVersion',
+					array(),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GetGeneratorVersion',
+					'rpc',
+					'encoded',
+					'Fetches the current POG version. Can be used to detect for upgrades.'
+					);
+$server -> register('GenerateObject',
+					array('objectName' => 'xsd:string',
+						'attributeList' => 'tns:StringArray',
+						'typeList' => 'tns:StringArray',
+						'language' => 'xsd:string',
+						'wrapper' => 'xsd:string',
+						'pdoDriver' => 'xsd:string'),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GenerateObject',
+					'rpc',
+					'encoded',
+					'Generates the appropriate object from supplied attributeList, typeList etc.'
+					);
+$server -> register('GenerateObjectFromLink',
+					array('link' => 'xsd:string'),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GenerateObjectFromLink',
+					'rpc',
+					'encoded',
+					'Generates the appropriate object from `proprietary format` of @link'
+					);
+$server -> register('GenerateConfiguration',
+					array('wrapper' => 'xsd:string'),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GenerateConfiguration',
+					'rpc',
+					'encoded',
+					'Generates the appropriate configuration file'
+					);
+$server -> register('GeneratePackage',
+					array('objectName' => 'xsd:string',
+						'attributeList' => 'tns:StringArray',
+						'typeList' => 'tns:StringArray',
+						'language' => 'xsd:string',
+						'wrapper' => 'xsd:string',
+						'pdoDriver' => 'xsd:string'),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GeneratePackage',
+					'rpc',
+					'encoded',
+					'Generates a pog package which is essentially a multi-D array with folder names as keys and file contents as values. The package can be delivered across the network, modified, and then finally zipped when the time is right.'
+					);
 
 /**
  * Protects the web service from possible 'attacks'
@@ -250,8 +315,9 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	}
 	closedir($dir);
 
-	return $package;
+	return serialize($package);
 }
 
+$HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '';
 $server->service($HTTP_RAW_POST_DATA);
 ?>
