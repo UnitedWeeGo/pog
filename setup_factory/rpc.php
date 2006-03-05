@@ -179,8 +179,8 @@ switch($action)
 						}
 						else
 						{
-							$subnode = &$node->addItem(new XNode($attribute." <span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute][1]."}</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
-							$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]})."<br/><a href='#' onclick='javascript:sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_update.gif' border='0'/></a>";
+							$subnode = &$node->addItem(new XNode($attribute." <span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
+							$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]})."<br/><a href='#' onclick='javascript:sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_update.gif' border='0'/></a>";
 							$valueNode = &$subnode->addItem(new XNode($thisValue, false,'',"folderopen.gif"));
 						}
 						$x++;
