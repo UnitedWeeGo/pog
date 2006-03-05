@@ -35,11 +35,10 @@ if (IsPostback())
 	}
 
 	$_SESSION['objectName'] = $objectName;
-	$_SESSION['attributeList'] = serialize($attributeList);
-	$_SESSION['typeList'] = serialize($typeList);
 	$_SESSION['language'] = $language = GetVariable('language');
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
+
 	$client = new soapclient($GLOBALS['configuration']['soap'], true);
 	$params = array(
 		    'objectName' 	=> $objectName,
@@ -51,7 +50,10 @@ if (IsPostback())
 		);
 
 	$object = base64_decode($client->call('GenerateObject', $params));
+	//echo $client->debug_str;
 	$_SESSION['objectString'] = $object;
+	$_SESSION['attributeList'] = serialize($attributeList);
+	$_SESSION['typeList'] = serialize($typeList);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
