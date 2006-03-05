@@ -117,11 +117,11 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 
 				foreach($attributeList as $attribute)
 				{
-					if (isset($instance->pog_attribute_type[$attribute]))
+					if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 					{
-						if (isset($type_value[$attribute]))
+						if (isset($type_value[strtolower($attribute)]))
   						{
- 							$instance->{$attribute} = $type_value[$attribute];
+ 							$instance->{$attribute} = $type_value[strtolower($attribute)];
 						}
 						else
 						{
@@ -160,11 +160,11 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 									{
 										foreach($attributeList as $attribute)
 										{
-											if (isset($instance->pog_attribute_type[$attribute]))
+											if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 											{
-												if (isset($type_value[$attribute]))
+												if (isset($type_value[strtolower($attribute)]))
 						  						{
-						 							$instance->{$attribute} = $type_value[$attribute];
+						 							$instance->{$attribute} = $type_value[strtolower($attribute)];
 												}
 												else
 												{
@@ -274,13 +274,13 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 							$attributeList = array_keys(get_object_vars($instance));
   							foreach ($attributeList as $attribute)
   							{
-		      					if (isset($instance->pog_attribute_type[$attribute]))
+		      					if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 	  							{
-		  							if (isset($type_value[$attribute]))
+		  							if (isset($type_value[strtolower($attribute)]))
 		  							{
-	      								if ($instance->{$attribute} != $type_value[$attribute])
+	      								if ($instance->{$attribute} != $type_value[strtolower($attribute)])
 	      								{
-	      									$diagnostics .= "WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$instance->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$instance->pog_attribute_type[$attribute][1]."`\n";
+	      									$diagnostics .= "WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[strtolower($attribute)]."`; found `".$instance->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$instance->pog_attribute_type[strtolower($attribute)][1]."`\n";
 	      								}
 		  							}
 	  							}
