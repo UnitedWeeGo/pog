@@ -128,7 +128,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 
   					foreach($attributeList as $attribute)
 					{
-						if (isset($instance->pog_attribute_type[$attribute]))
+						if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 						{
   							if (isset($type_value[$attribute]))
   							{
@@ -142,6 +142,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					}
   					//Test Save()
   					$instanceId = false;
+  					$instance->{strtolower($className)."Id"} = 0;
 					$instanceId = $instance->Save();
   					if(!$instanceId)
   					{

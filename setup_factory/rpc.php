@@ -152,8 +152,8 @@ switch($action)
 					{
 						$js .= ",";
 					}
-					$subnode = &$node->addItem(new XNode("<span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute][1]."}</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
-					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]});
+					$subnode = &$node->addItem(new XNode("<span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
+					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
 					$valueNode = &$subnode->addItem(new XNode($thisValue, false,'',"folderopen.gif"));
 				}
 			}
