@@ -39,7 +39,7 @@
 	{	
 		$this->result = mysql_query($query,$this->connection);
 		if (!$this->result) {
-			throw  new Exception(mysql_errno().":".mysql_error());
+			throw new Exception(mysql_errno().":".mysql_error());
 		}
 		return $this->result;
 	}
