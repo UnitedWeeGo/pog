@@ -152,15 +152,14 @@ switch($action)
 					{
 						$js .= ",";
 					}
-					$subnode = &$node->addItem(new XNode("<span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
 					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
-					$valueNode = &$subnode->addItem(new XNode($thisValue, false,'',"folderopen.gif"));
+					$subnode = &$node->addItem(new XNode("<br/><span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
 				}
 			}
 			$x++;
 		}
 		$js .= ")";
-		$subnode = &$node->addItem(new XNode("<a href='#' onclick='javascript:sndReq(\"Add\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_add.gif' border='0'/></a>", false,'',"folderopen.gif"));
+		$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Add\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_add.gif' border='0'/></a>", false,'',"folderopen.gif"));
 
 		if ($instanceList != null)
 		{
@@ -179,13 +178,13 @@ switch($action)
 						}
 						else
 						{
-							$subnode = &$node->addItem(new XNode($attribute." <span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
-							$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]})."<br/><a href='#' onclick='javascript:sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_update.gif' border='0'/></a>";
-							$valueNode = &$subnode->addItem(new XNode($thisValue, false,'',"folderopen.gif"));
+							$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
+							$subnode = &$node->addItem(new XNode("<br/>".$attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
 						}
 						$x++;
 					}
 				}
+				$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_update.gif' border='0'/></a>", false,'',"folderopen.gif"));
 			}
 		}
 		$menu_html_code = $root->generateTree();
