@@ -25,7 +25,7 @@ class Object
 		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();
 		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
-		$this->string.="public \$".strtolower($this->objectName)."Id;\n\n\t";
+		$this->string.="public \$".strtolower($this->objectName)."Id = '';\n\n\t";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{

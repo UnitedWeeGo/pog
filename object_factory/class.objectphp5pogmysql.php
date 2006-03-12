@@ -23,7 +23,7 @@ class Object
 		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();
 		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
-		$this->string.="public \$".strtolower($this->objectName)."Id;\n\n\t";
+		$this->string.="public \$".strtolower($this->objectName)."Id = '';\n\n\t";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
@@ -330,7 +330,7 @@ class Object
 		$this->string .= "\n\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, \$limitParts[0], \$limitParts[1]);";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\telse";
-		$this->string .= "\n\t\t\t\t\t{";		
+		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, 0, \$limit);";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
