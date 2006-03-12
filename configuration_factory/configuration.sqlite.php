@@ -4,7 +4,10 @@ if (!isset($_SESSION))
 	session_start();
 }
 global $configuration;
-//PDO related settings
+
 $configuration['pdoDriver']= 'sqlite';
+
+// edit the information below to match your database settings
+
 $configuration['sqliteDatabase']= 'C:\code\pog\test.db';
 ?>
