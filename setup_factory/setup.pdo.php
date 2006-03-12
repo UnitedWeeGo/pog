@@ -30,9 +30,6 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>Php Object Generator Setup</title>
-<meta name="description" content="Php Object Generator, (POG) is a PHP code generator which automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
-<meta name="keywords" content="php, code, generator, classes, object-oriented, CRUD" />
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="./setup.css" type="text/css" />
 <link rel="stylesheet" type="text/css" href="./setup_library/xPandMenu.css"/>
 <script src="./setup_library/xPandMenu.js"></script>

@@ -163,9 +163,18 @@ function sndReq(action, openNodes, objectName, objectId, currentNode, attributes
 		{
 			thisId = attributes[i];
 			var thisInput = document.getElementById(thisId);
-			req += "&" + thisId + "=" + thisInput.value;
+			if (thisInput.type == "checkbox")
+			{
+				if (thisInput.checked)
+				{
+					req += "&" + thisId + "=" + thisInput.value;
+				}
+			}
+			else
+			{
+				req += "&" + thisId + "=" + thisInput.value;
+			}
 		}
-		
 	}
 	else if (action == "Update")
 	{
@@ -173,7 +182,17 @@ function sndReq(action, openNodes, objectName, objectId, currentNode, attributes
 		{
 			thisId = attributes[i];
 			var thisInput = document.getElementById(thisId+"_"+objectId);
-			req += "&" + thisId + "=" + thisInput.value;
+			if (thisInput.type == "checkbox")
+			{
+				if (thisInput.checked)
+				{
+					req += "&" + thisId + "=" + thisInput.value;
+				}
+			}
+			else
+			{
+				req += "&" + thisId + "=" + thisInput.value;
+			}
 		}
 	}
     http.open('get', req);

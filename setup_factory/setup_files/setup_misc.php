@@ -82,9 +82,29 @@
 	{
 		switch ($attributeProperties[1])
 		{
-			case "TEXT":
+			case "ENUM":
+				$enumParts = explode(',', $attributeProperties[2]);
+				$html = "<select id='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."' class='s'>";
+					foreach ($enumParts as $enumPart)
+					{
+						if ($attributeValue == trim($enumPart, "\' "))
+						{
+							$html .= "<option value='".trim($enumPart, "\' ")."' selected>".trim($enumPart, "\' ")."</option>";
+						}
+						else
+						{
+							$html .= "<option value='".trim($enumPart, "\' ")."'>".trim($enumPart, "\' ")."</option>";
+						}
+					}
+					$html .= "</select>";
+			break;
 			case "MEDIUMBLOB":
+				$html = "sorry. cannot render attribute of type LONGBLOB";
+			break;
 			case "LONGBLOB":
+				$html = "sorry. cannot render attribute of type LONGBLOB";
+			break;
+			case "TEXT":
 			case "LONGTEXT":
 			case "BINARY":
 			case "MEDIUMTEXT":
@@ -109,7 +129,7 @@
 			case "MEDIUMINT":
 			case "TINYINT":
 			case "CHAR":
-				$html = "<input class='i' id='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."' value='".($attributeValue != ''?$attributeValue:'')."' />";
+				$html = "<input class='i' id='".($objectId != ''?$attributeName."_".$objectId:$attributeName)."' value='".($attributeValue != ''?$attributeValue:'')."' type='text' />";
 			break;
 			default:
 				$html = substr($attributeValue, 0, 500);

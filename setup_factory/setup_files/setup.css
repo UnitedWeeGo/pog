@@ -30,6 +30,7 @@ a {text-decoration:none;color:#7F7714}
 input.i {position:relative;padding:2px 3px;width:200px;color:#5A4F64;font-size:9px;vertical-align:middle;border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC; background-color:#F7F7F7;}
 textarea {width:575px;height:325px;font-size:12px;border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC}
 textarea.t {width:450px;height:50px;font-size:12px;border-top:1px solid #404040; color:#5A4F64; border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC; background-color:#F7F7F7;}
+select.s, input.c {border-top:1px solid #404040; color:#5A4F64; border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC; background-color:#F7F7F7;}
 table {position:relative;display:inline;background:#E8E9EE}
 td {height:25px}
 .id {font-weight:bold;padding-left:5px}
