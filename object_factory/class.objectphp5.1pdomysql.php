@@ -89,7 +89,7 @@ class Object
 		$this->string .="\n\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
-		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
+		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].':'.;dbname='.\$GLOBALS['configuration']['port'].'\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
 		$this->string .="\n\t\t\t\$this->pog_query = \"select * from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`= ? LIMIT 1\";";
 		$this->string .="\n\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
 		$this->string .="\n\t\t\tif (\$stmt->execute(array(\$".strtolower($this->objectName)."Id)))";
@@ -153,7 +153,7 @@ class Object
 		$this->string .= "\tfunction Save()\n\t{";
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
-		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
+		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].':'.;dbname='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"select `".strtolower($this->objectName)."id` from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`=\$this->".strtolower($this->objectName)."Id limit 1\";";
 		$this->string .= "\n\t\t\tif (\$Database->query(\$this->pog_query)!=null)";
 		$this->string .= "\n\t\t\t{";
@@ -270,7 +270,7 @@ class Object
 		$this->string .= "\tfunction Delete()\n\t{";
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
-		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
+		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].':'.;dbname='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"delete from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id` = '\$this->".strtolower($this->objectName)."Id'\";";
 		$this->string .= "\n\t\t\t\$affectedRows = \$Database->query(\$this->pog_query);";
 		$this->string .= "\n\t\t\tif (\$affectedRows != null)";
@@ -333,7 +333,7 @@ class Object
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."List = Array();";
 		$this->string .= "\n\t\t\ttry";
 		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
+		$this->string .= "\n\t\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].':'.;dbname='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
 		$this->string .= "\n\t\t\t\t\$pog_query = \"select `".strtolower($this->objectName)."id` from ".strtolower($this->objectName)." where \";";
 		$this->string .= "\n\t\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array)-1; \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t\t{";
@@ -370,7 +370,7 @@ class Object
 		$this->string .= "\n\t\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, \$limitParts[0], \$limitParts[1]);";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t\telse";
-		$this->string .= "\n\t\t\t\t\t\t{";		
+		$this->string .= "\n\t\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\treturn array_slice(\$".strtolower($this->objectName)."List, 0, \$limit);";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t}";
