@@ -211,11 +211,11 @@ function GenerateObjectFromLink($link)
  * @param string $wrapper
  * @return base64 encoded string
  */
-function GenerateConfiguration($wrapper = null)
+function GenerateConfiguration($wrapper = null, $pdoDriver = null)
 {
 	if (strtoupper($wrapper) == "PDO")
 	{
-		$data = file_get_contents("../configuration_factory/configuration.".strtolower($wrapper).".php");
+		$data = file_get_contents("../configuration_factory/configuration.".strtolower($pdoDriver).".php");
 	}
 	else
 	{
@@ -244,7 +244,9 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["setup"]["setup_library"] = array();
 
 	//generate configuration file
-	$package["configuration.php"] = GenerateConfiguration($wrapper);
+	$package["configuration.php"] = GenerateConfiguration($wrapper, $pdoDriver);
+
+
 
 	//generate objects
 	if (strtoupper($wrapper) != "PDO")

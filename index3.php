@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
 * @link  http://www.phpobjectgenerator.com
@@ -10,7 +10,7 @@ include "./include/configuration.php";
 include "./include/class.zipfile.php";
 include "./services/nusoap.php";
 ?>
-<?
+<?php
 if (isset($_SESSION['objectString']))
 {
 	$_GET = null;
