@@ -168,9 +168,9 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	$object->CreateConstructor();
 	$object->CreateGetFunction();
 	$object->CreateGetAllFunction();
-	$object->CreateSaveFunction(array_search("HASMANY", $typeList));
+	$object->CreateSaveFunction(in_array("HASMANY", $typeList));
 	$object->CreateSaveNewFunction();
-	$object->CreateDeleteFunction(array_search("HASMANY", $typeList));
+	$object->CreateDeleteFunction(in_array("HASMANY", $typeList));
 	
 	$i = 0;
 	foreach ($typeList as $type)

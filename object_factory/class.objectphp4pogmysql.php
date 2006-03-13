@@ -169,16 +169,18 @@ class Object
 		{
 			$this->string .= "\n\t\tif (\$deep)";
 			$this->string .= "\n\t\t{";
-			foreach ($this->pog_attribute_type as $attribute => $properties)
+			$i = 0;
+			foreach ($this->typeList as $type)
 			{
-				if ($properties[0] == "OBJECT")
+				if ($type == "HASMANY")
 				{
-					$this->string .= "\n\t\t\t$".$attribute."List = \$this->Get".ucfirst($attribute)."List();";
-					$this->string .= "\n\t\t\tforeach ($".$attribute."List as $".$attribute.")";
+					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
+					$this->string .= "\n\t\t\tforeach ($".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
 					$this->string .= "\n\t\t\t{";
-					$this->string .= "\n\t\t\t\t\$".$attribute."->Save(\$deep);";
+					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->Save(\$deep);";
 					$this->string .= "\n\t\t\t}";
 				}
+				$i++;
 			}
 			$this->string .= "\n\t\t}";
 		}
@@ -303,18 +305,19 @@ class Object
 		{
 			$this->string .= "\n\t\tif (\$deep)";
 			$this->string .= "\n\t\t{";
-			foreach ($this->pog_attribute_type as $attribute => $properties)
+			$i = 0;
+			foreach ($this->typeList as $type)
 			{
-				if ($properties[0] == "OBJECT")
+				if ($type == "HASMANY")
 				{
-					$this->string .= "\n\t\t\t$".$attribute."List = \$this->Get".ucfirst($attribute)."List();";
-					$this->string .= "\n\t\t\tforeach ($".$attribute."List as $".$attribute.")";
+					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
+					$this->string .= "\n\t\t\tforeach ($".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
 					$this->string .= "\n\t\t\t{";
-					$this->string .= "\n\t\t\t\t\$".$attribute."->Delete(\$deep);";
+					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->Delete(\$deep);";
 					$this->string .= "\n\t\t\t}";
 				}
+				$i++;
 			}
-			$this->string .= "\n\t\t\t}";
 			$this->string .= "\n\t\t}";
 		}
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
