@@ -142,7 +142,6 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
       					try
       					{
       						$instanceId = false;
-  							$instance->{strtolower($className)."Id"} = 0;
       						$instanceId = $instance->Save();
 	      					if(!$instanceId)
 	      					{
