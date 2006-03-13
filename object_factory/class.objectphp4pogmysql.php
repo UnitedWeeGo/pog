@@ -354,7 +354,7 @@ class Object
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"");
 		$this->string .= "\tfunction Set".ucfirst(strtolower($parent))."(\$".strtolower($parent).")\n\t{";
-		$this->string .= "\n\t\t\$this->".strtolower($parent)."Id = ".strtolower($parent)."->".strtolower($parent)."Id;";
+		$this->string .= "\n\t\t\$this->".strtolower($parent)."Id = $".strtolower($parent)."->".strtolower($parent)."Id;";
 		$this->string .= "\n\t}";
 	}
 
@@ -363,9 +363,9 @@ class Object
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"boolean");
-		$this->string .= "\tfunction Get".ucfirst(strtolower($parent))."(\$".strtolower().")\n\t{";
+		$this->string .= "\tfunction Get".ucfirst(strtolower($parent))."()\n\t{";
 		$this->string .= "\n\t\t\$".strtolower($parent)." = new ".$parent."();";
-		$this->string .= "\n\t\t\return = \$this->".strtolower($parent)."->Get(\$this->".strtolower($parent)."Id);";
+		$this->string .= "\n\t\treturn $".strtolower($parent)."->Get(\$this->".strtolower($parent)."Id);";
 		$this->string .= "\n\t}";
 	}
 
