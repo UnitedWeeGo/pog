@@ -168,9 +168,26 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	$object->CreateConstructor();
 	$object->CreateGetFunction();
 	$object->CreateGetAllFunction();
-	$object->CreateSaveFunction();
+	$object->CreateSaveFunction(array_search("HASMANY", $typeList));
 	$object->CreateSaveNewFunction();
-	$object->CreateDeleteFunction();
+	$object->CreateDeleteFunction(array_search("HASMANY", $typeList));
+	
+	$i = 0;
+	foreach ($typeList as $type)
+	{
+		if ($type == "HASMANY")
+		{
+			$object->CreateGetChildrenFunction($attributeList[$i]);
+			$object->CreateAddChildFunction($attributeList[$i]);
+		}
+		else if ($type == "BELONGSTO")
+		{
+			$object->CreateGetParentFunction($attributeList[$i]);
+			$object->CreateSetParentFunction($attributeList[$i]);
+		}
+		$i++;
+	}
+	
 	if(strtoupper($wrapper) == "PDO")
 	{
 		$object->CreateEscapeFunction();
