@@ -80,6 +80,8 @@ class Misc
 		|| $type=="SMALLMONEY"
 		|| $type=="UNIQUEIDENTIFIER"
 		|| $type=="VARBINARY"
+		|| $type=="HASMANY"
+		|| $type=="BELONGSTO"
 		)
 		return true;
 		else
@@ -207,6 +209,10 @@ class Misc
 		else if ($this->TypeIsSet($type))
 		{
 			return "SET";
+		}
+		else if ($type == "HASMANY" || $type == "BELONGSTO")
+		{
+			return "OBJECT";
 		}
 		else
 		{

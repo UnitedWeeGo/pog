@@ -27,11 +27,22 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .="/**\n\t";
-			$this->string .=" * @var ".stripcslashes($this->typeList[$x])."\n\t";
-			$this->string .=" */\n\t";
-			$this->string.="var $".$attribute.";\n\t";
-			$this->string.="\n\t";
+			if ($this->typeList[$x] == "BELONGSTO")
+			{
+				$this->string .="/**\n\t";
+				$this->string .=" * @var INT(11)\n\t";
+				$this->string .=" */\n\t";
+				$this->string.="var $".strtolower($attribute)."Id;\n\t";
+				$this->string.="\n\t";
+			}
+			else if ($this->typeList[$x] != "HASMANY")
+			{
+				$this->string .="/**\n\t";
+				$this->string .=" * @var ".stripcslashes($this->typeList[$x])."\n\t";
+				$this->string .=" */\n\t";
+				$this->string.="var $".$attribute.";\n\t";
+				$this->string.="\n\t";
+			}
 			$x++;
 		}
 		//	create attribute => type array map
@@ -114,13 +125,27 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($x == (count($this->typeList)-1))
+			if ($this->typeList[$x] == "BELONGSTO")
 			{
-				$this->sql .= "\n\t`".strtolower($attribute)."` ".stripcslashes($this->typeList[$x]).",";
+				if ($x == (count($this->typeList)-1))
+				{
+					$this->sql .= "\n\t`".strtolower($attribute)."id` int(11)";
+				}
+				else
+				{
+					$this->sql .= "\n\t`".strtolower($attribute)."id` int(11),";
+				}
 			}
-			else
+			else if ($this->typeList[$x] != "HASMANY")
 			{
-				$this->sql .= "\n\t`".strtolower($attribute)."` ".stripcslashes($this->typeList[$x]).",";
+				if ($x == (count($this->typeList)-1))
+				{
+					$this->sql .= "\n\t`".strtolower($attribute)."` ".stripcslashes($this->typeList[$x]);
+				}
+				else
+				{
+					$this->sql .= "\n\t`".strtolower($attribute)."` ".stripcslashes($this->typeList[$x]).",";
+				}
 			}
 			$x++;
 		}
@@ -128,11 +153,35 @@ class Object
 	}
 
 	// -------------------------------------------------------------
-	function CreateSaveFunction()
+	function CreateSaveFunction($deep = false)
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
 		$this->string .= $this->CreateComments("Saves the object to the database",'',"integer $".strtolower($this->objectName)."Id");
-		$this->string .= "\tfunction Save()\n\t{";
+		if ($deep)
+		{
+			$this->string .= "\tfunction Save(\$deep = true)\n\t{";
+		}
+		else
+		{
+			$this->string .= "\tfunction Save()\n\t{";
+		}
+		if ($deep)
+		{
+			$this->string .= "\n\t\tif (\$deep)";
+			$this->string .= "\n\t\t{";
+			foreach ($this->pog_attribute_type as $attribute => $properties)
+			{
+				if ($properties[0] == "OBJECT")
+				{
+					$this->string .= "\n\t\t\t$".$attribute."List = \$this->Get".ucfirst($attribute)."List();";
+					$this->string .= "\n\t\t\tforeach ($".$attribute."List as $".$attribute.")";
+					$this->string .= "\n\t\t\t{";
+					$this->string .= "\n\t\t\t\t\$".$attribute."->Save(\$deep);";
+					$this->string .= "\n\t\t\t}";
+				}
+			}
+			$this->string .= "\n\t\t}";
+		}
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$this->pog_query = \"select ".strtolower($this->objectName)."id from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
 		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
@@ -237,16 +286,83 @@ class Object
 		$this->string .= "\n\t}";
 	}
 
-
 	// -------------------------------------------------------------
-	function CreateDeleteFunction()
+	function CreateDeleteFunction($deep = false)
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Deletes the object from the database",'',"boolean");
-		$this->string .= "\tfunction Delete()\n\t{";
+		if ($deep)
+		{
+			$this->string .= "\tfunction Delete(\$deep = false)\n\t{";
+		}
+		else
+		{
+			$this->string .= "\tfunction Delete()\n\t{";
+		}
+		if ($deep)
+		{
+			$this->string .= "\n\t\tif (\$deep)";
+			$this->string .= "\n\t\t{";
+			foreach ($this->pog_attribute_type as $attribute => $properties)
+			{
+				if ($properties[0] == "OBJECT")
+				{
+					$this->string .= "\n\t\t\t$".$attribute."List = \$this->Get".ucfirst($attribute)."List();";
+					$this->string .= "\n\t\t\tforeach ($".$attribute."List as $".$attribute.")";
+					$this->string .= "\n\t\t\t{";
+					$this->string .= "\n\t\t\t\t\$".$attribute."->Delete(\$deep);";
+					$this->string .= "\n\t\t\t}";
+				}
+			}
+			$this->string .= "\n\t\t\t}";
+			$this->string .= "\n\t\t}";
+		}
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$this->pog_query = \"delete from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"'\";";
 		$this->string .= "\n\t\treturn \$Database->Query(\$this->pog_query);";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateAddChildFunction($child)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Associates the $child object to this one",'',"");
+		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(\$".strtolower($child).")\n\t{";
+		$this->string .= "\n\t\t\$".strtolower($child)."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateGetChildrenFunction($child)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Gets a list of $child objects associated to this one",'',"boolean");
+		$this->string .= "\tfunction Get".ucfirst(strtolower($child))."List()\n\t{";
+		$this->string .= "\n\t\t\$".strtolower($child)." = new ".$child."();";
+		$this->string .= "\n\t\t\$".strtolower($child)."List = $".strtolower($child)."->GetList(array(array(\"".strtolower($this->objectName)."Id\", \"=\", \$this->".strtolower($this->objectName)."Id)));;";
+		$this->string .= "\n\t\treturn \$".strtolower($child)."List;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateSetParentFunction($parent)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"");
+		$this->string .= "\tfunction Set".ucfirst(strtolower($parent))."(\$".strtolower($parent).")\n\t{";
+		$this->string .= "\n\t\t\$this->".strtolower($parent)."Id = ".strtolower($parent)."->".strtolower($parent)."Id;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateGetParentFunction($parent)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"boolean");
+		$this->string .= "\tfunction Get".ucfirst(strtolower($parent))."(\$".strtolower().")\n\t{";
+		$this->string .= "\n\t\t\$".strtolower($parent)." = new ".$parent."();";
+		$this->string .= "\n\t\t\return = \$this->".strtolower($parent)."->Get(\$this->".strtolower($parent)."Id);";
 		$this->string .= "\n\t}";
 	}
 
