@@ -11,11 +11,23 @@ if(file_exists("../objects/class.database.php"))
 	include "../objects/class.database.php";
 }
 
-// get current object name to instantiate class
 $objectName = $_REQUEST['objectname'];
 
-
-include  ("../objects/class.".strtolower($objectName).".php");
+//include all classes (possible relations)
+$dir = opendir('../objects/');
+$objects = array();
+while(($file = readdir($dir)) !== false)
+{
+	if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php")
+	{
+		$objects[] = $file;
+	}
+}
+closedir($dir);
+foreach ($objects as $object)
+{
+	include("../objects/{$object}");
+}
 
 eval ('$instance = new '.$objectName.'();');
 $attributeList = array_keys(get_object_vars($instance));

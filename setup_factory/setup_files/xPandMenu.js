@@ -163,16 +163,19 @@ function sndReq(action, openNodes, objectName, objectId, currentNode, attributes
 		{
 			thisId = attributes[i];
 			var thisInput = document.getElementById(thisId);
-			if (thisInput.type == "checkbox")
+			if (thisInput != null)
 			{
-				if (thisInput.checked)
+				if (thisInput.type == "checkbox")
+				{
+					if (thisInput.checked)
+					{
+						req += "&" + thisId + "=" + thisInput.value;
+					}
+				}
+				else
 				{
 					req += "&" + thisId + "=" + thisInput.value;
 				}
-			}
-			else
-			{
-				req += "&" + thisId + "=" + thisInput.value;
 			}
 		}
 	}
