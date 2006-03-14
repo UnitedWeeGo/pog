@@ -60,7 +60,11 @@
 				{
 					$attribute_testValues[$attribute] = "1234.56";
 				}
-				else if ($property[1] != "HASMANY" && $property[1] != "BELONGSTO")
+				else if ($property[1] == "BELONGSTO")
+				{
+					$attribute_testValues[$attribute] = "NULL";
+				}
+				else if ($property[1] != "HASMANY")
 				{
 					$attribute_testValues[$attribute] = ${$property[1]};
 				}
