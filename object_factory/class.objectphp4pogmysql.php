@@ -121,11 +121,18 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($this->typeList[$x] != "BELONGSTO" && $this->typeList[$x] != "HASMANY")
+			if ($this->typeList[$x] != "HASMANY")
 			{
 				if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
 				{
-					$this->string .= "\n\t\t\$this->".$attribute." = \$Database->Result(0, \"".strtolower($attribute)."\");";
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "\n\t\t\$this->".strtolower($attribute)."Id = \$Database->Result(0, \"".strtolower($attribute)."id\");";
+					}
+					else
+					{
+						$this->string .= "\n\t\t\$this->".$attribute." = \$Database->Result(0, \"".strtolower($attribute)."\");";
+					}
 				}
 				else
 				{
@@ -199,7 +206,7 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($this->typeList[$x] != "BELONGSTO" && $this->typeList[$x] != "HASMANY")
+			if ($this->typeList[$x] != "HASMANY")
 			{
 				if ($x == (count($this->attributeList)-1))
 				{
@@ -208,7 +215,14 @@ class Object
 					// but this solution is more efficient
 					if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
 					{
-						$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".\$this->$attribute.\"' ";
+						if ($this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= "\n\t\t\t`".strtolower($attribute)."id`='\".\$this->".strtolower($attribute)."Id\"' ";
+						}
+						else
+						{
+							$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".\$this->$attribute.\"' ";
+						}
 					}
 					else
 					{
@@ -219,7 +233,14 @@ class Object
 				{
 					if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
 					{
-						$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".\$this->$attribute.\"', ";
+						if ($this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= "\n\t\t\t`".strtolower($attribute)."id`='\".\$this->".strtolower($attribute)."Id\"', ";
+						}
+						else
+						{
+							$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".\$this->$attribute.\"', ";
+						}
 					}
 					else
 					{
@@ -237,15 +258,29 @@ class Object
 		$y=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($this->typeList[$y] != "BELONGSTO" && $this->typeList[$y] != "HASMANY")
+			if ($this->typeList[$y] != "HASMANY")
 			{
 				if ($y == (count($this->attributeList)-1))
 				{
-					$this->string .= "`".strtolower($attribute)."` ";
+					if ($this->typeList[$y] == "BELONGSTO")
+					{
+						$this->string .= "`".strtolower($attribute)."id` ";
+					}
+					else
+					{
+						$this->string .= "`".strtolower($attribute)."` ";
+					}
 				}
 				else
 				{
-					$this->string .= "`".strtolower($attribute)."`, ";
+					if ($this->typeList[$y] == "BELONGSTO")
+					{
+						$this->string .= "`".strtolower($attribute)."id`, ";
+					}
+					else
+					{
+						$this->string .= "`".strtolower($attribute)."`, ";
+					}
 				}
 			}
 			$y++;
@@ -254,13 +289,20 @@ class Object
 		$z=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($this->typeList[$z] != "BELONGSTO" && $this->typeList[$z] != "HASMANY")
+			if ($this->typeList[$z] != "HASMANY")
 			{
 				if ($z == (count($this->attributeList)-1))
 				{
 					if (strtolower(substr($this->typeList[$z],0,4)) == "enum" || strtolower(substr($this->typeList[$z],0,3)) == "set"  || strtolower(substr($this->typeList[$z],0,4)) == "date" || strtolower(substr($this->typeList[$z],0,4)) == "time")
 					{
-						$this->string .= "\n\t\t\t'\".\$this->$attribute.\"' ";
+						if ($this->typeList[$z] == "BELONGSTO")
+						{
+							$this->string .= "\n\t\t\t'\".\$this->$attribute.\"id' ";
+						}
+						else
+						{
+							$this->string .= "\n\t\t\t'\".\$this->$attribute.\"' ";
+						}
 					}
 					else
 					{
@@ -271,7 +313,14 @@ class Object
 				{
 					if (strtolower(substr($this->typeList[$z],0,4)) == "enum" || strtolower(substr($this->typeList[$z],0,3)) == "set"  || strtolower(substr($this->typeList[$z],0,4)) == "date" || strtolower(substr($this->typeList[$z],0,4)) == "time")
 					{
-						$this->string .= "\n\t\t\t'\".\$this->$attribute.\"', ";
+						if ($this->typeList[$z] == "BELONGSTO")
+						{
+							$this->string .= "\n\t\t\t'\".\$this->$attribute.\"Id', ";
+						}
+						else
+						{
+							$this->string .= "\n\t\t\t'\".\$this->$attribute.\"', ";
+						}
 					}
 					else
 					{
@@ -348,6 +397,7 @@ class Object
 		$this->string .= $this->CreateComments("Associates the $child object to this one",'',"");
 		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(\$".strtolower($child).")\n\t{";
 		$this->string .= "\n\t\t\$".strtolower($child)."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
+		$this->string .= "\n\t\t\$".strtolower($child)."->Save();";
 		$this->string .= "\n\t}";
 	}
 
