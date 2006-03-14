@@ -91,6 +91,10 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			$errors = 0;
 			$diagnostics = "";
 			$_SESSION['links'] = array();
+			foreach ($objects as $object)
+			{
+				include("../objects/{$object}");
+			}
 			foreach($objects as $object)
 			{
 				$content = file_get_contents("../objects/".$object);
@@ -117,7 +121,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					$linkParts2 = split("\@link", $linkParts1[0]);
 					$link = $linkParts2[1];
 
-					include("../objects/{$object}");
+
 					eval('$instance = new '.$className.'();');
 
 					$attributeList = array_keys(get_object_vars($instance));
