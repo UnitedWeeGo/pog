@@ -89,7 +89,10 @@ optionsArray=new Array("VARCHAR(255)",
 "LONGBLOB",
 "LONGTEXT",
 "BINARY",
-"OTHER")
+"OTHER",
+"<- HAS MANY",
+"<- BELONGS TO"
+)
 break
 case "oci":
 break
@@ -199,7 +202,18 @@ optionsArray=new Array("TEXT",
 break}
 for(var i=0;i<optionsArray.length;i++){
 NewOpt=new Option
-NewOpt.value=optionsArray[i]
+if (optionsArray[i] == "<- HAS MANY")
+{
+	NewOpt.value="HASMANY";
+}
+else if (optionsArray[i] == "<- BELONGS TO")
+{
+	NewOpt.value="BELONGSTO";
+}
+else
+{
+	NewOpt.value=optionsArray[i]
+}
 NewOpt.text=optionsArray[i]
 ddlist.options[i]=NewOpt}}}
 function Reposition(field,evt){
