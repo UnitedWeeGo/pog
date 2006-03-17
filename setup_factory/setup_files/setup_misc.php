@@ -60,11 +60,7 @@
 				{
 					$attribute_testValues[$attribute] = "1234.56";
 				}
-				else if ($property[1] == "BELONGSTO")
-				{
-					$attribute_testValues[$attribute] = "NULL";
-				}
-				else if ($property[1] != "HASMANY")
+				else if ($property[1] != "HASMANY" && $property[1] != "BELONGSTO")
 				{
 					$attribute_testValues[$attribute] = ${$property[1]};
 				}
@@ -101,6 +97,9 @@
 						}
 					}
 					$html .= "</select>";
+			break;
+			case "HASMANY":
+				$html = "";
 			break;
 			case "MEDIUMBLOB":
 				$html = "sorry. cannot render attribute of type LONGBLOB";

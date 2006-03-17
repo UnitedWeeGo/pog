@@ -35,7 +35,15 @@ class Object
 				$this->string.="var $".strtolower($attribute)."Id;\n\t";
 				$this->string.="\n\t";
 			}
-			else if ($this->typeList[$x] != "HASMANY")
+			else if ($this->typeList[$x] == "HASMANY")
+			{
+				$this->string .="/**\n\t";
+				$this->string .=" * @var private array of $attribute objects\n\t";
+				$this->string .=" */\n\t";
+				$this->string.="var \$_".strtolower($attribute)."List;\n\t";
+				$this->string.="\n\t";
+			}
+			else
 			{
 				$this->string .="/**\n\t";
 				$this->string .=" * @var ".stripcslashes($this->typeList[$x])."\n\t";
@@ -55,6 +63,10 @@ class Object
 			if ($this->typeList[$x] == "BELONGSTO")
 			{
 				$this->string .= "\"".strtolower($attribute)."id\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			}
+			else if ($this->typeList[$x] == "HASMANY")
+			{
+				$this->string .= "\"_".strtolower($attribute)."list\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
 			}
 			else
 			{
@@ -99,7 +111,11 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($this->typeList[$x] != "BELONGSTO" && $this->typeList[$x] != "HASMANY")
+			if ($this->typeList[$x] == "HASMANY")
+			{
+				$this->string .="\n\t\t\$this->_".strtolower($attribute)."List = array();";
+			}
+			else if ($this->typeList[$x] != "BELONGSTO")
 			{
 				$this->string .= "\n\t\t\$this->".$attribute." = $".$attribute.";";
 			}
@@ -178,25 +194,6 @@ class Object
 		{
 			$this->string .= "\tfunction Save()\n\t{";
 		}
-		if ($deep)
-		{
-			$this->string .= "\n\t\tif (\$deep)";
-			$this->string .= "\n\t\t{";
-			$i = 0;
-			foreach ($this->typeList as $type)
-			{
-				if ($type == "HASMANY")
-				{
-					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
-					$this->string .= "\n\t\t\tforeach ($".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
-					$this->string .= "\n\t\t\t{";
-					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->Save(\$deep);";
-					$this->string .= "\n\t\t\t}";
-				}
-				$i++;
-			}
-			$this->string .= "\n\t\t}";
-		}
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
 		$this->string .= "\n\t\t\$this->pog_query = \"select ".strtolower($this->objectName)."id from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
 		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
@@ -235,7 +232,7 @@ class Object
 					{
 						if ($this->typeList[$x] == "BELONGSTO")
 						{
-							$this->string .= "\n\t\t\t`".strtolower($attribute)."id`='\".\$this->".strtolower($attribute)."Id\"', ";
+							$this->string .= "\n\t\t\t`".strtolower($attribute)."id`='\".\$this->".strtolower($attribute)."Id.\"', ";
 						}
 						else
 						{
@@ -315,7 +312,7 @@ class Object
 					{
 						if ($this->typeList[$z] == "BELONGSTO")
 						{
-							$this->string .= "\n\t\t\t'\".\$this->$attribute.\"Id', ";
+							$this->string .= "\n\t\t\t'\".\$this->".strtolower($attribute)."Id.\"', ";
 						}
 						else
 						{
@@ -337,6 +334,25 @@ class Object
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$Database->GetCurrentId();";
 		$this->string .= "\n\t\t}";
+		if ($deep)
+		{
+			$this->string .= "\n\t\tif (\$deep)";
+			$this->string .= "\n\t\t{";
+			$i = 0;
+			foreach ($this->typeList as $type)
+			{
+				if ($type == "HASMANY")
+				{
+					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
+					$this->string .= "\n\t\t\tforeach (\$this->_".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
+					$this->string .= "\n\t\t\t{";
+					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->Save(\$deep);";
+					$this->string .= "\n\t\t\t}";
+				}
+				$i++;
+			}
+			$this->string .= "\n\t\t}";
+		}
 		$this->string .= "\n\t\treturn \$this->".strtolower($this->objectName)."Id;";
 		$this->string .= "\n\t}";
 	}
@@ -395,9 +411,9 @@ class Object
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $child object to this one",'',"");
-		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(\$".strtolower($child).")\n\t{";
+		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(&\$".strtolower($child).")\n\t{";
+		$this->string .= "\n\t\t\$this->_".strtolower($child)."List[] =& \$".strtolower($child).";";
 		$this->string .= "\n\t\t\$".strtolower($child)."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
-		$this->string .= "\n\t\t\$".strtolower($child)."->Save();";
 		$this->string .= "\n\t}";
 	}
 
@@ -408,8 +424,8 @@ class Object
 		$this->string .= $this->CreateComments("Gets a list of $child objects associated to this one",'',"boolean");
 		$this->string .= "\tfunction Get".ucfirst(strtolower($child))."List()\n\t{";
 		$this->string .= "\n\t\t\$".strtolower($child)." = new ".$child."();";
-		$this->string .= "\n\t\t\$".strtolower($child)."List = $".strtolower($child)."->GetList(array(array(\"".strtolower($this->objectName)."Id\", \"=\", \$this->".strtolower($this->objectName)."Id)));;";
-		$this->string .= "\n\t\treturn \$".strtolower($child)."List;";
+		$this->string .= "\n\t\t\$this->_".strtolower($child)."List = array_merge(\$this->_".strtolower($child)."List, $".strtolower($child)."->GetList(array(array(\"".strtolower($this->objectName)."Id\", \"=\", \$this->".strtolower($this->objectName)."Id))));";
+		$this->string .= "\n\t\treturn \$this->_".strtolower($child)."List;";
 		$this->string .= "\n\t}";
 	}
 
@@ -418,7 +434,7 @@ class Object
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"");
-		$this->string .= "\tfunction Set".ucfirst(strtolower($parent))."(\$".strtolower($parent).")\n\t{";
+		$this->string .= "\tfunction Set".ucfirst(strtolower($parent))."(&\$".strtolower($parent).")\n\t{";
 		$this->string .= "\n\t\t\$this->".strtolower($parent)."Id = $".strtolower($parent)."->".strtolower($parent)."Id;";
 		$this->string .= "\n\t}";
 	}
