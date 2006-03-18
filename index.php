@@ -80,18 +80,20 @@ urchinTracker();
 <div class="main">
 	<div class="left">
 		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/>PHP Object Generator, (POG) is an open source <h1>PHP code generator</h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
-		<br/><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project. The time you save can be spent on more interesting areas of your project.<br/><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="extended introduction to pog">Read more &#8250;&#8250;</a>
-		<br/><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
-		<br/>Generates clean &amp; tested code
-		<br/>Generates CRUD methods
-		<br/>Generates Setup file
-		<br/>Compatible with PHP4 &amp; PHP5
-		<br/>Compatible with PDO
-		<br/>Automatic data encoding
-		<br/>Free for personal use
-		<br/>Free for commercial use
-		<br/>Open Source
-		<br/><br/>
+		<br /><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project. The time you save can be spent on more interesting areas of your project.<br/><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="extended introduction to pog">Read more &#8250;&#8250;</a>
+		<br /><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
+		<br />Generates clean &amp; tested code
+		<br />Generates CRUD methods
+		<br />Generates setup file
+		<br />Generates parent-child relations
+		<br />Compatible with PHP4 &amp; PHP5
+		<br />Compatible with PDO
+		<br />Automatic data encoding
+		<br />Free Developer SOAP API
+		<br />Free for personal use
+		<br />Free for commercial use
+		<br />Open Source
+		<br /><br/>
 		<form class="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post">
 		<input type="hidden" name="cmd" value="_xclick">
 		<input type="hidden" name="business" value="pogguys@phpobjectgenerator.com">

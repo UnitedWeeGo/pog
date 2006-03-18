@@ -90,8 +90,8 @@ optionsArray=new Array("VARCHAR(255)",
 "LONGTEXT",
 "BINARY",
 "OTHER",
-"<- HAS MANY",
-"<- BELONGS TO"
+"{ CHILD }",
+"{ PARENT }"
 )
 break
 case "oci":
@@ -202,11 +202,11 @@ optionsArray=new Array("TEXT",
 break}
 for(var i=0;i<optionsArray.length;i++){
 NewOpt=new Option
-if (optionsArray[i] == "<- HAS MANY")
+if (optionsArray[i] == "{ CHILD }")
 {
 	NewOpt.value="HASMANY";
 }
-else if (optionsArray[i] == "<- BELONGS TO")
+else if (optionsArray[i] == "{ PARENT }")
 {
 	NewOpt.value="BELONGSTO";
 }

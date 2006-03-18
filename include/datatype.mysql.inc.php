@@ -23,5 +23,5 @@
 <option value="LONGTEXT" <?=(isset($typeList)&&isset($typeList[$dataTypeIndex])&&$typeList[$dataTypeIndex]=="LONGTEXT"?"selected":'')?>>LONGTEXT</option>
 <option value="BINARY" <?=(isset($typeList)&&isset($typeList[$dataTypeIndex])&&$typeList[$dataTypeIndex]=="BINARY"?"selected":'')?>>BINARY</option>
 <option value="OTHER">OTHER...</option>
-<option value="HASMANY"><- HAS MANY</option>
-<option value="BELONGSTO"><- BELONGS TO</option>
+<option value="HASMANY">{ CHILD }</option>
+<option value="BELONGSTO">{ PARENT }</option>

@@ -80,10 +80,13 @@ if (IsPostback())
 				<br /><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
 				<br />Generates clean &amp; tested code
 				<br />Generates CRUD methods
+				<br />Generates setup file
+				<br />Generates parent-child relations
 				<br />Generates Setup file
 				<br />Compatible with PHP4 &amp; PHP5
 				<br />Compatible with PDO
 				<br />Automatic data encoding
+				<br />Free Developer SOAP API
 				<br />Free for personal use
 				<br />Free for commercial use
 				<br />Open Source

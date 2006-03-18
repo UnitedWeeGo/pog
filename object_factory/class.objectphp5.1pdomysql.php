@@ -159,9 +159,10 @@ class Object
 				}
 				else
 				{
-					$this->string .= "\n\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
+					$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
 				}
 			}
+			$x++;
 		}
 		$this->string .="\n\t\t\t\t}";
 		$this->string .="\n\t\t\t}";
@@ -227,11 +228,25 @@ class Object
 			{
 				if ($x == (count($this->attributeList)-1))
 				{
-					$this->string .= "`".strtolower($attribute)."`=?";
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "`".strtolower($attribute)."id`=?";
+					}
+					else
+					{
+						$this->string .= "`".strtolower($attribute)."`=?";
+					}
 				}
 				else
 				{
-					$this->string .= "`".strtolower($attribute)."`=?,";
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "`".strtolower($attribute)."id`=?,";
+					}
+					else
+					{
+						$this->string .= "`".strtolower($attribute)."`=?,";
+					}
 				}
 			}
 			$x++;
@@ -384,7 +399,6 @@ class Object
 		$this->string .= "\n\t}";
 	}
 
-
 	// -------------------------------------------------------------
 	function CreateDeleteFunction($deep = false)
 	{
@@ -439,7 +453,7 @@ class Object
 	}
 
 	// -------------------------------------------------------------
-		function CreateAddChildFunction($child)
+	function CreateAddChildFunction($child)
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $child object to this one",'',"");

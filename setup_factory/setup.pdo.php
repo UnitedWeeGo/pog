@@ -133,6 +133,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				try
 				{
 					$instanceId = false;
+					$instance->{strtolower($className)."Id"} = '';
 					$instanceId = $instance->Save();
 					if(!$instanceId)
 					{
@@ -172,6 +173,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 											}
 										}
 									}
+									$instance->{strtolower($className)."Id"} = '';
 									$instanceId = $instance->Save();
 				  					if(!$instanceId)
 				  					{
