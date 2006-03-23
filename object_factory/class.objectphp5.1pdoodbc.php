@@ -147,16 +147,16 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "\n\t\t\t\t\t\$this->".strtolower($attribute)."Id = \$row['".strtolower($attribute)."id'];";
+						$this->string .= "\n\t\t\t\t\$this->".strtolower($attribute)."Id = \$row['".strtolower($attribute)."id'];";
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
+						$this->string .= "\n\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
 					}
 				}
 				else
 				{
-					$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
+					$this->string .= "\n\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
 				}
 			}
 			$x++;
@@ -183,7 +183,7 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->sql .= "\n\t`".strtolower($attribute)."id` int(11),";
+						$this->sql .= "\n\t".strtolower($attribute)."id INT,";
 					}
 					else if ($this->typeList[$x] != "HASMANY")
 					{
