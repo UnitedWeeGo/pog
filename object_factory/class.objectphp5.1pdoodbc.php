@@ -32,7 +32,7 @@ class Object
 			if ($this->typeList[$x] == "BELONGSTO")
 			{
 				$this->string .="/**\n\t";
-				$this->string .=" * @var INT(11)\n\t";
+				$this->string .=" * @var INT\n\t";
 				$this->string .=" */\n\t";
 				$this->string.="public $".strtolower($attribute)."Id;\n\t";
 				$this->string.="\n\t";
