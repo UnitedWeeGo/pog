@@ -121,7 +121,10 @@ optionsArray=new Array("BIGINT",
 "UNIQUEIDENTIFIER",
 "VARBINARY",
 "VARCHAR(255)",
-"OTHER")
+"OTHER",
+"{ CHILD }",
+"{ PARENT }"
+)
 break
 case "firebird":
 optionsArray=new Array("BLOB",
@@ -136,7 +139,10 @@ optionsArray=new Array("BLOB",
 "NUMERIC",
 "SMALLINT",
 "VARCHAR(255)",
-"OTHER")
+"OTHER",
+"{ CHILD }",
+"{ PARENT }"
+)
 break
 case "odbc":
 optionsArray=new Array("BIGINT",
@@ -163,7 +169,10 @@ optionsArray=new Array("BIGINT",
 "UNIQUEIDENTIFIER",
 "VARBINARY",
 "VARCHAR(255)",
-"OTHER")
+"OTHER",
+"{ CHILD }",
+"{ PARENT }"
+)
 break
 case "pgsql":
 optionsArray=new Array("BIGINT",
@@ -191,14 +200,20 @@ optionsArray=new Array("BIGINT",
 "SERIAL",
 "TEXT",
 "VARCHAR(255)",
-"OTHER")
+"OTHER",
+"{ CHILD }",
+"{ PARENT }"
+)
 break
 case "sqlite":
 optionsArray=new Array("TEXT",
 "NUMERIC",
 "INTEGER",
 "BLOB",
-"OTHER")
+"OTHER",
+"{ CHILD }",
+"{ PARENT }"
+)
 break}
 for(var i=0;i<optionsArray.length;i++){
 NewOpt=new Option
