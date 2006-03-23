@@ -141,11 +141,11 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 						{
 							$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
 						}
-						else if ($GLOBALS['configuration']['pdoDriver'] != 'firebird' && $GLOBALS['configuration']['pdoDriver'] != 'sqlite')
+						else if ($GLOBALS['configuration']['pdoDriver'] != 'firebird')
 						{
 							$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 						}
-						if ($GLOBALS['configuration']['pdoDriver'] != 'firebird' && $GLOBALS['configuration']['pdoDriver'] != 'sqlite')
+						if ($GLOBALS['configuration']['pdoDriver'] != 'firebird')
 						{
 							$Database->query($instance->pog_query);
 							if (substr($Database->errorCode(),0,2) == "42" || substr($Database->errorCode(),0,2) == "00")
