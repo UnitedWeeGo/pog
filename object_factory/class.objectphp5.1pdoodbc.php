@@ -212,7 +212,6 @@ class Object
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
 		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':'.\$GLOBALS['configuration']['odbcDSN']);";
-		$this->string .= "\n\t\t\t\$Database->beginTransaction();";
 		$this->string .= "\n\t\t\t\$count = 0;";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"select count(".strtolower($this->objectName)."id) as count from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id'\";";
 		$this->string .= "\n\t\t\tforeach (\$Database->query(\$this->pog_query) as \$row)";
@@ -232,54 +231,43 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "`".strtolower($attribute)."id`=?";
+						$this->string .= strtolower($attribute)."id = '\".\$this->".strtolower($attribute)."Id.\"'";
 					}
 					else
 					{
-						$this->string .= "`".strtolower($attribute)."`=?";
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"'";
+						}
+						else
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->Escape(\$this->".$attribute.").\"'";
+						}
 					}
 				}
 				else
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "`".strtolower($attribute)."id`=?,";
+						$this->string .= strtolower($attribute)."id = '\".\$this->".strtolower($attribute)."Id.\"', ";
 					}
 					else
 					{
-						$this->string .= "`".strtolower($attribute)."`=?,";
+						
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute."\, ";
+						}
+						else
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->Escape(\$this->".$attribute.").\"', ";
+						}
 					}
-				}
+				}				
 			}
 			$x++;
 		}
-		$this->string .= " where ".strtolower($this->objectName)."id=?\";";
-		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
-		$x=0;
-		foreach ($this->attributeList as $attribute)
-		{
-			if ($this->typeList[$x] != "HASMANY")
-			{
-				if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
-				{
-					if ($this->typeList[$x] == "BELONGSTO")
-					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($attribute)."Id);";
-					}
-					else
-					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
-					}
-				}
-				else
-				{
-					$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
-				}
-			}
-			$x++;
-		}
-		$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", $".strtolower($this->objectName)."Id);";
-		$this->string .= "\n\t\t\t\t\$".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
+		$this->string .= " where ".strtolower($this->objectName)."id = '$".strtolower($this->objectName)."Id')\";";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\telse";
 		$this->string .= "\n\t\t\t{";
@@ -294,22 +282,22 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "`".strtolower($attribute)."id`";
+						$this->string .= strtolower($attribute)."id";
 					}
 					else
 					{
-						$this->string .= "`".strtolower($attribute)."`";
+						$this->string .= strtolower($attribute);
 					}
 				}
 				else
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "`".strtolower($attribute)."id`,";
+						$this->string .= strtolower($attribute)."id, ";
 					}
 					else
 					{
-						$this->string .= "`".strtolower($attribute)."`,";
+						$this->string .= strtolower($attribute).", ";
 					}
 				}
 			}
@@ -323,42 +311,46 @@ class Object
 			{
 				if ($x == (count($this->attributeList)-1))
 				{
-					$this->string .= "?";
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "'\".\$this->".strtolower($attribute)."Id.\"'";
+					}
+					else
+					{
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= "'\".\$this->".$attribute.".\"'";
+						}
+						else
+						{
+							$this->string .= "'\".\$this->Escape(\$this->".$attribute.").\"'";
+						}
+					}
 				}
 				else
 				{
-					$this->string .= "?,";
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "'\".\$this->".strtolower($attribute)."Id.\"', ";
+					}
+					else
+					{
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= "'\".\$this->".$attribute.".\"', ";
+						}
+						else
+						{
+							$this->string .= "'\".\$this->Escape(\$this->".$attribute.").\"', ";
+						}
+					}
 				}
 			}
 			$x++;
 		}
 		$this->string .= ")\";";
-		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
-		$x=0;
-		foreach ($this->attributeList as $attribute)
-		{
-			if ($this->typeList[$x] != "HASMANY")
-			{
-				if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
-				{
-					if ($this->typeList[$x] == "BELONGSTO")
-					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($attribute)."Id);";
-					}
-					else
-					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
-					}
-				}
-				else
-				{
-					$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
-				}
-			}
-			$x++;
-		}
 		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\t\$stmt->execute();";
+		$this->string .= "\n\t\t\t\$Database->query(\$this->pog_query);";
 		$this->string .= "\n\t\t\tif (\$this->".strtolower($this->objectName)."Id == \"\")";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$this->pog_query = (\"select max(".strtolower($this->objectName)."id) as max from ".strtolower($this->objectName)."\");";
@@ -367,7 +359,6 @@ class Object
 		$this->string .= "\n\t\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['max'];";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\t\$Database->commit();";
 		if ($deep)
 		{
 			$this->string .= "\n\t\t\tif (\$deep)";
@@ -406,7 +397,6 @@ class Object
 		$this->string .= "\n\t\treturn \$this->Save();";
 		$this->string .= "\n\t}";
 	}
-
 
 	// -------------------------------------------------------------
 	function CreateDeleteFunction($deep = false)
