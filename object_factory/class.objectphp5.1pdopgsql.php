@@ -29,21 +29,50 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .="/**\n\t";
-			$this->string .=" * @var ".stripcslashes($this->typeList[$x])."\n\t";
-			$this->string .=" */\n\t";
-			$this->string.="public $".$attribute.";\n\t";
-			$this->string .="\n\t";
-			$x++;
+			if ($this->typeList[$x] == "BELONGSTO")
+			{
+				$this->string .="/**\n\t";
+				$this->string .=" * @var INTEGER\n\t";
+				$this->string .=" */\n\t";
+				$this->string.="public $".strtolower($attribute)."Id;\n\t";
+				$this->string.="\n\t";
+			}
+			else if ($this->typeList[$x] == "HASMANY")
+			{
+				$this->string .="/**\n\t";
+				$this->string .=" * @var private array of $attribute objects\n\t";
+				$this->string .=" */\n\t";
+				$this->string.="private \$_".strtolower($attribute)."List;\n\t";
+				$this->string.="\n\t";
+			}
+			else
+			{
+				$this->string .="/**\n\t";
+				$this->string .=" * @var ".stripcslashes($this->typeList[$x])."\n\t";
+				$this->string .=" */\n\t";
+				$this->string.="public $".$attribute.";\n\t";
+				$this->string.="\n\t";
+			}
 		}
 		//	create attribute => type array map
 		//	needed for setup
 		$this->string .= "public \$pog_attribute_type = array(\n\t\t";
-		$this->string .= "\"".strtolower($this->objectName)."id\" => array(\"NUMERIC\", \"INT\"),\n\t\t";
+				$this->string .= "\"".strtolower($this->objectName)."id\" => array(\"NUMERIC\", \"INTEGER\"),\n\t\t";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\"".strtolower($attribute)."\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			if ($this->typeList[$x] == "BELONGSTO")
+			{
+				$this->string .= "\"".strtolower($attribute)."id\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			}
+			else if ($this->typeList[$x] == "HASMANY")
+			{
+				$this->string .= "\"_".strtolower($attribute)."list\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			}
+			else
+			{
+				$this->string .= "\"".strtolower($attribute)."\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			}
 			$x++;
 		}
 		$this->string .= ");\n\t";
@@ -61,22 +90,36 @@ class Object
 	{
 		$this->string .= "\n\t\n\tfunction ".$this->objectName."(";
 		$i = 0;
+		$j = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($i == 0)
+			if ($this->typeList[$i] != "BELONGSTO" && $this->typeList[$i] != "HASMANY")
 			{
-				$this->string .= '$'.$attribute.'=\'\'';
-			}
-			else
-			{
-				$this->string .= ', $'.$attribute.'=\'\'';
+				if ($j == 0)
+				{
+					$this->string .= '$'.$attribute.'=\'\'';
+				}
+				else
+				{
+					$this->string .= ', $'.$attribute.'=\'\'';
+				}
+				$j++;
 			}
 			$i++;
 		}
 		$this->string .= ")\n\t{";
+		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\n\t\t\$this->".$attribute." = $".$attribute.";";
+			if ($this->typeList[$x] == "HASMANY")
+			{
+				$this->string .="\n\t\t\$this->_".strtolower($attribute)."List = array();";
+			}
+			else if ($this->typeList[$x] != "BELONGSTO")
+			{
+				$this->string .= "\n\t\t\$this->".$attribute." = $".$attribute.";";
+			}
+			$x++;
 		}
 		$this->string .= "\n\t}";
 	}
@@ -100,13 +143,23 @@ class Object
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
+			if ($this->typeList[$x] != "HASMANY")
 			{
-				$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
-			}
-			else
-			{
-				$this->string .="\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
+				if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "\n\t\t\t\t\t\$this->".strtolower($attribute)."Id = \$row['".strtolower($attribute)."id'];";
+					}
+					else
+					{
+						$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtolower($attribute)."'];";
+					}
+				}
+				else
+				{
+					$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
+				}
 			}
 		}
 		$this->string .="\n\t\t\t\t}";
@@ -130,13 +183,27 @@ class Object
 				$x=0;
 				foreach ($this->attributeList as $attribute)
 				{
-					if ($x == (count($this->typeList)-1))
+					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]).",";
+						if ($x == (count($this->attributeList)-1))
+						{
+							$this->sql .= "\n\t".strtolower($attribute)."id INTEGER";
+						}
+						else
+						{
+							$this->sql .= "\n\t".strtolower($attribute)."id INTEGER,";
+						}
 					}
-					else
+					else if ($this->typeList[$x] != "HASMANY")
 					{
-						$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]).",";
+						if ($x == (count($this->attributeList)-1))
+						{
+							$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]);
+						}
+						else
+						{
+							$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]).",";
+						}
 					}
 					$x++;
 				}
@@ -147,11 +214,18 @@ class Object
 	}
 
 	// -------------------------------------------------------------
-	function CreateSaveFunction()
+	function CreateSaveFunction($deep = false)
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
 		$this->string .= $this->CreateComments("Saves the object to the database",'',"integer $".strtolower($this->objectName)."Id");
-		$this->string .= "\tfunction Save()\n\t{";
+		if ($deep)
+		{
+			$this->string .= "\tfunction Save(\$deep = true)\n\t{";
+		}
+		else
+		{
+			$this->string .= "\tfunction Save()\n\t{";
+		}
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
 		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
@@ -163,32 +237,49 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($x == (count($this->attributeList)-1))
+			if ($this->typeList[$x] != "HASMANY")
 			{
-				$this->string .= strtolower($attribute)."=?";
-			}
-			else
-			{
-				$this->string .= strtolower($attribute)."=?,";
+				if ($x == (count($this->attributeList)-1))
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= strtolower($attribute)."id = '\".\$this->".strtolower($attribute)."Id.\"'";
+					}
+					else
+					{
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"'";
+						}
+						else
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->Escape(\$this->".$attribute.").\"'";
+						}
+					}
+				}
+				else
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= strtolower($attribute)."id = '\".\$this->".strtolower($attribute)."Id.\"', ";
+					}
+					else
+					{
+						
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute."\, ";
+						}
+						else
+						{
+							$this->string .= strtolower($attribute)." = '\".\$this->Escape(\$this->".$attribute.").\"', ";
+						}
+					}
+				}				
 			}
 			$x++;
 		}
-		$this->string .= " where ".strtolower($this->objectName)."id=?\";";
-		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
-		$x=0;
-		foreach ($this->attributeList as $attribute)
-		{
-			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
-			{
-				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
-			}
-			else
-			{
-				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
-			}
-			$x++;
-		}
-		$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($this->objectName)."Id);";
+		$this->string .= " where ".strtolower($this->objectName)."id = '\".\$this->".strtolower($this->objectName)."Id.\"';\");";		
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\telse";
 		$this->string .= "\n\t\t\t{";
@@ -197,13 +288,30 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($x == (count($this->attributeList)-1))
+			if ($this->typeList[$x] != "HASMANY")
 			{
-				$this->string .= strtolower($attribute);
-			}
-			else
-			{
-				$this->string .= strtolower($attribute).",";
+				if ($x == (count($this->attributeList)-1))
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= strtolower($attribute)."id";
+					}
+					else
+					{
+						$this->string .= strtolower($attribute);
+					}
+				}
+				else
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= strtolower($attribute)."id, ";
+					}
+					else
+					{
+						$this->string .= strtolower($attribute).", ";
+					}
+				}
 			}
 			$x++;
 		}
@@ -211,33 +319,50 @@ class Object
 		$x=0;
 		foreach ($this->attributeList as $attribute)
 		{
-			if ($x == (count($this->attributeList)-1))
+			if ($this->typeList[$x] != "HASMANY")
 			{
-				$this->string .= "?";
-			}
-			else
-			{
-				$this->string .= "?,";
+				if ($x == (count($this->attributeList)-1))
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "'\".\$this->".strtolower($attribute)."Id.\"'";
+					}
+					else
+					{
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= "'\".\$this->".$attribute.".\"'";
+						}
+						else
+						{
+							$this->string .= "'\".\$this->Escape(\$this->".$attribute.").\"'";
+						}
+					}
+				}
+				else
+				{
+					if ($this->typeList[$x] == "BELONGSTO")
+					{
+						$this->string .= "'\".\$this->".strtolower($attribute)."Id.\"', ";
+					}
+					else
+					{
+						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
+						{
+							$this->string .= "'\".\$this->".$attribute.".\"', ";
+						}
+						else
+						{
+							$this->string .= "'\".\$this->Escape(\$this->".$attribute.").\"', ";
+						}
+					}
+				}
 			}
 			$x++;
 		}
 		$this->string .= ")\";";
-		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
-		$x=0;
-		foreach ($this->attributeList as $attribute)
-		{
-			if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time")
-			{
-				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
-			}
-			else
-			{
-				$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
-			}
-			$x++;
-		}
 		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\t\$stmt->execute();";
+		$this->string .= "\n\t\t\t\$Database->query(\$this->pog_query);";
 		$this->string .= "\n\t\t\tif (\$this->".strtolower($this->objectName)."Id == \"\")";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$this->pog_query = (\"select max(".strtolower($this->objectName)."id) as max from ".strtolower($this->objectName)."\");";
@@ -246,6 +371,25 @@ class Object
 		$this->string .= "\n\t\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['max'];";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
+		if ($deep)
+		{
+			$this->string .= "\n\t\t\tif (\$deep)";
+			$this->string .= "\n\t\t\t{";
+			$i = 0;
+			foreach ($this->typeList as $type)
+			{
+				if ($type == "HASMANY")
+				{
+					$this->string .= "\n\t\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
+					$this->string .= "\n\t\t\t\tforeach (\$this->_".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
+					$this->string .= "\n\t\t\t\t{";
+					$this->string .= "\n\t\t\t\t\t\$".strtolower($this->attributeList[$i])."->Save(\$deep);";
+					$this->string .= "\n\t\t\t\t}";
+				}
+				$i++;
+			}
+			$this->string .= "\n\t\t\t}";
+		}
 		$this->string .= "\n\t\t\treturn \$this->".strtolower($this->objectName)."Id;";
 		$this->string .="\n\t\t}";
 		$this->string .="\n\t\tcatch(PDOException \$e)";
@@ -266,15 +410,40 @@ class Object
 		$this->string .= "\n\t}";
 	}
 
-
 	// -------------------------------------------------------------
-	function CreateDeleteFunction()
+	function CreateDeleteFunction($deep = false)
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Deletes the object from the database",'',"integer \$affectedRows");
-		$this->string .= "\tfunction Delete()\n\t{";
+		if ($deep)
+		{
+			$this->string .= "\tfunction Delete(\$deep = false)\n\t{";
+		}
+		else
+		{
+			$this->string .= "\tfunction Delete()\n\t{";
+		}
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
+		if ($deep)
+		{
+			$this->string .= "\n\t\t\tif (\$deep)";
+			$this->string .= "\n\t\t\t{";
+			$i = 0;
+			foreach ($this->typeList as $type)
+			{
+				if ($type == "HASMANY")
+				{
+					$this->string .= "\n\t\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
+					$this->string .= "\n\t\t\t\tforeach ($".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
+					$this->string .= "\n\t\t\t\t{";
+					$this->string .= "\n\t\t\t\t\t\$".strtolower($this->attributeList[$i])."->Delete(\$deep);";
+					$this->string .= "\n\t\t\t\t}";
+				}
+				$i++;
+			}
+			$this->string .= "\n\t\t\t}";
+		}
 		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"delete from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id'\";";
 		$this->string .= "\n\t\t\t\$affectedRows = \$Database->query(\$this->pog_query);";
@@ -291,6 +460,50 @@ class Object
 		$this->string .="\n\t\t{";
 		$this->string .="\n\t\t\tthrow new Exception(\$e->getMessage());";
 		$this->string .="\n\t\t}";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateAddChildFunction($child)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Associates the $child object to this one",'',"");
+		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(&\$".strtolower($child).")\n\t{";
+		$this->string .= "\n\t\t\$this->_".strtolower($child)."List[] =& \$".strtolower($child).";";
+		$this->string .= "\n\t\t\$".strtolower($child)."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateGetChildrenFunction($child)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Gets a list of $child objects associated to this one",'',"boolean");
+		$this->string .= "\tfunction Get".ucfirst(strtolower($child))."List()\n\t{";
+		$this->string .= "\n\t\t\$".strtolower($child)." = new ".$child."();";
+		$this->string .= "\n\t\t\$this->_".strtolower($child)."List = array_merge(\$this->_".strtolower($child)."List, $".strtolower($child)."->GetList(array(array(\"".strtolower($this->objectName)."Id\", \"=\", \$this->".strtolower($this->objectName)."Id))));";
+		$this->string .= "\n\t\treturn \$this->_".strtolower($child)."List;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateSetParentFunction($parent)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"");
+		$this->string .= "\tfunction Set".ucfirst(strtolower($parent))."(&\$".strtolower($parent).")\n\t{";
+		$this->string .= "\n\t\t\$this->".strtolower($parent)."Id = $".strtolower($parent)."->".strtolower($parent)."Id;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
+	function CreateGetParentFunction($parent)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Associates the $parent object to this one",'',"boolean");
+		$this->string .= "\tfunction Get".ucfirst(strtolower($parent))."()\n\t{";
+		$this->string .= "\n\t\t\$".strtolower($parent)." = new ".$parent."();";
+		$this->string .= "\n\t\treturn $".strtolower($parent)."->Get(\$this->".strtolower($parent)."Id);";
 		$this->string .= "\n\t}";
 	}
 
