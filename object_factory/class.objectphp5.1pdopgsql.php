@@ -185,25 +185,11 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						if ($x == (count($this->attributeList)-1))
-						{
-							$this->sql .= "\n\t".strtolower($attribute)."id INTEGER";
-						}
-						else
-						{
 							$this->sql .= "\n\t".strtolower($attribute)."id INTEGER,";
-						}
 					}
 					else if ($this->typeList[$x] != "HASMANY")
 					{
-						if ($x == (count($this->attributeList)-1))
-						{
-							$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]);
-						}
-						else
-						{
-							$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]).",";
-						}
+						$this->sql .= "\n\t".strtolower($attribute)." ".stripcslashes($this->typeList[$x]).",";
 					}
 					$x++;
 				}
@@ -265,7 +251,7 @@ class Object
 					}
 					else
 					{
-						
+
 						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
 						{
 							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute."\, ";
@@ -275,11 +261,11 @@ class Object
 							$this->string .= strtolower($attribute)." = '\".\$this->Escape(\$this->".$attribute.").\"', ";
 						}
 					}
-				}				
+				}
 			}
 			$x++;
 		}
-		$this->string .= " where ".strtolower($this->objectName)."id = '\".\$this->".strtolower($this->objectName)."Id.\"';\");";		
+		$this->string .= " where ".strtolower($this->objectName)."id = '\".\$this->".strtolower($this->objectName)."Id.\"';\"";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\telse";
 		$this->string .= "\n\t\t\t{";
