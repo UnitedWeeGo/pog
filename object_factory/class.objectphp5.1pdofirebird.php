@@ -147,16 +147,16 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "\n\t\t\t\t\t\$this->".strtolower($attribute)."Id = \$row['".strtoupper($attribute)."ID'];";
+						$this->string .= "\n\t\t\t\t\$this->".strtolower($attribute)."Id = \$row['".strtoupper($attribute)."ID'];";
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$row['".strtoupper($attribute)."'];";
+						$this->string .= "\n\t\t\t\t\$this->".$attribute." = \$row['".strtoupper($attribute)."'];";
 					}
 				}
 				else
 				{
-					$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtoupper($attribute)."']);";
+					$this->string .= "\n\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtoupper($attribute)."']);";
 				}
 			}
 		}
@@ -233,7 +233,6 @@ class Object
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
 		$this->string .="\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
-		$this->string .="\n\t\t\t\$Database->beginTransaction();";
 		$this->string .= "\n\t\t\t\$count = 0;";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"select count(".strtolower($this->objectName)."id) from ".strtolower($this->objectName)." where ".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id'\";";
 		$this->string .= "\n\t\t\tforeach (\$Database->query(\$this->pog_query) as \$row)";
@@ -381,7 +380,6 @@ class Object
 		$this->string .= "\n\t\t\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['MAX'];";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\t\$Database->commit();";
 		if ($deep)
 		{
 			$this->string .= "\n\t\t\tif (\$deep)";
