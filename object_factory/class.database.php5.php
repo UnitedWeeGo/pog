@@ -71,7 +71,6 @@
 		return null;
 	}
 
-
 	// -------------------------------------------------------------
 	function InsertOrUpdate($query)
 	{
@@ -80,13 +79,13 @@
 	}
 
 	/**
-	* This function will always try to encode $text to base64, except when $text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.
+	* This function will try to encode $text to base64, except when $text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.
 	* @param string $text
 	* @return string encoded to base64
 	*/
 	function Escape($text)
 	{
-		if (!is_numeric($text))
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{
 			return base64_encode($text);
 		}
@@ -96,7 +95,7 @@
 	// -------------------------------------------------------------
 	function Unescape($text)
 	{
-		if (!is_numeric($text))
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{
 			return base64_decode($text);
 		}

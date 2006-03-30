@@ -622,7 +622,7 @@ class Object
 		$this->string .= $this->CreateComments("This function will always try to encode \$text to base64, except when \$text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.",array(1=>"string \$text"),"base64_encoded \$text");
 		$this->string .= "\tfunction Escape(\$text)";
 		$this->string .= "\n\t{";
-		$this->string .= "\n\t\tif (!is_numeric(\$text))";
+		$this->string .= "\n\t\tif (\$GLOBALS['configuration']['db_encoding'] && !is_numeric(\$text))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\treturn base64_encode(\$text);";
 		$this->string .= "\n\t\t}";
@@ -636,7 +636,7 @@ class Object
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= "function Unescape(\$text)";
 		$this->string .= "\n\t{";
-		$this->string .= "\n\t\tif (!is_numeric(\$text))";
+		$this->string .= "\n\t\tif (\$GLOBALS['configuration']['db_encoding'] && !is_numeric(\$text))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\treturn base64_decode(\$text);";
 		$this->string .= "\n\t\t}";

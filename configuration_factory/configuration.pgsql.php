@@ -6,6 +6,7 @@ if (!isset($_SESSION))
 global $configuration;
 
 $configuration['pdoDriver']= 'pgsql';
+$configuration['db_encoding'] = 1;
 
 // edit the information below to match your database settings
 

@@ -6,6 +6,7 @@ if (!isset($_SESSION))
 global $configuration;
 
 $configuration['pdoDriver']= 'sqlite';
+$configuration['db_encoding'] = 1;
 
 // edit the information below to match your database settings
 

@@ -80,7 +80,7 @@
 	*/
 	function Escape($text)
 	{
-		if (!is_numeric($text))
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{
 			return base64_encode($text);
 		}
@@ -90,7 +90,7 @@
 	// -------------------------------------------------------------
 	function Unescape($text)
 	{
-		if (!is_numeric($text))
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{
 			return base64_decode($text);
 		}
