@@ -269,13 +269,13 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
   					}
   					if ($errors == 0)
 					{
-						$diagnostics .= $className."....OK\n-----\n";
+						$database->Query("optimize table ".strtolower($className));
+						$diagnostics .= "Optimizing ".$className."....OK\n-----\n";
 						$_SESSION['links'][$className] = $link;
 					}
-						$contentParts2 = null;
+					$contentParts2 = null;
 					$className = null;
 				}
-
 			}
 			$diagnostics .= "\nFOUND & CHECKED ".count($objectNameList)." OBJECT(S)\n";
 			$_SESSION['fileNames'] = serialize($objects);

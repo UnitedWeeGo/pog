@@ -312,7 +312,16 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				}
 				if ($errors == 0)
 				{
-					$diagnostics .= $className."....OK\n-----\n";
+					if ($GLOBALS['configuration']['pdoDriver'] == 'mysql')
+					{
+						$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+						$Database->Query("optimize table ".strtolower($className));
+						$diagnostics .= "Optimizing ".$className."....OK\n-----\n";
+					}
+					else
+					{
+						$diagnostics .= $className."....OK\n-----\n";
+					}
 					$_SESSION['links'][$className] = $link;
 				}
 				$className = null;
