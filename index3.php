@@ -23,7 +23,8 @@ if (isset($_SESSION['objectString']))
 		    'typeList'      => $typeList,
 		    'language'      => $_SESSION['language'],
 		    'wrapper'       => $_SESSION['wrapper'],
-		    'pdoDriver'     => $_SESSION['pdoDriver']
+		    'pdoDriver'     => $_SESSION['pdoDriver'],
+		    'db_encoding' 	=> "1"
 		);
 	$package = unserialize($client->call('GeneratePackage', $params));
 	$zipfile = new createZip();

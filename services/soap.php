@@ -64,7 +64,8 @@ $server -> register('GeneratePackage',
 						'typeList' => 'tns:StringArray',
 						'language' => 'xsd:string',
 						'wrapper' => 'xsd:string',
-						'pdoDriver' => 'xsd:string'),
+						'pdoDriver' => 'xsd:string',
+						'db_encoding' => 'xsd:string'),
 					array('return' => 'xsd:string'),
 					'urn:pogwsdl',
 					'urn:pogwsdl#GeneratePackage',
@@ -171,7 +172,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	$object->CreateSaveFunction(in_array("HASMANY", $typeList));
 	$object->CreateSaveNewFunction();
 	$object->CreateDeleteFunction(in_array("HASMANY", $typeList));
-	
+
 	$i = 0;
 	foreach ($typeList as $type)
 	{
@@ -187,7 +188,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 		}
 		$i++;
 	}
-	
+
 	if(strtoupper($wrapper) == "PDO")
 	{
 		$object->CreateEscapeFunction();
@@ -228,8 +229,12 @@ function GenerateObjectFromLink($link)
  * @param string $wrapper
  * @return base64 encoded string
  */
-function GenerateConfiguration($wrapper = null, $pdoDriver = null)
+function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding = 1)
 {
+	if ($db_encoding == "")
+	{
+		$db_encoding = 1;
+	}
 	if (strtoupper($wrapper) == "PDO")
 	{
 		$data = file_get_contents("../configuration_factory/configuration.".strtolower($pdoDriver).".php");
@@ -238,6 +243,7 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null)
 	{
 		$data = file_get_contents("../configuration_factory/configuration.php");
 	}
+	$data = str_replace('&db_encoding', $db_encoding, $data);
 	return base64_encode($data);
 }
 
@@ -252,7 +258,7 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null)
  * @param string $wrapper
  * @param string $pdoDriver
  */
-function GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver = null)
+function GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver = null, $db_encoding = 1)
 {
 	$package = array();
 	$package["objects"] = array();
@@ -261,7 +267,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["setup"]["setup_library"] = array();
 
 	//generate configuration file
-	$package["configuration.php"] = GenerateConfiguration($wrapper, $pdoDriver);
+	$package["configuration.php"] = GenerateConfiguration($wrapper, $pdoDriver, $db_encoding);
 
 
 
