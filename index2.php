@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
 * @link  http://www.phpobjectgenerator.com
