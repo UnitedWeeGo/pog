@@ -155,7 +155,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	else
 	{
 
-		if  ($language == "php4")
+		if  (strtolower($language) == "php4")
 		{
 			require "../object_factory/class.objectphp4pogmysql.php";
 		}
