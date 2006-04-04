@@ -163,22 +163,14 @@ class createZip  {
 
 	function forceDownload($archiveName) {
 		$headerInfo = '';
-
-		if(ini_get('zlib.output_compression')) {
-			ini_set('zlib.output_compression', 'Off');
-		}
-
-
 		header("Pragma: public");
 		header("Expires: 0");
 		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 		header("Cache-Control: private",false);
 		header("Content-Type: application/zip");
 		header("Content-Disposition: attachment; filename=".basename($archiveName).";" );
-		header("Content-type: application/octet-stream");
-		//header("Content-Length: ".filesize($archiveName));
-		$data = $this->getZippedfile();
-		echo $data;
+		header("Content-Transfer-Encoding: binary");
+		echo $this->getZippedfile();
 
 	 }
 
@@ -196,17 +188,17 @@ class createZip  {
 			$path = '';
 			foreach ($paths as $p)
 			{
-				$path .= "/$p";
+				$path .= (($path == '') ? $p : "/$p");
 			}
 			if (strpos($key, ".") == false)
 			{
 				$paths[] = $key;
-				$this->addDirectory("$path/$key");
+				$this->addDirectory((($path == '') ? $key : "$path/$key"));
 				$this->addPOGPackage($package[$key], &$paths);
 			}
 			else
 			{
-				$this->addFile(base64_decode($value), "$path/$key");
+				$this->addFile(base64_decode($value), (($path == '') ? $key : "$path/$key"));
 			}
 			if ($i == (sizeof($package)-1))
 			{
