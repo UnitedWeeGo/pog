@@ -277,7 +277,7 @@ class Object
 
 						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
 						{
-							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute."\, ";
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"',";
 						}
 						else
 						{
