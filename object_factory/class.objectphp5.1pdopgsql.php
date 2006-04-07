@@ -53,6 +53,7 @@ class Object
 				$this->string.="public $".$attribute.";\n\t";
 				$this->string.="\n\t";
 			}
+			$x++;
 		}
 		//	create attribute => type array map
 		//	needed for setup
@@ -161,6 +162,7 @@ class Object
 					$this->string .= "\n\t\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
 				}
 			}
+			$x++;
 		}
 		$this->string .="\n\t\t\t\t}";
 		$this->string .="\n\t\t\t}";
@@ -254,7 +256,7 @@ class Object
 
 						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
 						{
-							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"',";
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"', ";
 						}
 						else
 						{
@@ -264,6 +266,10 @@ class Object
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= " where ".strtolower($this->objectName)."id = '\".\$this->".strtolower($this->objectName)."Id.\"';\";";
 		$this->string .= "\n\t\t\t}";
@@ -300,6 +306,10 @@ class Object
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ") values (";
 		$x=0;
@@ -345,6 +355,10 @@ class Object
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t\t}";
