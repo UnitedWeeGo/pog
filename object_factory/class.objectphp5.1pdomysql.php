@@ -258,6 +258,7 @@ class Object
 		$this->string .= " where `".strtolower($this->objectName)."id`=?\";";
 		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
 		$x=0;
+		$y=1;
 		foreach ($this->attributeList as $attribute)
 		{
 			if ($this->typeList[$x] != "HASMANY")
@@ -266,21 +267,22 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($attribute)."Id);";
+						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->".strtolower($attribute)."Id);";
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
+						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->".$attribute.");";
 					}
 				}
 				else
 				{
-					$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
+					$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->Escape(\$this->".$attribute."));";
 				}
+				$y++;
 			}
 			$x++;
 		}
-		$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($this->objectName)."Id);";
+		$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->".strtolower($this->objectName)."Id);";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\telse";
 		$this->string .= "\n\t\t\t{";
@@ -344,6 +346,7 @@ class Object
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
 		$x=0;
+		$y=1;
 		foreach ($this->attributeList as $attribute)
 		{
 			if ($this->typeList[$x] != "HASMANY")
@@ -352,17 +355,18 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".strtolower($attribute)."Id);";
+						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->".strtolower($attribute)."Id);";
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->".$attribute.");";
+						$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->".$attribute.");";
 					}
 				}
 				else
 				{
-					$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($x+1).", \$this->Escape(\$this->".$attribute."));";
+					$this->string .= "\n\t\t\t\t\$stmt->bindParam(".($y).", \$this->Escape(\$this->".$attribute."));";
 				}
+				$y++;
 			}
 			$x++;
 		}
@@ -533,7 +537,7 @@ class Object
 		$this->string .= "\n\n/**";
 		$this->string .= "\n* <b>".ucwords($this->objectName)."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
-		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber'];
+		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / PHP5.1 MYSQL";
 		$this->string .= "\n* @see http://www.phpobjectgenerator.com/plog/tutorials/45/pdo-mysql";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
 		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$this->pdoDriver."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(urlencode(var_export($this->typeList, true)));

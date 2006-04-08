@@ -487,7 +487,7 @@ class Object
 		$this->string .= "\n\n/**";
 		$this->string .= "\n* <b>".ucwords($this->objectName)."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
-		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber'];
+		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / PHP5";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
 		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5&wrapper=pog&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
