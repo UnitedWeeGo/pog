@@ -63,7 +63,7 @@ $pdoDriver = ($misc->GetVariable('pdoDriver')!=null?$misc->GetVariable('pdoDrive
 <head>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
 <link rel="stylesheet" href="./phpobjectgenerator.css" type="text/css" />
-<title>Php Object Generator (v<?=$GLOBALS['configuration']['versionNumber']?> <?=$GLOBALS['configuration']['revisionNumber']?>) - Open Source PHP Code Generator</title>
+<title>Php Object Generator (v<?=$GLOBALS['configuration']['versionNumber']?><?=$GLOBALS['configuration']['revisionNumber']?>) - Open Source PHP Code Generator</title>
 <meta name="description" content="Php Object Generator, (POG) is a PHP code generator which automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
 <meta name="keywords" content="php, code, generator, classes, object-oriented, CRUD" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -237,7 +237,7 @@ urchinTracker();
 		</div><!-- generate -->
 
 		<div class="submit">
-			<input type="image"  src="./images/generate.jpg" alt="Generate!"/>
+			<input type="image"  src="./images/generate.jpg" alt="Generate!" onclick="WarnMinInput();"/>
 		</div><!-- submit -->
 		</form>
 	</div><!-- middle -->

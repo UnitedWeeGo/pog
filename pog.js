@@ -217,18 +217,12 @@ optionsArray=new Array("TEXT",
 break}
 for(var i=0;i<optionsArray.length;i++){
 NewOpt=new Option
-if (optionsArray[i] == "{ CHILD }")
-{
-	NewOpt.value="HASMANY";
-}
-else if (optionsArray[i] == "{ PARENT }")
-{
-	NewOpt.value="BELONGSTO";
-}
-else
-{
-	NewOpt.value=optionsArray[i]
-}
+if(optionsArray[i]=="{ CHILD }"){
+NewOpt.value="HASMANY"}
+else if(optionsArray[i]=="{ PARENT }"){
+NewOpt.value="BELONGSTO"}
+else{
+NewOpt.value=optionsArray[i]}
 NewOpt.text=optionsArray[i]
 ddlist.options[i]=NewOpt}}}
 function Reposition(field,evt){
@@ -285,3 +279,20 @@ type2[0].style.display="inline"
 cf2[0].value=""
 cf2[0].style.display="none"}
 attribute2[0].focus()}
+function WarnMinInput(){
+var inputCount=0
+trs=document.getElementsByTagName("input")
+for(var w=0;w<trs.length;w++){
+if(trs[w].value !=""&&trs[w].type !="hidden"&&trs[w].name !="object"){
+inputCount++}}
+if(inputCount>0){
+var typeCount=0
+trs=document.getElementsByTagName("select")
+for(var w=0;w<trs.length;w++){
+if(trs[w].value !="{ CHILD }"&&trs[w].value !="{ PARENT }"&&trs[w].value !="OTHER"&&trs[w].value.substring(0,3)=="type"){
+typeCount++}}
+if(typeCount<inputCount){
+alert("Warning:\nYou need to have at least 1 non-parent/child attribute. Else POG will generate an invalid PHP object")}}
+else{
+alert("Warning:\nWithout any object attributes, POG will generate an invalid PHP object. You need to have at least 1 non-parent/child attribute")}
+return false}

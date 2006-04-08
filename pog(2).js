@@ -8,7 +8,7 @@ function AddField()
 			trs[w].style.display="block";
 			var control = document.getElementById("field"+trs[w].id);
 			try
-			{ 
+			{
 				control.focus();
 			}
 			catch(e)
@@ -34,7 +34,7 @@ function ConvertDDLToTextfield(id)
 	{
 		if(trs[w].id == thisId)
 		{
-			
+
 			if (trs[w].value == "OTHER")
 			{
 				trs[w].style.display="none";
@@ -64,7 +64,7 @@ function IsPDO()
 	trs2=document.getElementById("wrapper");
 	if(trs2.value.toUpperCase() == "PDO")
 	{
-		
+
 		link=document.getElementById("disappear");
 		link.style.display = "none";
 		trs2=document.getElementById("PDOdriver");
@@ -87,14 +87,14 @@ function CascadePhpVersion()
 	select.length=0;
 	if(trs2.value == "php5.1")
 	{
-		optionsArray = new Array("PDO", 
+		optionsArray = new Array("PDO",
 								"POG");
 	}
 	else
 	{
 		optionsArray = new Array("POG");
 	}
-	for (var i=0; i<optionsArray.length; i++)     
+	for (var i=0; i<optionsArray.length; i++)
 	{
 		NewOpt =  new Option;
 		NewOpt.value = optionsArray[i].toLowerCase();
@@ -113,7 +113,7 @@ function GenerateSQLTypesForDriver(driver)
 		switch (driver)
 		{
 			case "mysql":
-				optionsArray = new Array("VARCHAR(255)", 
+				optionsArray = new Array("VARCHAR(255)",
 										"TINYINT",
 										"TEXT",
 										"DATE",
@@ -143,12 +143,12 @@ function GenerateSQLTypesForDriver(driver)
 			break;
 			case "dblib":
 				optionsArray = new Array("BIGINT",
-										"BINARY", 
-										"BIT", 
+										"BINARY",
+										"BIT",
 										"CHAR",
 										"DATETIME",
-										"DECIMAL", 
-										"FLOAT", 
+										"DECIMAL",
+										"FLOAT",
 										"IMAGE",
 										"INT",
 										"MONEY",
@@ -170,12 +170,12 @@ function GenerateSQLTypesForDriver(driver)
 			break;
 			case "firebird":
 				optionsArray = new Array("BLOB",
-										"CHAR", 
-										"CHAR(1)", 
+										"CHAR",
+										"CHAR(1)",
 										"TIMESTAMP",
 										"DECIMAL",
-										"DOUBLE", 
-										"FLOAT", 
+										"DOUBLE",
+										"FLOAT",
 										"INT64",
 										"INTEGER",
 										"NUMERIC",
@@ -185,12 +185,12 @@ function GenerateSQLTypesForDriver(driver)
 			break;
 			case "odbc":
 				optionsArray = new Array("BIGINT",
-										"BINARY", 
-										"BIT", 
+										"BINARY",
+										"BIT",
 										"CHAR",
 										"DATETIME",
-										"DECIMAL", 
-										"FLOAT", 
+										"DECIMAL",
+										"FLOAT",
 										"IMAGE",
 										"INT",
 										"MONEY",
@@ -246,7 +246,7 @@ function GenerateSQLTypesForDriver(driver)
 										"OTHER");
 			break;
 		}
-	    for (var i=0; i<optionsArray.length; i++)     
+	    for (var i=0; i<optionsArray.length; i++)
 		{
 			NewOpt =  new Option;
 			NewOpt.value = optionsArray[i];
@@ -255,4 +255,37 @@ function GenerateSQLTypesForDriver(driver)
 		}
 	}
 	//document.DynamicForm.DynamicSelect.options[0].selected = true;    //make the first option selected
+}
+function WarnMinInput()
+{
+	var inputCount = 0;
+	trs=document.getElementsByTagName("input")
+	for(var w=0;w<trs.length;w++)
+	{
+		if (trs[w].value != "")
+		{
+			inputCount++;
+		}
+	}
+	if (inputCount > 0)
+	{
+		var typeCount = 0;
+		trs=document.getElementsByTagName("select");
+		for(var w=0;w<trs.length;w++)
+		{
+			if (trs[w].value != "{ CHILD }" && trs[w].value != "{ PARENT }" && trs[w].value != "OTHER" )
+			{
+				typeCount++;
+			}
+		}
+		if (typeCount < inputCount)
+		{
+			alert("Warning:\nYou need to have at least 1 non-parent/child attribute. Else POG will generate an invalid PHP object");
+		}
+	}
+	else
+	{
+		alert("Warning:\nWithout any object attributes, POG will generate an invalid PHP object. You need to have at least 1 non-parent/child attribute");
+	}
+	return false;
 }
