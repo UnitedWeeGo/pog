@@ -159,6 +159,7 @@ class Object
 					$this->string .= "\n\t\t\t\t\$this->".$attribute." = \$this->Unescape(\$row['".strtoupper($attribute)."']);";
 				}
 			}
+			$x++;
 		}
 		$this->string .="\n\t\t\t}";
 		$this->string .="\n\t\t\treturn \$this;";
