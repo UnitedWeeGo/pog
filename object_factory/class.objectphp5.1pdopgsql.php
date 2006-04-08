@@ -535,7 +535,7 @@ class Object
 		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber'];
 		$this->string .= "\n* @see http://www.phpobjectgenerator.com/plog/tutorials/42/pdo-postgresql";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
-		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$_SESSION['pdoDriver']."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
+		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$this->pdoDriver."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
 	}
 

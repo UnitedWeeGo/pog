@@ -241,15 +241,19 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "`".strtolower($attribute)."id`=?,";
+						$this->string .= "`".strtolower($attribute)."id`=?, ";
 					}
 					else
 					{
-						$this->string .= "`".strtolower($attribute)."`=?,";
+						$this->string .= "`".strtolower($attribute)."`=?, ";
 					}
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= " where `".strtolower($this->objectName)."id`=?\";";
 		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
@@ -302,15 +306,19 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "`".strtolower($attribute)."id`,";
+						$this->string .= "`".strtolower($attribute)."id`, ";
 					}
 					else
 					{
-						$this->string .= "`".strtolower($attribute)."`,";
+						$this->string .= "`".strtolower($attribute)."`, ";
 					}
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ") values (";
 		$x=0;
@@ -324,10 +332,14 @@ class Object
 				}
 				else
 				{
-					$this->string .= "?,";
+					$this->string .= "?, ";
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t\t\t\$stmt = \$Database->prepare(\$this->pog_query);";
@@ -524,7 +536,7 @@ class Object
 		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber'];
 		$this->string .= "\n* @see http://www.phpobjectgenerator.com/plog/tutorials/45/pdo-mysql";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
-		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$_SESSION['pdoDriver']."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(urlencode(var_export($this->typeList, true)));
+		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$this->pdoDriver."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(urlencode(var_export($this->typeList, true)));
 		$this->string .= "\n*/";
 	}
 

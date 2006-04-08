@@ -164,7 +164,6 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 			require "../object_factory/class.objectphp5pogmysql.php";
 		}
 	}
-	$_SESSION['pdoDriver'] = $pdoDriver;
 	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
 	$object->BeginObject();
 	$object->CreateConstructor();

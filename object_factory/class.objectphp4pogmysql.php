@@ -7,6 +7,7 @@ class Object
 	var $attributeList;
 	var $typeList;
 	var $separator = "\n\t";
+	var $pdoDriver;
 
 	// -------------------------------------------------------------
 	function Object($objectName, $attributeList='', $typeList='', $pdoDriver='')
@@ -14,6 +15,7 @@ class Object
 		$this->objectName = $objectName;
 		$this->attributeList = $attributeList;
 		$this->typeList = $typeList;
+		$this->pdoDriver = $pdoDriver;
 	}
 
 	// -------------------------------------------------------------
@@ -247,6 +249,10 @@ class Object
 			}
 			$x++;
 		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
+		}
 		$this->string .= "where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"'\";";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\telse";
@@ -281,6 +287,10 @@ class Object
 				}
 			}
 			$y++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ") values (";
 		$z=0;
@@ -326,6 +336,10 @@ class Object
 				}
 			}
 			$z++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t}";

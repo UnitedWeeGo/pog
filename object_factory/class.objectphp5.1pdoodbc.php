@@ -256,7 +256,7 @@ class Object
 
 						if (strtolower(substr($this->typeList[$x],0,4)) == "enum" || strtolower(substr($this->typeList[$x],0,3)) == "set" || strtolower(substr($this->typeList[$x],0,4)) == "date" || strtolower(substr($this->typeList[$x],0,4)) == "time" || $this->typeList[$x] == "BELONGSTO")
 						{
-							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"',";
+							$this->string .= strtolower($attribute)." = '\".\$this->".$attribute.".\"', ";
 						}
 						else
 						{
@@ -266,6 +266,10 @@ class Object
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= " where ".strtolower($this->objectName)."id = '$".strtolower($this->objectName)."Id')\";";
 		$this->string .= "\n\t\t\t}";
@@ -302,6 +306,10 @@ class Object
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ") values (";
 		$x=0;
@@ -347,6 +355,10 @@ class Object
 				}
 			}
 			$x++;
+		}
+		if (substr($this->string, strlen($this->string) - 2) == ", ")
+		{
+			$this->string = substr($this->string, 0, strlen($this->string) - 2);
 		}
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t\t}";
@@ -523,7 +535,7 @@ class Object
 		$this->string .= "\n* @version ".$GLOBALS['configuration']['versionNumber']." ".$GLOBALS['configuration']['revisionNumber'];
 		$this->string .= "\n* @see http://www.phpobjectgenerator.com/plog/tutorials/46/pdo-odbc";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
-		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$_SESSION['pdoDriver']."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
+		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$this->pdoDriver."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
 	}
 
