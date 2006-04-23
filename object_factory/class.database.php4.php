@@ -1,4 +1,11 @@
 <?php
+/**
+* <b>Database Connection</b> class.
+* @author Php Object Generator
+* @version POG 2.0.0 / PHP4
+* @see http://www.phpobjectgenerator.com/
+* @copyright Free for personal & commercial use. (Offered under the BSD license)
+*/
  Class DatabaseConnection
 {
 	var $connection;
