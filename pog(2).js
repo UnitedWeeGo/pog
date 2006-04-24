@@ -259,10 +259,10 @@ function GenerateSQLTypesForDriver(driver)
 function WarnMinInput()
 {
 	var inputCount = 0;
-	trs=document.getElementsByTagName("input")
+	trs=document.getElementsByTagName("input");
 	for(var w=0;w<trs.length;w++)
 	{
-		if (trs[w].value != "")
+		if (trs[w].value != "" && trs[w].type != "hidden" && trs[w].name != "object")
 		{
 			inputCount++;
 		}
@@ -273,12 +273,12 @@ function WarnMinInput()
 		trs=document.getElementsByTagName("select");
 		for(var w=0;w<trs.length;w++)
 		{
-			if (trs[w].value != "{ CHILD }" && trs[w].value != "{ PARENT }" && trs[w].value != "OTHER" )
+			if (trs[w].value == "HASMANY" || trs[w].value == "BELONGSTO" )
 			{
 				typeCount++;
 			}
 		}
-		if (typeCount < inputCount)
+		if (typeCount >= inputCount)
 		{
 			alert("Warning:\nYou need to have at least 1 non-parent/child attribute. Else POG will generate an invalid PHP object");
 		}
