@@ -47,11 +47,10 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 <div class="container">
 <div class="left">
 	<div class="logo2"></div>
-	<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike.
-	<br/><br/>POG Setup is a 3 step process which:<br/><br/>
-	1. Creates tables for your generated objects.<br/><br/>
-	2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/>
-	3. Provides a light interface to your object tables.</div>
+	<div class="text"><div class="gold">POG setup diagnostics</div>
+	<br/>Setup performs unit tests on all your objects in the object directory and makes sure they're OK. <br/>This makes sure that your objects can talk to your database correctly. This can also be useful if you modify / customize the objects manually and want to make sure they still work once you're done.
+	<br/><br/>The diagnostics screen on the right shows the results of those tests.
+	</div>
 </div>
 <div class="middle">
 	<div id="tabs">
@@ -332,11 +331,12 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 <div class="container">
 	<div class="left">
 		<div class="logo3"></div>
-		<div class="text"><div class="gold">What is POG Setup?</div>POG Setup is an extension of the online Php Object Generator. It is meant to help the veteran POG user and the novice alike.
-		<br/><br/>POG Setup is a 3 step process which:<br/><br/>
-		1. Creates tables for your generated objects.<br/><br/>
-		2. Performs diagnostics tests on all objects within your 'objects' directory.<br/><br/>
-		3. Provides a light interface to your object tables.</div>
+		<div class="text"><div class="gold">POG documentation summary</div>
+		<br/>The following 3 documents summarize what POG is all about:<br/><br/>
+		1. <a href="http://www.phpobjectgenerator.com/plog/file_download/15">POG Essentials</a><br/><br/>
+		2. <a href="http://www.phpobjectgenerator.com/plog/file_download/21">POG Object Relations</a><br/><br/>
+		3. <a href="http://www.phpobjectgenerator.com/plog/file_download/18">POG SOAP API</a>
+		</div><!--text-->
 	</div>
 <div class="middle33">
 	<div id="tabs3">
