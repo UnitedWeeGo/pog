@@ -69,7 +69,7 @@ $pdoDriver = ($misc->GetVariable('pdoDriver')!=null?$misc->GetVariable('pdoDrive
 <meta name="keywords" content="php, code, generator, classes, object-oriented, CRUD" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="ICBM" content="53.5411, -113.4914">
-<meta name="DC.title" content="PHP Object Generator (POG)"> 
+<meta name="DC.title" content="PHP Object Generator (POG)">
 <script src="./pog.js" type="text/javascript">
 </script>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
