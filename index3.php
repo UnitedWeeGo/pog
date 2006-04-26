@@ -9,8 +9,7 @@ session_start();
 include "./include/configuration.php";
 include "./include/class.zipfile.php";
 include "./services/nusoap.php";
-?>
-<?php
+
 if (isset($_SESSION['objectString']))
 {
 	$_GET = null;
