@@ -1,7 +1,7 @@
 <?php
-include "../configuration.php";
-include "./setup_library/class.zipfile.php";
-include "./setup_library/nusoap.php";
+include "../../configuration.php";
+include "../setup_library/class.zipfile.php";
+include "../setup_library/nusoap.php";
 
 	/**
 	 * Connects to POG SOAP server defined in configuration.php and 
@@ -26,7 +26,7 @@ include "./setup_library/nusoap.php";
 		$package["objects"] = array();
 		foreach($objects as $object)
 		{
-			$content = file_get_contents("../objects/".$object);
+			$content = file_get_contents($path."/".$object);
 			$contentParts = split("<b>",$content);
 			if (isset($contentParts[1]))
 			{
@@ -46,8 +46,7 @@ include "./setup_library/nusoap.php";
 
 				$client = new soapclient($GLOBALS['configuration']['soap'], true);
 				$params = array('link' 	=> $link);
-				$objectString = unserialize($client->call('GenerateObjectFromLink', $params));
-
+				$objectString = $client->call('GenerateObjectFromLink', $params);
 				$package["objects"]["class.".strtolower($className).".php"] = $objectString;
 			}
 		}
@@ -65,7 +64,7 @@ include "./setup_library/nusoap.php";
 	{
 		$client = new soapclient($GLOBALS['configuration']['soap'], true);
 		$params = array();
-		$generatorVersion = base64_decode(unserialize($client->call('GetGeneratorVersion', $params)));
+		$generatorVersion = base64_decode($client->call('GetGeneratorVersion'));
 		if ($generatorVersion != $GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber'])
 		{
 			return true;
@@ -78,7 +77,7 @@ include "./setup_library/nusoap.php";
 	
 	if (UpdateAvailable())
 	{
-		UpdateAllObjects("../objects/");
+		UpdateAllObjects("../../objects/");
 	}
 	else 
 	{
