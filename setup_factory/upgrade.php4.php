@@ -1,7 +1,7 @@
 <?php
 include "../../configuration.php";
-include "../setup_library/class.zipfile.php";
-include "../setup_library/nusoap.php";
+include "class.zipfile.php";
+include "nusoap.php";
 
 	/**
 	 * Connects to POG SOAP server defined in configuration.php and 

@@ -1,6 +1,6 @@
 <?php
 include "../../configuration.php";
-include "../setup_library/class.zipfile.php";
+include "class.zipfile.php";
 
 	/**
 	 * Connects to POG SOAP server defined in configuration.php and 
@@ -43,7 +43,7 @@ include "../setup_library/class.zipfile.php";
 				$linkParts2 = split("\@link", $linkParts1[0]);
 				$link = $linkParts2[1];
 
-				$client = new SoapClient($wsdl) ;
+				$client = new SoapClient($GLOBALS['configuration']['soap']) ;
 				$objectString = $client -> GenerateObjectFromLink($link);
 				$package["objects"]["class.".strtolower($className).".php"] = $objectString;
 			}
@@ -60,7 +60,7 @@ include "../setup_library/class.zipfile.php";
 	 */
 	function UpdateAvailable()
 	{
-		$client = new SoapClient($wsdl);
+		$client = new SoapClient($GLOBALS['configuration']['soap']);
 		$generatorVersion = base64_decode($client -> GetGeneratorVersion());
 		if ($generatorVersion != $GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber'])
 		{
@@ -78,6 +78,7 @@ include "../setup_library/class.zipfile.php";
 	}
 	else 
 	{
-		echo "All POG objects are already up to date.";
+		
+		 "All POG objects are already up to date.";
 	}
 ?>
