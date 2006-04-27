@@ -231,7 +231,7 @@ function GenerateObjectFromLink($link)
  */
 function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding = 1)
 {
-	require ("../include/configuration.php");
+	/*require ("../include/configuration.php");*/
 	if ($db_encoding == "")
 	{
 		$db_encoding = 1;
@@ -245,9 +245,9 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
 		$data = file_get_contents("../configuration_factory/configuration.php");
 	}
 	$data = str_replace('&db_encoding', $db_encoding, $data);
-	$data = str_replace('&soap', $GLOBALS['configuration']['soap'], $data);
-	$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber']);
-	$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber']);
+	/*$data = str_replace('&soap', $configuration['soap'], $data);
+	$data = str_replace('&versionNumber', $configuration['versionNumber']);
+	$data = str_replace('&revisionNumber', $configuration['revisionNumber']);*/
 
 	return base64_encode($data);
 }
@@ -343,7 +343,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["setup"]["setup_library"]["class.zipfile.php"] = base64_encode($data);
 
 	//generate upgrade scripts
-	$data = file_get_contents("../setup_factory/upgrade.".$language.".php");
+	$data = file_get_contents("../setup_factory/upgrade.".strtolwer($language).".php");
 	$package["setup"]["setup_library"]["upgrade.php"] = base64_encode($data);
 
 	//read all setup image files
