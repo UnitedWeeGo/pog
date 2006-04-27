@@ -101,7 +101,7 @@ function Shelter()
  */
 function GetGeneratorVersion()
 {
-	require("../include/configuration.php");
+	require_once("../include/configuration.php");
 	return base64_encode($GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']);
 }
 
@@ -118,8 +118,8 @@ function GetGeneratorVersion()
  */
 function GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver)
 {
-	require ("../include/configuration.php");
-	require ("../include/class.misc.php");
+	require_once ("../include/configuration.php");
+	require_once ("../include/class.misc.php");
 
 	//added these so that POG would still generate something even if invalid variables are passed
 	//this is so that users see something being generated even if they don't fill in the object fields
@@ -231,7 +231,7 @@ function GenerateObjectFromLink($link)
  */
 function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding = 1)
 {
-	/*require ("../include/configuration.php");*/
+	require_once("../include/configuration.php");
 	if ($db_encoding == "")
 	{
 		$db_encoding = 1;
@@ -245,9 +245,9 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
 		$data = file_get_contents("../configuration_factory/configuration.php");
 	}
 	$data = str_replace('&db_encoding', $db_encoding, $data);
-	/*$data = str_replace('&soap', $configuration['soap'], $data);
-	$data = str_replace('&versionNumber', $configuration['versionNumber']);
-	$data = str_replace('&revisionNumber', $configuration['revisionNumber']);*/
+	$data = str_replace('&soap', $GLOBALS['configuration']['soap'], $data);
+	$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber'], $data);
+	$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber'], $data);
 
 	return base64_encode($data);
 }
@@ -265,6 +265,7 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
  */
 function GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver = null, $db_encoding = 1)
 {
+	require_once ("../include/configuration.php");
 	$package = array();
 	$package["objects"] = array();
 	$package["setup"] = array();
@@ -285,6 +286,9 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 		{
 			$data = file_get_contents("../object_factory/class.database.php5.php");
 		}
+		$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber'], $data);
+		$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber'], $data);
+		$data = str_replace('&language', strtoupper($language), $data);
 		$package["objects"]["class.database.php"] = base64_encode($data);
 	}
 	$package["objects"]["class.".strtolower($objectName).".php"] =  GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver);
@@ -343,7 +347,14 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["setup"]["setup_library"]["class.zipfile.php"] = base64_encode($data);
 
 	//generate upgrade scripts
-	$data = file_get_contents("../setup_factory/upgrade.".strtolwer($language).".php");
+	if (strtolower($language) == "php4")
+	{
+		$data = file_get_contents("../setup_factory/upgrade.php4.php");
+	}
+	else
+	{
+		$data = file_get_contents("../setup_factory/upgrade.php5.php");
+	}
 	$package["setup"]["setup_library"]["upgrade.php"] = base64_encode($data);
 
 	//read all setup image files
