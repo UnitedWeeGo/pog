@@ -231,6 +231,7 @@ function GenerateObjectFromLink($link)
  */
 function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding = 1)
 {
+	require ("../include/configuration.php");
 	if ($db_encoding == "")
 	{
 		$db_encoding = 1;
@@ -244,6 +245,10 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
 		$data = file_get_contents("../configuration_factory/configuration.php");
 	}
 	$data = str_replace('&db_encoding', $db_encoding, $data);
+	$data = str_replace('&soap', $GLOBALS['configuration']['soap'], $data);
+	$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber']);
+	$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber']);
+
 	return base64_encode($data);
 }
 
@@ -325,18 +330,18 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 
 	$data = file_get_contents("../setup_factory/setup_files/xPandMenu.js");
 	$package["setup"]["setup_library"]["xPandMenu.js"] = base64_encode($data);
-	
+
 	if (strtolower($language) == "php4")
 	{
 		//add nusoap library to the package if since php4 does not support soap natively
 		$data = file_get_contents("./nusoap.php");
 		$package["setup"]["setup_library"]["nusoap.php"] = base64_encode($data);
 	}
-	
+
 	//add zip class to package
 	$data = file_get_contents("../include/class.zipfile.php");
 	$package["setup"]["setup_library"]["class.zipfile.php"] = base64_encode($data);
-	
+
 	//generate upgrade scripts
 	$data = file_get_contents("../setup_factory/upgrade.".$language.".php");
 	$package["setup"]["setup_library"]["upgrade.php"] = base64_encode($data);

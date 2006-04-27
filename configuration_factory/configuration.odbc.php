@@ -7,6 +7,9 @@ if (!isset($_SESSION))
 	session_start();
 }
 global $configuration;
+$configuration['soap'] = "&soap";
+$configuration['revisionNumber'] = "&revisionNumber";
+$configuration['versionNumber'] = "&versionNumber";
 
 $configuration['pdoDriver']= 'odbc';
 $configuration['db_encoding'] = &db_encoding;
