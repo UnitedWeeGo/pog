@@ -1,4 +1,14 @@
 <?php
+/**
+* @author  Joel Wan & Mark Slemko.  Designs by Jonathan Easton
+* @link  http://www.phpobjectgenerator.com
+* @copyright  Offered under the  BSD license
+*
+* This upgrade file does the following:
+* 1. Checks if there is a new version of POG
+* 2. If there is, it reads generates newer versions of all objects in the object directory, 
+* zip then and present them to the user to 'download'
+*/
 include "../../configuration.php";
 include "class.zipfile.php";
 
