@@ -1,5 +1,8 @@
 <?php
 include_once("nusoap.php");
+include_once("../include/configuration.php");
+
+Shelter(); // check if this is a safe connection before continuing.
 
 $server = new soap_server();
 $server -> configureWSDL('pogwsdl', 'urn:pogwsdl');
@@ -101,6 +104,15 @@ function Shelter()
 	// 4) use a membership model - i.e. sign-in
 
 	// MS: I think that 1, 2b, and 3 are applicable to this service
+
+	$ip = $_SERVER['REMOTE_ADDR'];
+	$bannedFileArray = file($configuration['installDirectory']."bannedip.txt");
+	foreach ($bannedFileArray as $ipLine)
+	{
+		if ($ip == trim($ipLine)) {
+			exit;
+		}
+	}
 }
 
 /**
