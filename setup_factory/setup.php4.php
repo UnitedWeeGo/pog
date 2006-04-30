@@ -365,7 +365,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	</ul>
 	</div><!--header-->
 	</div><!--subtabs-->
-	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" alt="regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="./?thrashall=true" title="Delete everything"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a></div><div class="middle3">
+	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" link="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="./?thrashall=true" title="Delete all objects"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="./setup_library/upgrade.php" target="_blank" title="update all objects to newest POG version"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><div class="middle3">
 	<?php
 	//is there an action to perform?
 	if (isset($_GET['thrashall']))

@@ -6,14 +6,14 @@
 *
 * This upgrade file does the following:
 * 1. Checks if there is a new version of POG
-* 2. If there is, it reads generates newer versions of all objects in the object directory, 
+* 2. If there is, it reads generates newer versions of all objects in the object directory,
 * zip then and present them to the user to 'download'
 */
 include "../../configuration.php";
 include "class.zipfile.php";
 
 	/**
-	 * Connects to POG SOAP server defined in configuration.php and 
+	 * Connects to POG SOAP server defined in configuration.php and
 	 * generates new versions of all objects detected in /objects/ dir.
 	 * All upgraded objects are then zipped and presented to user.
 	 *
@@ -62,7 +62,7 @@ include "class.zipfile.php";
 		$zipfile -> addPOGPackage($package);
 		$zipfile -> forceDownload("pog.".time().".zip");
 	}
-	
+
 	/**
 	 * Checks if POG generator has been updated
 	 *
@@ -76,19 +76,21 @@ include "class.zipfile.php";
 		{
 			return true;
 		}
-		else 
+		else
 		{
 			return  false;
 		}
 	}
-	
+
 	if (UpdateAvailable())
 	{
 		UpdateAllObjects("../../objects/");
 	}
-	else 
+	else
 	{
-		
-		 "All POG objects are already up to date.";
+		echo "<script>
+			alert('All POG objects are already up to date');
+			window.close();
+		</script>";
 	}
 ?>
