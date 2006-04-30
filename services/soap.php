@@ -106,7 +106,7 @@ function Shelter()
 	// MS: I think that 1, 2b, and 3 are applicable to this service
 
 	$ip = $_SERVER['REMOTE_ADDR'];
-	$bannedFileArray = file($configuration['installDirectory']."bannedip.txt");
+	$bannedFileArray = file("./bannedip.txt");
 	foreach ($bannedFileArray as $ipLine)
 	{
 		if ($ip == trim($ipLine)) {
