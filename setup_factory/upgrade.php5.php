@@ -31,8 +31,7 @@ include "class.zipfile.php";
 			}
 		}
 		closedir($dir);
-		$package = array();
-		$package["objects"] = array();
+		$i = 0;
 		foreach($objects as $object)
 		{
 			$content = file_get_contents($path."/".$object);
@@ -54,9 +53,17 @@ include "class.zipfile.php";
 				$link = $linkParts2[1];
 
 				$client = new SoapClient($GLOBALS['configuration']['soap']) ;
-				$objectString = $client -> GenerateObjectFromLink($link);
-				$package["objects"]["class.".strtolower($className).".php"] = $objectString;
+				if ($i == 0)
+				{
+					$package = unserialize($client->call('GeneratePackageFromLink', $params));
+				}
+				else
+				{
+					$objectString = $client->call('GenerateObjectFromLink', $params);
+					$package["objects"]["class.".strtolower($className).".php"] = $objectString;
+				}
 			}
+			$i++;
 		}
 		$zipfile = new createZip();
 		$zipfile -> addPOGPackage($package);

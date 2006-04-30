@@ -49,6 +49,15 @@ $server -> register('GenerateObjectFromLink',
 					'encoded',
 					'Generates the appropriate object from `proprietary format` of @link'
 					);
+$server -> register('GeneratePackageFromLink',
+					array('link' => 'xsd:string'),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GeneratePackageFromLink',
+					'rpc',
+					'encoded',
+					'enerates a pog package which is essentially a multi-D array with folder names as keys and file contents as values. The package can be delivered across the network, modified, and then finally zipped when the time is right.'
+);
 $server -> register('GenerateConfiguration',
 					array('wrapper' => 'xsd:string'),
 					array('return' => 'xsd:string'),
@@ -222,6 +231,33 @@ function GenerateObjectFromLink($link)
 	$string = GenerateObject($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
 	return $string;
 }
+
+/**
+ * Generates a pog 'package' which is essentially a multi-D array with folder names as keys and file contents as values.
+ * The package can be delivered across the network, modified, and then finally zipped when the time is right.
+ * An @link looks like this: http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=alliever&attributeList=array (  0 => 'firstName',  1 => 'lastName',  2 => 'description',  3 => 'gender',  4 => 'Country',  5 => 'over18',)&typeList=array (  0 => 'VARCHAR(255)',  1 => 'VARCHAR(255)',  2 => 'TEXT',  3 => 'enum(\\\'male\\\',\\\'female\\\')',  4 => 'enum(\\\'Mauritius\\\', \\\'Canada\\\', \\\'Singapore\\\')',  5 => 'enum(\\\'yes\\\')',)
+ * @param (urlencoded)string $link
+ * @return base64 encoded string
+ */
+function GeneratePackageFromLink($link)
+{
+	$link = explode('?', $link);
+
+	$linkParts = explode('&', $link[1]);
+	for ($i = 0; $i < sizeof($linkParts); $i++)
+	{
+		$arguments = split('[^ ]=', $linkParts[$i]);
+
+		eval ("\$".$arguments[0]." =". stripcslashes(urldecode($arguments[1])).";");
+	}
+	for($i=0; $i<sizeof($typeLis); $i++)
+	{
+		$typeLis[$i] = stripcslashes($typeLis[$i]);
+	}
+
+	return GeneratePackage($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
+}
+
 
 /**
  * Generates the appropriate configuration file
