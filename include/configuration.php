@@ -1,6 +1,6 @@
 <?
 global $configuration;
-$configuration['soap'] = "http://beta.phpobjectgenerator.com/services/soap.php?wsdl";
+$configuration['soap'] = "http://www..phpobjectgenerator.com/services/soap.php?wsdl";
 $configuration['revisionNumber']=".1";
 $configuration['versionNumber'] = "2.0";
 $configuration['author'] = "Php Object Generator";
