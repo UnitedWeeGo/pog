@@ -53,6 +53,7 @@ include "class.zipfile.php";
 				$link = $linkParts2[1];
 
 				$client = new SoapClient($GLOBALS['configuration']['soap']) ;
+				$params = array('link' 	=> $link);
 				if ($i == 0)
 				{
 					$package = unserialize($client->call('GeneratePackageFromLink', $params));
