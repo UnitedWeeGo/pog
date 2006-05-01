@@ -51,16 +51,14 @@ include "class.zipfile.php";
 				$linkParts1 = split("\*\/", $contentParts[1]);
 				$linkParts2 = split("\@link", $linkParts1[0]);
 				$link = $linkParts2[1];
-
 				$client = new SoapClient($GLOBALS['configuration']['soap']) ;
-				$params = array('link' 	=> $link);
 				if ($i == 0)
 				{
-					$package = unserialize($client->call('GeneratePackageFromLink', $params));
+					$package = unserialize($client->GeneratePackageFromLink($link));
 				}
 				else
 				{
-					$objectString = $client->call('GenerateObjectFromLink', $params);
+					$objectString = $client->GenerateObjectFromLink($link);
 					$package["objects"]["class.".strtolower($className).".php"] = $objectString;
 				}
 			}
