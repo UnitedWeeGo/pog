@@ -193,7 +193,7 @@ class createZip  {
 			if (strpos($key, ".") == false)
 			{
 				$paths[] = $key;
-				$this->addDirectory((($path == '') ? $key : "$path/$key"));
+				$this->addDirectory((($path == '') ? "$key/" : "$path/$key/"));
 				$this->addPOGPackage($package[$key], &$paths);
 			}
 			else
