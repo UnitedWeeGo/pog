@@ -27,7 +27,7 @@
 		}
 		else
 		{
-			throw new Exception('cannot connect to the database. check configuration.');
+			throw new Exception('I cannot connect to the database. Please edit configuration.php with your database configuration.');
 		}
 	}
 
