@@ -20,8 +20,9 @@ $server -> wsdl -> addComplexType(
 );
 
 
+// apparently, there's an obscure bug in nusoap + wsdl for empty arrays. temporary workaround: xsd:anyType[0]
 $server -> register('GetGeneratorVersion',
-					array(),
+					array('dummy' => 'xsd:anyType[0]'),
 					array('return' => 'xsd:string'),
 					'urn:pogwsdl',
 					'urn:pogwsdl#GetGeneratorVersion',
