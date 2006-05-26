@@ -81,7 +81,7 @@ include "nusoap.php";
 	{
 		$client = new soapclient($GLOBALS['configuration']['soap'], true);
 		$params = array();
-		$generatorVersion = base64_decode($client->call('GetGeneratorVersion'));
+		$generatorVersion = base64_decode($client->call('GetGeneratorVersion', $params));
 		if ($generatorVersion != $GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber'])
 		{
 			return true;
