@@ -134,8 +134,8 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		  						{
 		 							$instance->{$attribute} = $type_value[strtolower($attribute)];
 								}
-	  							else
-	  							{
+	  							else if ($instance->pog_attribute_type[strtolower($attribute)][0] != "OBJECT")
+  								{
 	  								$instance->{$attribute} = "1";
 	  							}
   							}
@@ -321,6 +321,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		}
 	}
 $_POST = null;
+$instanceId = null;
 ?>
 </div></div>
 <?php
