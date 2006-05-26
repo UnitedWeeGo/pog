@@ -217,7 +217,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 		$object->CreateUnescapeFunction();
 	}
 	$object->EndObject();
-	mail("joelwan@gmail.com", "POG", $object->string, "FROM:POG <POG@phpobjectgenerator.com>");
+
 	return base64_encode($object->string);
 }
 
