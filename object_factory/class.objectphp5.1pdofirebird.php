@@ -435,7 +435,14 @@ class Object
 			$this->string .="\tfunction SaveNew()\n\t{";
 		}
 		$this->string .= "\n\t\t\$this->".strtolower($this->objectName)."Id = '';";
-		$this->string .= "\n\t\treturn \$this->Save(\$deep);";
+		if ($deep)
+		{
+			$this->string .= "\n\t\treturn \$this->Save(\$deep);";
+		}
+		else
+		{
+			$this->string .= "\n\t\treturn \$this->Save();";
+		}
 		$this->string .= "\n\t}";
 	}
 
