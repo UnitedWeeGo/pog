@@ -133,7 +133,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				{
 					$instanceId = false;
 					$instance->{strtolower($className)."Id"} = '';
-					$instanceId = $instance->Save();
+					$instanceId = $instance->Save(false);
 					if(!$instanceId)
 					{
 						if ($GLOBALS['configuration']['pdoDriver'] == 'odbc')
@@ -173,7 +173,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 										}
 									}
 									$instance->{strtolower($className)."Id"} = '';
-									$instanceId = $instance->Save();
+									$instanceId = $instance->Save(false);
 				  					if(!$instanceId)
 				  					{
 				  						$diagnostics .= "ERROR: Save() could not be performed\n";
@@ -213,7 +213,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				}
 
 				//Test SaveNew()
-				if(!$instance->SaveNew())
+				if(!$instance->SaveNew(false))
 				{
 					$diagnostics .= "ERROR: SaveNew() could not be performed";
 					$diagnostics .= $instance->pog_query."\n";
@@ -221,7 +221,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				}
 				else
 				{
-					$instance->SaveNew();
+					$instance->SaveNew(false);
 					$diagnostics .= "Testing SaveNew()....OK\n";
 				}
 

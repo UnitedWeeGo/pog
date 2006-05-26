@@ -143,14 +143,14 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
   					//Test Save()
   					$instanceId = false;
   					$instance->{strtolower($className)."Id"} = 0;
-					$instanceId = $instance->Save();
+					$instanceId = $instance->Save(false);
   					if(!$instanceId)
   					{
   						//table doesn't exist
 						//try to create table
 						$database = new DatabaseConnection();
 						$database->Query($sql);
-						$instanceId = $instance->Save();
+						$instanceId = $instance->Save(false);
       					if(!$instanceId)
       					{
       						$diagnostics .= "Could not create table.";
@@ -170,7 +170,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
   					}
 
   					//Test SaveNew()
-  					if(!$instance->SaveNew())
+  					if(!$instance->SaveNew(false))
   					{
   						$diagnostics .= "ERROR: SaveNew() could not be performed\n";
   						$diagnostics .= $instance->pog_query."\n";
@@ -178,7 +178,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
   					}
   					else
   					{
-  						$instance->SaveNew();
+  						$instance->SaveNew(false);
   						$diagnostics .= "Testing SaveNew()....OK\n";
   					}
 

@@ -192,7 +192,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	$object->CreateGetFunction();
 	$object->CreateGetAllFunction();
 	$object->CreateSaveFunction(in_array("HASMANY", $typeList));
-	$object->CreateSaveNewFunction();
+	$object->CreateSaveNewFunction(in_array("HASMANY", $typeList));
 	$object->CreateDeleteFunction(in_array("HASMANY", $typeList));
 
 	$i = 0;
@@ -217,6 +217,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 		$object->CreateUnescapeFunction();
 	}
 	$object->EndObject();
+	mail("joelwan@gmail.com", "POG", $object->string, "FROM:POG <POG@phpobjectgenerator.com>");
 	return base64_encode($object->string);
 }
 

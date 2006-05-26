@@ -400,13 +400,20 @@ class Object
 	}
 
 	// -------------------------------------------------------------
-	function CreateSaveNewFunction()
+	function CreateSaveNewFunction($deep = false)
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Clones the object and saves it to the database",'',"integer $".strtolower($this->objectName)."Id");
-		$this->string .="\tfunction SaveNew()\n\t{";
+		if ($deep)
+		{
+			$this->string .="\tfunction SaveNew(\$deep = false)\n\t{";
+		}
+		else
+		{
+			$this->string .="\tfunction SaveNew()\n\t{";
+		}
 		$this->string .= "\n\t\t\$this->".strtolower($this->objectName)."Id = '';";
-		$this->string .= "\n\t\treturn \$this->Save();";
+		$this->string .= "\n\t\treturn \$this->Save(\$deep);";
 		$this->string .= "\n\t}";
 	}
 
