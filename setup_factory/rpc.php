@@ -80,7 +80,7 @@ switch($action)
 			{
 				if (isset($_GET[$attribute]))
 				{
-					$instance->{$attribute} = $_GET[$attribute];
+					$instance->{$attribute} = stripcslashes($_GET[$attribute]);
 				}
 			}
 		}
@@ -129,7 +129,7 @@ switch($action)
 			{
 				if (isset($_GET[$attribute]))
 				{
-					$instance->{$attribute} = $_GET[$attribute];
+					$instance->{$attribute} = stripcslashes($_GET[$attribute]);
 				}
 			}
 		}
