@@ -385,6 +385,9 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$data = file_get_contents("../setup_factory/setup_files/xPandMenu.js");
 	$package["setup"]["setup_library"]["xPandMenu.js"] = base64_encode($data);
 
+	$data = file_get_contents("../setup_factory/setup_files/authentication.php");
+	$package["setup"]["setup_library"]["authentication.php"] = base64_encode($data);
+
 	if (strtolower($language) == "php4")
 	{
 		//add nusoap library to the package if since php4 does not support soap natively

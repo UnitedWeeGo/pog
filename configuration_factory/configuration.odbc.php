@@ -12,6 +12,7 @@ $configuration['revisionNumber'] = "&revisionNumber";
 $configuration['versionNumber'] = "&versionNumber";
 
 $configuration['pdoDriver']= 'odbc';
+$configuration['setup_password'] = '';
 $configuration['db_encoding'] = &db_encoding;
 
 // edit the information below to match your database settings

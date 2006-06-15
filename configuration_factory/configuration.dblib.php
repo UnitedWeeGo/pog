@@ -9,6 +9,7 @@ $configuration['revisionNumber'] = "&revisionNumber";
 $configuration['versionNumber'] = "&versionNumber";
 
 $configuration['pdoDriver']= 'dblib';
+$configuration['setup_password'] = '';
 
 // edit the information below to match your database settings
 

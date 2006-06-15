@@ -12,7 +12,6 @@
 * 5. Tests 5 CRUD functions and determine if everything is OK for all objects within the current directory
 * 6. When all tests pass, provides an interface to the database and a way to manage objects.
 */
-include_once("setup_library/setup_misc.php");
 if(file_exists("../configuration.php"))
 {
 	include_once("../configuration.php");
@@ -20,7 +19,10 @@ if(file_exists("../configuration.php"))
 else
 {
 	echo "configuration file missing<br/>";
+	exit;
 }
+include_once("setup_library/authentication.php");
+include_once("setup_library/setup_misc.php");
 if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET['step']=="diagnostics"))
 {
 	$_SESSION['diagnosticsSuccessful'] = false;
