@@ -1,5 +1,5 @@
 <?php
-if (sizeof($_POST) > 0 && (!isset($_SESSION['authenticated']) || !$_SESSION['authenticated']))
+if (sizeof($_POST) > 0 && $GLOBALS['configuration']['setup_password'] != "" && (!isset($_SESSION['authenticated']) || !$_SESSION['authenticated']))
 {
 	if ($_POST['setup_password'] == $GLOBALS['configuration']['setup_password'])
 	{
