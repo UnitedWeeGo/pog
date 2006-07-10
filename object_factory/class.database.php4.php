@@ -22,7 +22,7 @@
 		$databasePort = $GLOBALS['configuration']['port'];
 
 		$this->connection = mysql_connect ($serverName.":".$databasePort, $databaseUser, $databasePassword) or die ('I cannot connect to the database. Please edit configuration.php with your database configuration.');
-		mysql_select_db ($this->databaseName);
+		mysql_select_db ($this->databaseName) or die ('I cannot find the specified database "'.$this->databaseName.'". Please edit configuration.php');
 	}
 
 	// -------------------------------------------------------------

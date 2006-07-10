@@ -23,7 +23,10 @@
 		$this->connection = mysql_connect ($serverName.":".$databasePort, $databaseUser, $databasePassword);
 		if ($this->connection)
 		{
-			mysql_select_db ($this->databaseName);
+			if (!mysql_select_db ($this->databaseName))
+			{
+				throw new Exception('I cannot find the specified database "'.$this->databaseName.'". Please edit configuration.php.');
+			}
 		}
 		else
 		{
