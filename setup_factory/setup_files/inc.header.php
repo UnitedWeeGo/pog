@@ -1,3 +1,13 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Php Object Generator Setup <?=$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']?></title>
+<link rel="stylesheet" href="./setup.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="./setup_library/xPandMenu.css"/>
+<script src="./setup_library/xPandMenu.js"></script>
+</head>
+<body>
+<div class="header">
 <script type="text/javascript"><!--
 google_ad_client = "pub-7832108692498114";
 google_alternate_color = "FFFFFF";
@@ -15,3 +25,11 @@ google_color_text = "CCC078";
 <script type="text/javascript"
   src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
+<script type="text/javascript"><!--
+function PleaseWait()
+{	
+	var div = document.getElementById("pleasewait");
+	div.style.display = "block";
+}
+//--></script>
+</div>

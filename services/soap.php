@@ -60,7 +60,7 @@ $server -> register('GeneratePackageFromLink',
 					'urn:pogwsdl#GeneratePackageFromLink',
 					'rpc',
 					'encoded',
-					'enerates a pog package which is essentially a multi-D array with folder names as keys and file contents as values. The package can be delivered across the network, modified, and then finally zipped when the time is right.'
+					'Generates a pog package which is essentially a multi-D array with folder names as keys and file contents as values. The package can be delivered across the network, modified, and then finally zipped when the time is right.'
 );
 $server -> register('GenerateConfiguration',
 					array('wrapper' => 'xsd:string'),
@@ -106,6 +106,7 @@ function Shelter()
 
 	// MS: I think that 1, 2b, and 3 are applicable to this service
 
+	//check for banned IP addresses
 	$ip = $_SERVER['REMOTE_ADDR'];
 	$bannedFileArray = file("./bannedip.txt");
 	foreach ($bannedFileArray as $ipLine)
@@ -201,6 +202,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 		if ($type == "HASMANY")
 		{
 			$object->CreateGetChildrenFunction($attributeList[$i]);
+			$object->CreateSetChildrenFunction($attributeList[$i]);
 			$object->CreateAddChildFunction($attributeList[$i]);
 		}
 		else if ($type == "BELONGSTO")
@@ -235,13 +237,52 @@ function GenerateObjectFromLink($link)
 	for ($i = 0; $i < sizeof($linkParts); $i++)
 	{
 		$arguments = split('[^ ]=', $linkParts[$i]);
+		$value = trim(stripcslashes(urldecode($arguments[1])));
 
-		eval ("\$".$arguments[0]." =". stripcslashes(urldecode($arguments[1])).";");
+		if (strlen($value) > 5 && substr(strtolower($value), 0, 5) == "array" && $arguments[0] == "attributeLis")
+		{
+			eval ("$".$arguments[0]." = ".stripcslashes(urldecode($value)).";");
+		}
+		else if (strlen($value) > 5 && substr(strtolower($value), 0, 5) == "array" && $arguments[0] == "typeLis")
+		{
+			if (strpos($value, "enum") == false && strpos($value, "set") == false)
+			{
+				eval ("$".$arguments[0]." = ".urldecode($value).";");
+			}
+			else
+			{
+				$typeLis = array();
+				$value_parts = explode('=>', $value);
+
+				for($j = 1; $j < sizeof($value_parts); $j++)
+				{
+					$value_part = $value_parts[$j];
+					if (strpos($value_part, "enum") != false)
+					{
+						$val = explode("(", $value_part);
+						$val = explode(")", $val[1]);
+						$typeLis[] = "enum(".$val[0].")";
+					}
+					else if (strpos($value_part, "set") != false)
+					{
+						$val = explode("(", $value_part);
+						$val = explode(")", $val[1]);
+						$typeLis[] = "set(".$val[0].")";
+					}
+					else
+					{
+						$val = explode("'", $value_part);
+						$typeLis[] = $val[1];
+					}
+				}
+			}
+		}
+		else
+		{
+			eval ("$".$arguments[0]." = '".$value."';");
+		}
 	}
-	for($i=0; $i<sizeof($typeLis); $i++)
-	{
-		$typeLis[$i] = stripcslashes($typeLis[$i]);
-	}
+
 	$string = GenerateObject($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
 	return $string;
 }
@@ -255,23 +296,59 @@ function GenerateObjectFromLink($link)
  */
 function GeneratePackageFromLink($link)
 {
+
 	$link = explode('?', $link);
 
 	$linkParts = explode('&', $link[1]);
 	for ($i = 0; $i < sizeof($linkParts); $i++)
 	{
 		$arguments = split('[^ ]=', $linkParts[$i]);
+		$value = trim(stripcslashes(urldecode($arguments[1])));
 
-		eval ("\$".$arguments[0]." =". stripcslashes(urldecode($arguments[1])).";");
+		if (strlen($value) > 5 && substr(strtolower($value), 0, 5) == "array" && $arguments[0] == "attributeLis")
+		{
+			eval ("$".$arguments[0]." = ".stripcslashes(urldecode($value)).";");
+		}
+		else if (strlen($value) > 5 && substr(strtolower($value), 0, 5) == "array" && $arguments[0] == "typeLis")
+		{
+			if (strpos($value, "enum") == false && strpos($value, "set") == false)
+			{
+				eval ("$".$arguments[0]." = ".urldecode($value).";");
+			}
+			else
+			{
+				$typeLis = array();
+				$value_parts = explode('=>', urldecode($value));
+				for($j = 1; $j < sizeof($value_parts); $j++)
+				{
+					$value_part = $value_parts[$j];
+					if (strpos($value_part, "enum") != false)
+					{
+						$val = explode("(", $value_part);
+						$val = explode(")", $val[1]);
+						$typeLis[] = "enum(".$val[0].")";
+					}
+					else if (strpos($value_part, "set") != false)
+					{
+						$val = explode("(", $value_part);
+						$val = explode(")", $val[1]);
+						$typeLis[] = "set(".$val[0].")";
+					}
+					else
+					{
+						$val = explode("'", $value_part);
+						$typeLis[] = $val[1];
+					}
+				}
+			}
+		}
+		else
+		{
+			eval ("$".$arguments[0]." = '".$value."';");
+		}
 	}
-	for($i=0; $i<sizeof($typeLis); $i++)
-	{
-		$typeLis[$i] = stripcslashes($typeLis[$i]);
-	}
-
 	return GeneratePackage($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
 }
-
 
 /**
  * Generates the appropriate configuration file
@@ -350,14 +427,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	}
 	else
 	{
-		if (strtolower($language) == "php4")
-		{
-			$data = file_get_contents("../setup_factory/setup.php4.php");
-		}
-		else
-		{
-			$data = file_get_contents("../setup_factory/setup.php");
-		}
+		$data = file_get_contents("../setup_factory/setup.php");
 	}
 	$package["setup"]["index.php"] = base64_encode($data);
 

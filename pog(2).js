@@ -273,7 +273,7 @@ function WarnMinInput()
 		trs=document.getElementsByTagName("select");
 		for(var w=0;w<trs.length;w++)
 		{
-			if (trs[w].value == "HASMANY" || trs[w].value == "BELONGSTO" )
+			if (trs[w].value == "HASMANY" || trs[w].value == "BELONGSTO" || trs[w].value == "JOIN" )
 			{
 				typeCount++;
 			}

@@ -82,6 +82,7 @@ class Misc
 		|| $type=="VARBINARY"
 		|| $type=="HASMANY"
 		|| $type=="BELONGSTO"
+		|| $type=="JOIN"
 		)
 		return true;
 		else
@@ -210,7 +211,7 @@ class Misc
 		{
 			return "SET";
 		}
-		else if ($type == "HASMANY" || $type == "BELONGSTO")
+		else if ($type == "HASMANY" || $type == "BELONGSTO" || $type == "JOIN")
 		{
 			return "OBJECT";
 		}

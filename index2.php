@@ -20,17 +20,26 @@ if (IsPostback())
 	$z=0;
 	for ($i=1; $i<50; $i++)
 	{
-		if (GetVariable(('fieldattribute_'.$i)))
+		if (GetVariable(('fieldattribute_'.$i)) != null)
 		{
 			$attributeList[] = GetVariable(('fieldattribute_'.$i));
 			$z++;
 		}
-		if (GetVariable(('type_'.$i)) && $z==$i)
+		if (GetVariable(('type_'.$i)) != null && $z==$i)
 		{
 			if (GetVariable(('type_'.$i)) != "OTHER"  && GetVariable(('ttype_'.$i)) == null)
+			{
 				$typeList[] = GetVariable(('type_'.$i));
+			}
 			else
+			{
 				$typeList[] = GetVariable(('ttype_'.$i));
+			}
+		}
+		else
+		{
+			//attribute may have been removed. proceed to next row
+			$z++;
 		}
 	}
 

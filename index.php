@@ -69,7 +69,7 @@ $pdoDriver = ($misc->GetVariable('pdoDriver')!=null?$misc->GetVariable('pdoDrive
 <meta name="keywords" content="php, code, generator, classes, object-oriented, CRUD" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="ICBM" content="53.5411, -113.4914">
-<meta name="DC.title" content="PHP Object Generator (POG)">
+<meta name="DC.title" content="PHP Object Generator (POG)"> 
 <script src="./pog.js" type="text/javascript">
 </script>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
@@ -116,6 +116,7 @@ urchinTracker();
 		<br/><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and code samples">The POG tutorials/code samples</a>
 		<br/><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
 		<br/><a href="http://www.phpobjectgenerator.com/plog/article/51/pog-source-code-locations" title="POG source code location">The POG source code</a>
+		<?php include("include/inc.tla.php"); ?>
 		</div><!-- left -->
 
 	<div class="middle">
@@ -126,7 +127,7 @@ urchinTracker();
 			<select class="s" name="language" id="FirstField" onchange="CascadePhpVersion()">
 				<option value="php4" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php4"?"selected":"")?>>PHP 4</option>
 				<option value="php5" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php5"?"selected":"")?>>PHP 5</option>
-				<option value="php5.1" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php5.1"?"selected":"")?>>PHP 5.1</option>
+				<option value="php5.1" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php5.1"?"selected":"")?>>PHP 5.1+</option>
 			</select>
 			<br/><br/>
 			<select class="s" name="wrapper" id="wrapper" onchange="IsPDO()">
@@ -266,3 +267,6 @@ google_color_text = "CCC078";
 </div><!-- main -->
 </body>
 </html>
+<?php
+	unset($_SESSION);
+?>

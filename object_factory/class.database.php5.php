@@ -99,7 +99,7 @@
 		{
 			return base64_encode($text);
 		}
-		return $text;
+		return mysql_escape_string($text);
 	}
 
 	// -------------------------------------------------------------
@@ -109,7 +109,7 @@
 		{
 			return base64_decode($text);
 		}
-		return $text;
+		return stripcslashes($text);
 	}
 
 	// -------------------------------------------------------------

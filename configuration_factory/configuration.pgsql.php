@@ -10,6 +10,8 @@ $configuration['versionNumber'] = "&versionNumber";
 
 $configuration['pdoDriver']= 'pgsql';
 $configuration['setup_password'] = '';
+
+//db_encoding=1 is highly recommended unless you know what you're doing
 $configuration['db_encoding'] = &db_encoding;
 
 // edit the information below to match your database settings

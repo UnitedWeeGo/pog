@@ -78,9 +78,12 @@ switch($action)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 			{
-				if (isset($_GET[$attribute]))
+				if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 				{
-					$instance->{$attribute} = stripcslashes($_GET[$attribute]);
+					if (isset($_GET[$attribute]))
+					{
+						$instance->{$attribute} = $_GET[$attribute];
+					}
 				}
 			}
 		}
@@ -127,9 +130,12 @@ switch($action)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 			{
-				if (isset($_GET[$attribute]))
+				if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 				{
-					$instance->{$attribute} = stripcslashes($_GET[$attribute]);
+					if (isset($_GET[$attribute]))
+					{
+						$instance->{$attribute} = $_GET[$attribute];
+					}
 				}
 			}
 		}
@@ -157,19 +163,16 @@ switch($action)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 			{
-				if ($x != 0)
+				if ($x != 0 && isset($instance->pog_attribute_type[strtolower($attribute)]))
 				{
-					$js .= '"'.$attribute.'"';
-					if ($x != sizeof($attributeList)-3)
-					{
-						$js .= ",";
-					}
+					$js .= '"'.$attribute.'",';
 					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
 					$subnode = &$node->addItem(new XNode("<br/><span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
 				}
 			}
 			$x++;
 		}
+		$js = trim($js, ",");
 		$js .= ")";
 		$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Add\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_add.gif' border='0'/></a>", false,'',"folderopen.gif"));
 
@@ -179,21 +182,15 @@ switch($action)
 			{
 				$className = get_class($instance);
 				$node = &$masterNode->addItem(new XNode("<span style='color:#0BAA9D'>[".$instance->{strtolower($className)."Id"}."]</span>  <a href='#' onclick='javascript:sndReq(\"Delete\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src=\"./setup_images/button_delete.gif\" border=\"0\"/></a>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
-				$x = 0;
 				foreach($attributeList as $attribute)
 				{
-					if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
+					if ($attribute != "pog_attribute_type" && $attribute!= "pog_query" )
 					{
-						if ($x == 0)
-						{
-							$table = "<div class='cell'>".$instance->{$attribute}."</div>";
-						}
-						else
+						if (isset($instance->pog_attribute_type[strtolower($attribute)]))
 						{
 							$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
 							$subnode = &$node->addItem(new XNode("<br/>".$attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
 						}
-						$x++;
 					}
 				}
 				$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_update.gif' border='0'/></a>", false,'',"folderopen.gif"));

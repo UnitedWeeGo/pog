@@ -40,9 +40,6 @@
 	function Query($query)
 	{
 		$this->result = mysql_query($query,$this->connection);
-		if (!$this->result) {
-			return('Invalid query: '.mysql_error());
-		}
 		return $this->result;
 	}
 
@@ -67,7 +64,7 @@
 	{
 		if ($this->Rows() > 0)
 		{
-			return mysql_result($this->result,$row,$name);
+			return mysql_result($this->result, $row, $name);
 		}
 		return null;
 	}
@@ -91,7 +88,7 @@
 		{
 			return base64_encode($text);
 		}
-		return $text;
+		return mysql_escape_string($text);
 	}
 
 	// -------------------------------------------------------------
@@ -101,7 +98,7 @@
 		{
 			return base64_decode($text);
 		}
-		return $text;
+		return stripcslashes($text);
 	}
 
 	// -------------------------------------------------------------

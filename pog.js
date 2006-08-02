@@ -91,7 +91,8 @@ optionsArray=new Array("VARCHAR(255)",
 "BINARY",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }"
+"{ PARENT }",
+"{ MAP }"
 )
 break
 case "oci":
@@ -123,7 +124,8 @@ optionsArray=new Array("BIGINT",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }"
+"{ PARENT }",
+"{ MAP }"
 )
 break
 case "firebird":
@@ -141,7 +143,8 @@ optionsArray=new Array("BLOB",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }"
+"{ PARENT }",
+"{ MAP }"
 )
 break
 case "odbc":
@@ -171,7 +174,8 @@ optionsArray=new Array("BIGINT",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }"
+"{ PARENT }",
+"{ MAP }"
 )
 break
 case "pgsql":
@@ -202,7 +206,8 @@ optionsArray=new Array("BIGINT",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }"
+"{ PARENT }",
+"{ MAP }"
 )
 break
 case "sqlite":
@@ -212,7 +217,8 @@ optionsArray=new Array("TEXT",
 "BLOB",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }"
+"{ PARENT }",
+"{ MAP }"
 )
 break}
 for(var i=0;i<optionsArray.length;i++){
@@ -221,6 +227,8 @@ if(optionsArray[i]=="{ CHILD }"){
 NewOpt.value="HASMANY"}
 else if(optionsArray[i]=="{ PARENT }"){
 NewOpt.value="BELONGSTO"}
+else if(optionsArray[i]=="{ MAP }"){
+NewOpt.value="JOIN"}
 else{
 NewOpt.value=optionsArray[i]}
 NewOpt.text=optionsArray[i]
@@ -289,10 +297,10 @@ if(inputCount>0){
 var typeCount=0
 trs=document.getElementsByTagName("select")
 for(var w=0;w<trs.length;w++){
-if(trs[w].value=="HASMANY" || trs[w].value=="BELONGSTO"){
+if(trs[w].value=="HASMANY" || trs[w].value=="BELONGSTO" || trs[w].value=="JOIN"){
 typeCount++}}
 if(typeCount>=inputCount){
-alert("Warning:\nYou need to have at least 1 non-parent/child attribute. Else POG will generate an invalid PHP object")}}
+alert("Warning:\nYou need to have at least 1 non parent/child/map attribute. Else POG will generate an invalid PHP object")}}
 else{
-alert("Warning:\nWithout any object attributes, POG will generate an invalid PHP object. You need to have at least 1 non-parent/child attribute")}
+alert("Warning:\nWithout any object attributes, POG will generate an invalid PHP object. You need to have at least 1 non parent/child/map attribute")}
 return false}

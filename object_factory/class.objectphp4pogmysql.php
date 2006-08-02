@@ -64,11 +64,11 @@ class Object
 		{
 			if ($this->typeList[$x] == "BELONGSTO")
 			{
-				$this->string .= "\"".strtolower($attribute)."id\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+				$this->string .= "\"$attribute\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
 			}
 			else if ($this->typeList[$x] == "HASMANY")
 			{
-				$this->string .= "\"_".strtolower($attribute)."list\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+				$this->string .= "\"$attribute\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
 			}
 			else
 			{
@@ -360,6 +360,7 @@ class Object
 					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
 					$this->string .= "\n\t\t\tforeach (\$this->_".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
 					$this->string .= "\n\t\t\t{";
+					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
 					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->Save(\$deep);";
 					$this->string .= "\n\t\t\t}";
 				}
@@ -458,6 +459,16 @@ class Object
 	}
 
 	// -------------------------------------------------------------
+	function CreateSetChildrenFunction($child)
+	{
+		$this->string .= "\n\t$this->separator\n\t";
+		$this->string .= $this->CreateComments("Setter for the $child objects array",'',"null");
+		$this->string .= "\tfunction Set".ucfirst(strtolower($child))."List(&\$list)\n\t{";
+		$this->string .= "\n\t\t\$this->_".strtolower($child)."List =& \$list;";
+		$this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
 	function CreateSetParentFunction($parent)
 	{
 		$this->string .= "\n\t$this->separator\n\t";
@@ -523,9 +534,23 @@ class Object
 		$this->string .= "\n\t\t\t\$this->pog_query = \"select ".strtolower($this->objectName)."id from `".strtolower($this->objectName)."` where \";";
 		$this->string .= "\n\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array)-1; \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\t\$this->pog_query .= \"`\".strtolower(\$fcv_array[\$i][0]).\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"' AND\";";
+		$this->string .= "\n\t\t\t\tif (isset(\$this->pog_attribute_type[strtolower(\$fcv_array[\$i][0])]) && \$this->pog_attribute_type[strtolower(\$fcv_array[\$i][0])][0] != 'NUMERIC')";
+		$this->string .= "\n\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \"`\".strtolower(\$fcv_array[\$i][0]).\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"' AND\";";
+		$this->string .= "\n\t\t\t\t}";
+		$this->string .= "\n\t\t\t\telse";
+		$this->string .= "\n\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \"`\".strtolower(\$fcv_array[\$i][0]).\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"' AND\";";
+		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\t\$this->pog_query .= \"`\".strtolower(\$fcv_array[\$i][0]).\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"' order by ".strtolower($this->objectName)."id asc \$sqlLimit\";";
+		$this->string .= "\n\t\t\tif (isset(\$this->pog_attribute_type[strtolower(\$fcv_array[\$i][0])]) && \$this->pog_attribute_type[strtolower(\$fcv_array[\$i][0])][0] != 'NUMERIC')";
+		$this->string .= "\n\t\t\t{";
+		$this->string .= "\n\t\t\t\t\$this->pog_query .= \"`\".strtolower(\$fcv_array[\$i][0]).\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"' order by ".strtolower($this->objectName)."id asc \$sqlLimit\";";
+		$this->string .= "\n\t\t\t}";
+		$this->string .= "\n\t\t\telse";
+		$this->string .= "\n\t\t\t{";
+		$this->string .= "\n\t\t\t\t\$this->pog_query .= \"`\".strtolower(\$fcv_array[\$i][0]).\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"' order by ".strtolower($this->objectName)."id asc \$sqlLimit\";";
+		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\t\$Database->Query(\$this->pog_query);";
 		$this->string .= "\n\t\t\tfor (\$i=0; \$i < \$Database->Rows(); \$i++)";
 		$this->string .= "\n\t\t\t{";
