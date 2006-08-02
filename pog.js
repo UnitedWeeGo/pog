@@ -91,8 +91,7 @@ optionsArray=new Array("VARCHAR(255)",
 "BINARY",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }",
-"{ MAP }"
+"{ PARENT }"
 )
 break
 case "oci":
@@ -124,8 +123,7 @@ optionsArray=new Array("BIGINT",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }",
-"{ MAP }"
+"{ PARENT }"
 )
 break
 case "firebird":
@@ -143,8 +141,7 @@ optionsArray=new Array("BLOB",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }",
-"{ MAP }"
+"{ PARENT }"
 )
 break
 case "odbc":
@@ -174,8 +171,7 @@ optionsArray=new Array("BIGINT",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }",
-"{ MAP }"
+"{ PARENT }"
 )
 break
 case "pgsql":
@@ -206,8 +202,7 @@ optionsArray=new Array("BIGINT",
 "VARCHAR(255)",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }",
-"{ MAP }"
+"{ PARENT }"
 )
 break
 case "sqlite":
@@ -217,8 +212,7 @@ optionsArray=new Array("TEXT",
 "BLOB",
 "OTHER",
 "{ CHILD }",
-"{ PARENT }",
-"{ MAP }"
+"{ PARENT }"
 )
 break}
 for(var i=0;i<optionsArray.length;i++){
@@ -227,8 +221,6 @@ if(optionsArray[i]=="{ CHILD }"){
 NewOpt.value="HASMANY"}
 else if(optionsArray[i]=="{ PARENT }"){
 NewOpt.value="BELONGSTO"}
-else if(optionsArray[i]=="{ MAP }"){
-NewOpt.value="JOIN"}
 else{
 NewOpt.value=optionsArray[i]}
 NewOpt.text=optionsArray[i]
