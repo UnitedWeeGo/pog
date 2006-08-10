@@ -512,7 +512,7 @@ class Object
 		$this->CreateSQLQuery();
 		$this->string .= "\n".$this->sql."\n*/";
 		$this->string .= "\n\n/**";
-		$this->string .= "\n* <b>".ucwords($this->objectName)."</b> class with integrated CRUD methods.";
+		$this->string .= "\n* <b>".$this->objectName."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
 		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / PHP4";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
