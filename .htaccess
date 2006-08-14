@@ -1,5 +1,4 @@
 Options -Indexes
-php_flag magic_quotes_gpc Off
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ^phpobjectgenerator\.com$ [NC]
 RewriteRule ^(.*)$ http://www.phpobjectgenerator.com/$1 [R=301,L]
