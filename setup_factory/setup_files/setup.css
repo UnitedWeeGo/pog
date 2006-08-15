@@ -21,7 +21,7 @@ body {margin:0 auto;padding:0;color:#828282;background:#fff;font:normal 10px Ver
 .middle2 {float:left;position:relative;padding:20px 0 0 22px;width:594px;background:#E7E9EE}
 .middle33 {height:596px;position:relative;padding-left:234px;color:#404855}
 .middle3 {float:left;position:relative;width:100%;background:#E7E9EE}
-.subtabs {height:25px;padding-top:35px;float:left;position:relative}
+.subtabs {padding-top:35px;float:left;position:relative}
 #tabs {width:617px;height:20px;float:left}
 #tabs3 {width:100%;height:20px;float:left}
 #tabs img,#tabs3 img {float:left;border:none}
@@ -45,7 +45,7 @@ b.r3 {margin:0 2px}
 b.rtop b.r4,b.rbottom b.r4 {margin:0 1px;height:2px}
 .col1,.col2 {padding-left:15px;padding-right:15px;margin-left:10px;line-height:14px;color:#848484;position:relative;width:250px;height:270px;display:inline;float:left}
 .col3 {width:300px;padding-left:150px;padding-right:150px;height:190px;display:block;float:left	color:#848484}
-#header {float:left;width:100%;line-height:normal;height:25px;}
+#header {float:left;width:100%;line-height:normal;}
 #header ul {margin:0;padding:8px 10px 0;list-style:none;color:#818183}
 #header li {float:left;background:url("norm_right.gif") no-repeat right top;margin-right:5px;padding:0}
 #header a {display:block;background:url("norm_left.gif") no-repeat left top;padding:3px 8px 2px;color:#B1B97D}

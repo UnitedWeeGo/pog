@@ -153,10 +153,12 @@ function createRequestObject()
 
 var http = createRequestObject();
 
-function sndReq(action, openNodes, objectName, objectId, currentNode, attributes)
+function sndReq(action, openNodes, objectName, objectId, currentNode, attributes, anchor)
 {
+
+
 	http = createRequestObject();
-	var req = './rpc.php?action='+action+'&opennodes='+openNodes+'&objectname='+objectName+'&objectid='+objectId+'&currentnode='+currentNode;
+	var req = './rpc.php?action='+action+'&opennodes='+openNodes+'&objectname='+objectName+'&objectid='+objectId+'&currentnode='+currentNode+'&anchor='+anchor;
 	if (action == "Add")
 	{
 		for (i=0; i<attributes.length; i++)

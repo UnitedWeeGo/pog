@@ -9,6 +9,7 @@
 * 2. If there is, it reads generates newer versions of all objects in the object directory,
 * zip then and present them to the user to 'download'
 */
+ini_set("max_execution_time", 0);
 include "../../configuration.php";
 include "class.zipfile.php";
 include "nusoap.php";

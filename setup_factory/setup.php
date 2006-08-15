@@ -27,6 +27,7 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 <form action="./index.php" method="POST">
 <?php
 ini_set("error_reporting", 0);
+ini_set("max_execution_time", 0);
 if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 {
 ?>
@@ -115,7 +116,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		/**
 		 * verify storage status
 		 */
-		
+
 		if ($errors == 0)
 		{
 			AddTrace("Configuration Info....OK!\n");
@@ -186,8 +187,8 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				$objectCount++;
 			}
 		}
-				
-				
+
+
 		if ($errors == 0)
 		{
 			AddTrace("\nPOG Relations PreRequisites");
@@ -345,7 +346,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 		}
 		unset($_GET);
 	}
-	echo "<script>sndReq('GetList', '', '$objectName', '', '', '');</script>";
+	echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</script>";
 	echo '<div id="container"></div>';
 	$_SESSION['fileNames'] = serialize($fileNames);
 	$_SESSION['objectNameList'] = serialize($objectNameList);
@@ -390,7 +391,7 @@ else
 			<br/>1. Establish a database connection.<br/>
 			2. Create table(s) for your objec(s), if required.<br/>
 			3. Perform diagnostics tests on your object(s).<br/>
-			4. Provide you with the test results.<br/><input type="image" onclick="PleaseWait();" src="./setup_images/setup_pogmeup.gif" name="submit"/>
+			4. Provide you with the test results.<br/><input type="image" onclick="PleaseWait('');" src="./setup_images/setup_pogmeup.gif" name="submit"/>
 			<div align="center" id="pleasewait" style="display:none;"><img src="./setup_images/loading.gif"/></div>
 			</div>
 			</div>

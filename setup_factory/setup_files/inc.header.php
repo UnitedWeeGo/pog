@@ -26,10 +26,11 @@ google_color_text = "CCC078";
   src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 <script type="text/javascript"><!--
-function PleaseWait()
+function PleaseWait(id)
 {	
-	var div = document.getElementById("pleasewait");
+	var div = document.getElementById("pleasewait"+id);
 	div.style.display = "block";
+	return false;
 }
 //--></script>
 </div>

@@ -1,5 +1,6 @@
 <?php
 
+
 	/**
 	 * Specifies what test data is used during unit testing (step 2 of the setup process)
 	 * Todo: Can be improved but satisfatory for now
@@ -99,7 +100,10 @@
 					$html .= "</select>";
 			break;
 			case "HASMANY":
-				$html = "";
+				$html = $attributeValue;
+			break;
+			case "BELONGSTO":
+				$html = $attributeValue;
 			break;
 			case "MEDIUMBLOB":
 				$html = "sorry. cannot render attribute of type LONGBLOB";
@@ -144,6 +148,83 @@
 		}
 		return $html;
 	}
+
+	/**
+	 * Renders an object as an Xtree Node
+	 *
+	 * @param unknown_type $child
+	 */
+	function ConvertObjectToNode(&$instance, &$masterNode, $js, $anchor)
+	{
+		$attributeList = array_keys(get_object_vars($instance));
+		$objectName = $className = get_class($instance);
+		$node = &$masterNode->addItem(new XNode("<span style='color:#0BAA9D'>[".$instance->{strtolower($className)."Id"}."]</span>  <a href='#' onclick='javascript:sndReq(\"Delete\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js, \"$anchor\");return false;'><img src=\"./setup_images/button_delete.gif\" border=\"0\"/></a>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
+
+		//regular attributes
+		foreach($attributeList as $attribute)
+		{
+			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query" )
+			{
+				if (isset($instance->pog_attribute_type[strtolower($attribute)]))
+				{
+					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
+					$subnode = &$node->addItem(new XNode($attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/><br/>", false,'',"setup_images/folderopen.gif"));
+				}
+			}
+		}
+
+		//parents and children
+		foreach ($instance->pog_attribute_type as $attribute_name => $attrubute_type)
+		{
+			if ($attrubute_type[1] == "HASMANY" || $attrubute_type[1] == "BELONGSTO")
+			{
+				if ($attrubute_type[1] == "BELONGSTO")
+				{
+					eval ('$value = $instance->'.strtolower($attribute_name).'Id;');
+					$thisValue = ConvertAttributeToHtml($attribute_name, $attrubute_type, $value, '');
+					$subnode = &$node->addItem(new XNode("<br/>".$attribute_name."<span style='font-weight:normal;color:#ADA8B2;'>{".($attrubute_type[1] == "HASMANY" ? "CHILD" : "PARENT")."}</span><br/>".$thisValue."<br/><br/>", false,'',"setup_images/folderopen.gif"));
+				}
+				else
+				{
+					$value = '';
+					eval('$childrenList = $instance->Get'.ucfirst(strtolower($attribute_name)).'List();');
+					if (sizeof($childrenList) > 0)
+					{
+						$myNode = &$node->addItem(new XNode("<span style='color:#4d4a4a'>[".$attribute_name."List]{Dimensions:[".sizeof($childrenList)."]}</span>", false, "setup_images/folderclose.gif","setup_images/folderopen.gif"));
+						$child = $childrenList[0];
+						$js2 = "new Array(";
+						$attributeList = array_keys(get_object_vars($child));
+						$x=0;
+						foreach($attributeList as $attribute)
+						{
+							if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
+							{
+								if ($x != 0 && isset($child->pog_attribute_type[strtolower($attribute)]))
+								{
+									$js2 .= '"'.$attribute.'",';
+								}
+							}
+							$x++;
+						}
+						$js2 = trim($js2, ",");
+						$js2 .= ")";
+
+						foreach ($childrenList as $child)
+						{
+							/*$value .= $child->{strtolower($attribute_name)."Id"} . ",";*/
+							ConvertObjectToNode($child, $myNode, $js2, $anchor);
+						}
+					}
+					else
+					{
+						$node->addItem(new XNode("<span style='color:#4d4a4a'>[".$attribute_name."List]{Dimensions:[0]}</span><br/><br/>", false, '',"setup_images/folderopen.gif"));
+					}
+				}
+			}
+		}
+		$subnode = &$node->addItem(new XNode("<br/><a style='float:left;' href='#' onclick='javascript:PleaseWait(\"".$instance->{strtolower($objectName).'Id'}."\"); sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js, \"$anchor\");return false;'><img src='./setup_images/button_update.gif' border='0'/></a><span id='pleasewait".$instance->{strtolower($objectName).'Id'}."' style='float:left;display:none;'><img src='./setup_images/loading.gif' style='float:left;'/></span><br/>", false,'',"folderopen.gif"));
+	}
+
 
 	/**
 	 * Populates object attributes with test values
@@ -277,13 +358,13 @@
 	 */
 	function TestEssentials($instance, $optimizeAsWell = true)
 	{
-		$errors = 0; 	
+		$errors = 0;
 		if (!TestSave($instance))
 		{
-	
+
 			$errors++;
 		}
-		
+
 		if (!TestSaveNew($instance))
 		{
 			$errors++;
@@ -303,7 +384,7 @@
 				$errors++;
 			}
 		}
-		
+
 		if ($errors == 0)
 		{
 			return  true;
@@ -417,12 +498,12 @@
 			$databaseConnection = new DatabaseConnection();
 			$databaseConnection->Query($query);
 		}
-		else 
+		else
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 			$affectedRows = $databaseConnection->query($query);
 		}
-		
+
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
 			if ($databaseConnection->Rows() > 0)
@@ -432,12 +513,12 @@
 			return false;
 		}
 		else
-		{	
+		{
 			if (sizeof($affectedRows->fetchAll()) > 0)
 			{
 				return true;
 			}
-			else 
+			else
 			{
 				return  false;
 			}
@@ -455,7 +536,7 @@
 			AddError("POG Setup doesn't support automatic table creation for Firebird databases yet. Therefore, your objects/tables may be misaligned. If POG Essential tests failed, this may very well be the case. Create the tables manually and re-run setup.");
 			return true;
 		}
-		
+
 		$objectName = GetObjectName($objectFilePath);
 
 		//extract sql
@@ -486,7 +567,7 @@
 			}
 			else if ($databaseType == "odbc")
 			{
-				$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);		
+				$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
 			}
 			if ($databaseConnection->Query($sql))
 			{
@@ -507,7 +588,7 @@
 		{
 			$databaseConnection = new DatabaseConnection();
 		}
-		else 
+		else
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
@@ -531,7 +612,7 @@
 			AddError("POG Setup doesn't support table automatic alteration for non-MySQL databases yet. Therefore, your objects/tables may be misaligned. If POG Essential tests failed, this may very well be the case. Drop and recreate the tables and re-run setup.");
 			return true;
 		}
-		
+
 		//find object attributes/table columns mismatch
 		$tableName = strtolower(get_class($object));
 		$columns = array();
@@ -541,7 +622,7 @@
 		{
 			$databaseConnection = new DatabaseConnection();
 		}
-		else 
+		else
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
@@ -554,7 +635,7 @@
 					$columns[$databaseConnection->Result($i, "Field")] = $databaseConnection->Result($i, "Type");
 				}
 			}
-			else 
+			else
 			{
 				foreach ($databaseConnection->Query($query) as $row)
 				{
@@ -609,7 +690,16 @@
 				{
 					if ($attribute_types[$c][1] == "BELONGSTO")
 					{
-						$columnsToAdd2[] = strtolower($c)."id int";
+						$colMarkedForDeletion = array_search(strtolower($c)."id", $columnsToRemove);
+						if ($colMarkedForDeletion === false) //this is clumsy, until we think of something better
+						{
+							$columnsToAdd2[] = strtolower($c)."id int";
+						}
+						else
+						{
+							//remove entry from columnsToRemove since they are the same. Will lose  data if dropped & recreated
+							array_splice($columnsToRemove, $colMarkedForDeletion, 1);
+						}
 					}
 					else
 					{
@@ -668,7 +758,6 @@
 				$query .= "modify $modify ".$columnsToModify[$modify].",";
 			}
 			$query = trim($query, ',');
-
 			//execute query
 			if ($databaseConnection -> Query($query))
 			{
@@ -691,7 +780,7 @@
 		{
 			$databaseConnection = new DatabaseConnection();
 		}
-		else 
+		else
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
@@ -729,7 +818,7 @@
 		{
 			$databaseConnection = new DatabaseConnection();
 		}
-		else 
+		else
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
@@ -764,7 +853,7 @@
 			{
 				$databaseConnection = new DatabaseConnection();
 			}
-			else 
+			else
 			{
 				$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 			}
@@ -1363,7 +1452,7 @@
 		$object = PopulateTestValues($object);
 
 		$object -> Save(false);
-		
+
 		//get all child classes
 		$childrenList = array();
 		foreach ($attribute_types as $key => $attribute_array)
@@ -1415,9 +1504,9 @@
 			$childInstance->Delete();
 			eval ("\$object -> Set".$child."List(new array());");
 		}
-		
+
 		$object -> Delete(false);
-		
+
 		if ($errors == 0)
 		{
 			return true;

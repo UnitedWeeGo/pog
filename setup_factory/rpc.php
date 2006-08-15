@@ -12,6 +12,7 @@ if(file_exists("../objects/class.database.php"))
 }
 
 $objectName = $_REQUEST['objectname'];
+$anchor = $_REQUEST['anchor'];
 
 //include all classes (possible relations)
 $dir = opendir('../objects/');
@@ -97,10 +98,10 @@ switch($action)
 				}
 			}
 		}
-    	RefreshTree($objectName, $root);
+    	RefreshTree($anchor, $root);
     break;
     case 'GetList':
-		RefreshTree($objectName, $root);
+		RefreshTree($anchor, $root);
     break;
     case 'Delete':
     	eval ('$instance = new '.$objectName.'();');
@@ -120,7 +121,7 @@ switch($action)
 				}
 			}
 		}
-    	RefreshTree($objectName, $root);
+    	RefreshTree($anchor, $root);
     break;
     case 'Update':
     	eval ('$instance = new '.$objectName.'();');
@@ -140,7 +141,7 @@ switch($action)
 			}
 		}
     	$instance->Save();
-    	RefreshTree($objectName, $root);
+    	RefreshTree($anchor, $root);
     break;
  }
 
@@ -157,7 +158,7 @@ switch($action)
 		$attributeList = array_keys(get_object_vars($instance));
 		$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0,)), strtolower($objectName)."Id", false);
 		$x = 0;
-		$masterNode = &$root->addItem(new XNode("<span style='color:#998D05'>".$objectName."</span>&nbsp;<span style='font-weight:normal'>{Dimensions:[".sizeof($instanceList)."]}</span>", false, "setup_images/folderopen.gif","setup_images/folderclose.gif"));
+		$masterNode = &$root->addItem(new XNode("<span style='color:#998D05'>".$objectName."</span>&nbsp;<span style='font-weight:normal'>{Dimensions:[".sizeof($instanceList)."]}</span>", false, "setup_images/folderclose.gif","setup_images/folderopen.gif"));
 		$node = &$masterNode->addItem(new XNode("<span style='color:#998D05'>ADD RECORD</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
 		foreach($attributeList as $attribute)
 		{
@@ -174,26 +175,13 @@ switch($action)
 		}
 		$js = trim($js, ",");
 		$js .= ")";
-		$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Add\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_add.gif' border='0'/></a>", false,'',"folderopen.gif"));
+		$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Add\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js, \"$objectName\");return false;'><img src='./setup_images/button_add.gif' border='0'/></a>", false,'',"folderopen.gif"));
 
 		if ($instanceList != null)
 		{
 			foreach($instanceList as $instance)
 			{
-				$className = get_class($instance);
-				$node = &$masterNode->addItem(new XNode("<span style='color:#0BAA9D'>[".$instance->{strtolower($className)."Id"}."]</span>  <a href='#' onclick='javascript:sndReq(\"Delete\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src=\"./setup_images/button_delete.gif\" border=\"0\"/></a>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
-				foreach($attributeList as $attribute)
-				{
-					if ($attribute != "pog_attribute_type" && $attribute!= "pog_query" )
-					{
-						if (isset($instance->pog_attribute_type[strtolower($attribute)]))
-						{
-							$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
-							$subnode = &$node->addItem(new XNode("<br/>".$attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
-						}
-					}
-				}
-				$subnode = &$node->addItem(new XNode("<br/><a href='#' onclick='javascript:sndReq(\"Update\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js);return false;'><img src='./setup_images/button_update.gif' border='0'/></a>", false,'',"folderopen.gif"));
+				ConvertObjectToNode($instance, $masterNode, $js, $objectName);
 			}
 		}
 		$menu_html_code = $root->generateTree();

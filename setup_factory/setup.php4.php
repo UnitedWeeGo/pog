@@ -382,7 +382,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 		}
 		$_GET = null;
 	}
-	echo "<script>sndReq('GetList', '', '$objectName', '', '', '');</script>";
+	echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</script>";
 	echo '<div id="container"></div>';
 	$_SESSION['fileNames'] = serialize($fileNames);
 	$_SESSION['objectNameList'] = serialize($objectNameList);
