@@ -197,7 +197,7 @@ class Object
 			$this->string .= "\tfunction Save()\n\t{";
 		}
 		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
-		$this->string .= "\n\t\t\$this->pog_query = \"select ".strtolower($this->objectName)."id from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
+		$this->string .= "\n\t\t\$this->pog_query = \"select `".strtolower($this->objectName)."id` from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
 		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
 		$this->string .= "\n\t\tif (\$Database->Rows() > 0)";
 		$this->string .= "\n\t\t{";

@@ -216,7 +216,7 @@ class Object
 		$this->string .="\n\t\ttry";
 		$this->string .="\n\t\t{";
 		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';port='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
-		$this->string .= "\n\t\t\t\$this->pog_query = \"select count(`".strtolower($this->objectName)."id`) as count from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`=\$this->".strtolower($this->objectName)."Id limit 1\";";
+		$this->string .= "\n\t\t\t\$this->pog_query = \"select count(`".strtolower($this->objectName)."id`) as count from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\$this->".strtolower($this->objectName)."Id' limit 1\";";
 		$this->string .= "\n\t\t\tforeach (\$Database->query(\$this->pog_query) as \$row)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$rows = \$row[\"count\"];";
@@ -393,7 +393,7 @@ class Object
 					$this->string .= "\n\t\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst($this->attributeList[$i])."List();";
 					$this->string .= "\n\t\t\t\tforeach (\$this->_".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
 					$this->string .= "\n\t\t\t\t{";
-					$this->string .= "\n\t\t\t\t\t\$".strtolower($this->attributeList[$i])."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";		
+					$this->string .= "\n\t\t\t\t\t\$".strtolower($this->attributeList[$i])."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
 					$this->string .= "\n\t\t\t\t\t\$".strtolower($this->attributeList[$i])."->Save(\$deep);";
 					$this->string .= "\n\t\t\t\t}";
 				}
@@ -520,7 +520,7 @@ class Object
 		$this->string .= "\n\t\t\$this->_".strtolower($child)."List =& \$list;";
 		$this->string .= "\n\t}";
 	}
-	
+
 	// -------------------------------------------------------------
 	function CreateSetParentFunction($parent)
 	{
@@ -587,7 +587,7 @@ class Object
 		$this->string .= "\n\t\t\ttry";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';port='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
-		$this->string .= "\n\t\t\t\t\$pog_query = \"select `".strtolower($this->objectName)."id` from ".strtolower($this->objectName)." where \";";
+		$this->string .= "\n\t\t\t\t\$pog_query = \"select `".strtolower($this->objectName)."id` from `".strtolower($this->objectName)."` where \";";
 		$this->string .= "\n\t\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array)-1; \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\tif (isset(\$this->pog_attribute_type[strtolower(\$fcv_array[\$i][0])]) && \$this->pog_attribute_type[strtolower(\$fcv_array[\$i][0])][0] != 'NUMERIC')";
