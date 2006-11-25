@@ -44,6 +44,19 @@ $server -> register('GenerateObject',
 					'encoded',
 					'Generates the appropriate object from supplied attributeList, typeList etc.'
 					);
+$server -> register('GenerateMapping',
+					array('objectName1' => 'xsd:string',
+						'objectName2' => 'xsd:string',
+						'language' => 'xsd:string',
+						'wrapper' => 'xsd:string',
+						'pdoDriver' => 'xsd:string'),
+					array('return' => 'xsd:string'),
+					'urn:pogwsdl',
+					'urn:pogwsdl#GenerateMapping',
+					'rpc',
+					'encoded',
+					'Generates a mapping class between 2 siblings'
+					);
 $server -> register('GenerateObjectFromLink',
 					array('link' => 'xsd:string'),
 					array('return' => 'xsd:string'),
@@ -180,21 +193,26 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 
 		if  (strtolower($language) == "php4")
 		{
-			require "../object_factory/class.objectphp4pogmysql.php";
+			require_once "../object_factory/class.objectphp4pogmysql.php";
 		}
 		else
 		{
-			require "../object_factory/class.objectphp5pogmysql.php";
+			require_once "../object_factory/class.objectphp5pogmysql.php";
 		}
 	}
 	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
 	$object->BeginObject();
+	if (strtolower($language) != "php4")
+	{
+		$object->CreateMagicGetterFunction();
+	}
 	$object->CreateConstructor();
 	$object->CreateGetFunction();
 	$object->CreateGetAllFunction();
-	$object->CreateSaveFunction(in_array("HASMANY", $typeList));
-	$object->CreateSaveNewFunction(in_array("HASMANY", $typeList));
-	$object->CreateDeleteFunction(in_array("HASMANY", $typeList));
+	$object->CreateSaveFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
+	$object->CreateSaveNewFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
+	$object->CreateDeleteFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
+	$object->CreateDeleteListFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
 
 	$i = 0;
 	foreach ($typeList as $type)
@@ -210,6 +228,12 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 			$object->CreateGetParentFunction($attributeList[$i]);
 			$object->CreateSetParentFunction($attributeList[$i]);
 		}
+		else if ($type == "JOIN")
+		{
+			$object->CreateSetAssociationsFunction($attributeList[$i]);
+			$object->CreateGetAssociationsFunction($attributeList[$i]);
+			$object->CreateAddAssociationFunction($attributeList[$i]);
+		}
 		$i++;
 	}
 
@@ -218,6 +242,49 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 		$object->CreateEscapeFunction();
 		$object->CreateUnescapeFunction();
 	}
+	$object->EndObject();
+
+	return base64_encode($object->string);
+}
+
+/**
+ * Generates the mapping object (for Many-Many relations)
+ *
+ * @param unknown_type $objectName1
+ * @param unknown_type $objectName2
+ * @param unknown_type $language
+ * @param unknown_type $wrapper
+ * @param unknown_type $pdoDriver
+ * @return unknown
+ */
+function GenerateMapping($objectName1, $objectName2, $language, $wrapper, $pdoDriver)
+{
+	require_once ("../include/configuration.php");
+	require_once ("../include/class.misc.php");
+
+	if (strtoupper($wrapper) == "PDO")
+	{
+		require_once "../object_factory/class.objectmapping".$language.strtolower($wrapper).$pdoDriver.".php";
+	}
+	else
+	{
+		if  (strtolower($language) == "php4")
+		{
+			require_once "../object_factory/class.objectmappingphp4pogmysql.php";
+		}
+		else
+		{
+			require_once "../object_factory/class.objectmappingphp5pogmysql.php";
+		}
+	}
+
+	$array = array($objectName1, $objectName2);
+	sort($array);
+	$object = new ObjectMap($array[0], $array[1]);
+	$object->BeginObject();
+	$object->CreateAddMappingFunction();
+	$object->CreateRemoveMappingFunction();
+	$object->CreateSaveFunction();
 	$object->EndObject();
 
 	return base64_encode($object->string);
@@ -282,7 +349,10 @@ function GenerateObjectFromLink($link)
 			eval ("$".$arguments[0]." = '".$value."';");
 		}
 	}
-
+	if (!isset($pdoDrive))
+	{
+		$pdoDrive = '';
+	}
 	$string = GenerateObject($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
 	return $string;
 }
@@ -346,6 +416,10 @@ function GeneratePackageFromLink($link)
 		{
 			eval ("$".$arguments[0]." = '".$value."';");
 		}
+		if (!isset($pdoDrive))
+		{
+			$pdoDrive = '';
+		}
 	}
 	return GeneratePackage($objectNam, $attributeLis, $typeLis, $languag, $wrappe, $pdoDrive);
 }
@@ -375,6 +449,7 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
 	$data = str_replace('&soap', $GLOBALS['configuration']['soap'], $data);
 	$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber'], $data);
 	$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber'], $data);
+	$data = str_replace('&homepage', $GLOBALS['configuration']['homepage'], $data);
 
 	return base64_encode($data);
 }
@@ -393,6 +468,8 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
 function GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver = null, $db_encoding = 1)
 {
 	require_once ("../include/configuration.php");
+	require_once ("../include/class.misc.php");
+
 	$package = array();
 	$package["objects"] = array();
 	$package["setup"] = array();
@@ -419,6 +496,16 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 		$package["objects"]["class.database.php"] = base64_encode($data);
 	}
 	$package["objects"]["class.".strtolower($objectName).".php"] =  GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver);
+
+	//generate mapping object if necessary
+	$misc = new Misc(array());
+	foreach ($typeList as $key => $type)
+	{
+		if ($type == "JOIN")
+		{
+			$package["objects"]["class.".strtolower($misc->MappingName($objectName, $attributeList[$key])).".php"] =  GenerateMapping($objectName, $attributeList[$key], $language, $wrapper, $pdoDriver);
+		}
+	}
 
 	//generate setup
 	if (strtoupper($wrapper) == "PDO")
@@ -491,6 +578,19 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 		}
 	}
 	closedir($dir);
+
+	$package["setup"]["data_initialization"] = array();
+
+	//data initialization stuff
+	$data = file_get_contents("../setup_factory/setup_files/data_initialization/data_initialization.sql");
+	$package["setup"]["data_initialization"]["data_initialization.sql"] = base64_encode($data);
+
+	$data = file_get_contents("../setup_factory/setup_files/data_initialization/howto.txt");
+	$package["setup"]["data_initialization"]["howto.txt"] = base64_encode($data);
+
+	$data = file_get_contents("../setup_factory/setup_files/data_initialization/read_dump_lib.php");
+	$package["setup"]["data_initialization"]["read_dump_lib.php"] = base64_encode($data);
+
 
 	return serialize($package);
 }

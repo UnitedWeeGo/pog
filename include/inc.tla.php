@@ -1,6 +1,6 @@
 <?php
 function tla_ads() {
-	
+
 	// Number of seconds before connection to XML times out
 	// (This can be left the way it is)
 	$CONNECTION_TIMEOUT = 10;
@@ -9,7 +9,7 @@ function tla_ads() {
 	// This file MUST be writable by web server
 	// You should create a blank file and CHMOD it to 666
 	$LOCAL_XML_FILENAME = "local_46888.xml";
-	
+
 	if( !file_exists($LOCAL_XML_FILENAME) ) die("Text Link Ads script error: $LOCAL_XML_FILENAME does not exist. Please create a blank file named $LOCAL_XML_FILENAME.");
 	if( !is_writable($LOCAL_XML_FILENAME) ) die("Text Link Ads script error: $LOCAL_XML_FILENAME is not writable. Please set write permissions on $LOCAL_XML_FILENAME.");
 
@@ -24,17 +24,9 @@ function tla_ads() {
 	$arr_xml = tla_decodeXML($xml);
 
 	if ( is_array($arr_xml) ) {
-		echo "
-<style type=\"text/css\">
-ul#links46888 { width: 100%; list-style: none; overflow: hidden; margin: 0px; padding: 0px; border: 0px; border-spacing: 0px; } 
-ul#links46888 li { display: inline; float: left; clear: none; width: 100%; padding: 0px; margin: 0px; } 
-ul#links46888 li span { display: block; width: 100%; margin: 0px; font-size: 9px; color: #000000; } 
-ul#links46888 li span a { font-size: 9px; color: #837E3C; } 
-</style> 
-";
-		echo "\n<ul id=\"links46888\">\n";
+		echo "\n<ul style=\"border: 0px; border-spacing: 0px; width: 100%; overflow: hidden; list-style: none; margin: 0; padding: 0;\">\n";
 		for ($i = 0; $i < count($arr_xml['URL']); $i++) {
-			echo "<li><span>".$arr_xml['BeforeText'][$i]." <a href=\"".$arr_xml['URL'][$i]."\">".$arr_xml['Text'][$i]."</a> ".$arr_xml['AfterText'][$i]."</span></li>\n";
+			echo "<li style=\"clear: none; float: left; width: 100%; margin: 0; padding: 0; display: inline;\"><span style=\"padding: 3px; display: block; font-size: 12px; color: #000000; width: 100%; margin: 0;\">".$arr_xml['BeforeText'][$i]." <a style=\"font-size: 9px; color: 837E3C;\" href=\"".$arr_xml['URL'][$i]."\">".$arr_xml['Text'][$i]."</a> ".$arr_xml['AfterText'][$i]."</span></li>\n";
 		}
 		echo "</ul>";
 	}
@@ -49,7 +41,7 @@ function tla_updateLocalXML($url, $file, $time_out)
 	}
 	if($xml = file_get_contents_tla($url, $time_out)) {
 		$xml = substr($xml, strpos($xml,'<?'));
-	
+
 		if ($handle = fopen($file, "w")) {
 			fwrite($handle, $xml);
 			fclose($handle);
@@ -91,9 +83,9 @@ function file_get_contents_tla($url, $time_out)
 
 function tla_decodeXML($xmlstg)
 {
-	
+
 	if( !function_exists('html_entity_decode') ){
-		function html_entity_decode($string) 
+		function html_entity_decode($string)
 		{
 		   // replace numeric entities
 		   $string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\1"))', $string);
@@ -121,4 +113,5 @@ function tla_decodeXML($xmlstg)
 }
 
 tla_ads();
+
 ?>

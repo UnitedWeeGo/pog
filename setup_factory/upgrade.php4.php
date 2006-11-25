@@ -10,9 +10,10 @@
 * zip then and present them to the user to 'download'
 */
 ini_set("max_execution_time", 0);
-include "../../configuration.php";
-include "class.zipfile.php";
-include "nusoap.php";
+include_once "../../configuration.php";
+include_once "class.zipfile.php";
+include_once "nusoap.php";
+include_once "setup_misc.php";
 
 	/**
 	 * Connects to POG SOAP server defined in configuration.php and
@@ -48,26 +49,49 @@ include "nusoap.php";
 			}
 			if (isset($className))
 			{
-				$objectNameList[] = $className;
-
-				$linkParts1 = split("\*\/", $contentParts[1]);
-				$linkParts2 = split("\@link", $linkParts1[0]);
-				$link = $linkParts2[1];
-
-				$client = new soapclient($GLOBALS['configuration']['soap'], true);
-				$params = array('link' 	=> $link);
-				if ($i == 0)
+				eval ('include_once("../../objects/class.'.strtolower($className).'.php");');
+				$instance = new $className();
+				if (!TestIsMapping($instance))
 				{
-					$package = unserialize($client->call('GeneratePackageFromLink', $params));
-				}
-				else
-				{
-					$objectString = $client->call('GenerateObjectFromLink', $params);
-					$package["objects"]["class.".strtolower($className).".php"] = $objectString;
+					$objectNameList[] = $className;
+
+					$linkParts1 = split("\*\/", $contentParts[1]);
+					$linkParts2 = split("\@link", $linkParts1[0]);
+					$link = $linkParts2[1];
+
+					$client = new soapclient($GLOBALS['configuration']['soap'], true);
+					$params = array('link' 	=> $link);
+					if ($i == 0)
+					{
+						$package = unserialize($client->call('GeneratePackageFromLink', $params));
+					}
+					else
+					{
+						$objectString = $client->call('GenerateObjectFromLink', $params);
+						$package["objects"]["class.".strtolower($className).".php"] = $objectString;
+					}
 				}
 			}
 			$i++;
 		}
+
+		//upgrade mapping classes if any
+		foreach ($objectNameList as $objectName)
+		{
+			$instance = new $objectName();
+			foreach ($instance->pog_attribute_type as $key => $attribute_type)
+			{
+				if ($attribute_type[1] == "JOIN")
+				{
+					$params = array('objectName1' => $objectName, 'objectName2' => $key, 'language' => "php4", 'wrapper' => 'POG', 'pdoDriver' => ' ');
+					$mappingString = $client->call('GenerateMapping', $params);
+					$package["objects"]['class.'.strtolower(MappingName($objectName, $key)).'.php'] = $mappingString;
+				}
+			}
+		}
+
+
+
 		$zipfile = new createZip();
 		$zipfile -> addPOGPackage($package);
 		$zipfile -> forceDownload("pog.".time().".zip");

@@ -182,6 +182,7 @@ class createZip  {
 	 */
 	function addPOGPackage($package, $paths=array())
 	{
+		
 		$i = 0;
 		foreach ($package as $key=>$value)
 		{

@@ -16,7 +16,7 @@ body {margin:0 auto;padding:0;color:#828282;background:#fff;font:normal 10px Ver
 .bottom3 img {display:inline}
 .left {width:234px;height:550px;position:absolute}
 .text {width:194px;height:319px;line-height:15px;position:relative;float:left;padding:22px}
-.gold {color:#998D05;font-weight:bold;display:block}
+.gold {color:#998D05;font-weight:bold;display:block;}
 .middle {width:617px;position:relative;padding-left:234px;height:596px;color:#404855}
 .middle2 {float:left;position:relative;padding:20px 0 0 22px;width:594px;background:#E7E9EE}
 .middle33 {height:596px;position:relative;padding-left:234px;color:#404855}
@@ -31,6 +31,7 @@ input.i {position:relative;padding:2px 3px;width:200px;color:#5A4F64;font-size:9
 textarea {width:575px;height:325px;font-size:12px;border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC}
 textarea.t {width:450px;height:50px;font-size:12px;border-top:1px solid #404040; color:#5A4F64; border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC; background-color:#F7F7F7;}
 select.s, input.c {border-top:1px solid #404040; color:#5A4F64; border-left:1px solid #404040;border-right:1px solid #D1D0CC;border-bottom:1px solid #D1D0CC; background-color:#F7F7F7;}
+.ss{font-size:95%;}
 table {position:relative;display:inline;background:#E8E9EE}
 td {height:25px}
 .id {font-weight:bold;padding-left:5px}
@@ -52,3 +53,25 @@ b.rtop b.r4,b.rbottom b.r4 {margin:0 1px;height:2px}
 #header #current {background-image:url("./setup_images/tab_activeobjectright.gif")}
 #header #current a {background-image:url("./setup_images/tab_activeobjectleft.gif");padding:3px 8px 2px;font-weight:bold;color:#867C1D}
 #header #inactive {padding:3px 3px 2px 5px;font-weight:bold}
+a.deleteDeep:hover
+{
+text-decoration:none;
+background-color:#9a1818;
+color:#fff;
+}
+a.deleteShallow:hover
+{
+text-decoration:none;
+background-color:#f3e508;
+color:#000;
+}
+a.deleteCancel:hover
+{
+text-decoration:none;
+background-color:#bee8b6;
+color:#000;
+}
+.nav
+{
+padding-left:80px;
+}

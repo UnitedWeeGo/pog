@@ -141,17 +141,28 @@ function xSaveState()
 
 function createRequestObject()
 {
-    var ro;
-    var browser = navigator.appName;
-    if(browser == "Microsoft Internet Explorer"){
-        ro = new ActiveXObject("Microsoft.XMLHTTP");
-    }else{
-        ro = new XMLHttpRequest();
+	var ro;
+    if (window.XMLHttpRequest)
+    {
+  		ro = new XMLHttpRequest();
+	}
+	else
+	{
+        ro = new ActiveXObject('MSXML2.XMLHTTP.3.0');
     }
     return ro;
 }
 
 var http = createRequestObject();
+
+function refTree(offset, limit, objectName)
+{
+	http = createRequestObject();
+	var req = './rpc.php?action=Refresh&offset='+offset+'&limit='+limit+'&objectname='+objectName;
+	http.open('get', req);
+    http.onreadystatechange = handleResponse;
+    http.send(null);
+}
 
 function sndReq(action, openNodes, objectName, objectId, currentNode, attributes, anchor)
 {
@@ -245,5 +256,18 @@ function collapseAll()
 		{
 			myLists[i].src = "setup_images/folderclose.gif";
 		}
+	}
+}
+
+function ToggleElementVisibility(elementId)
+{
+	var element = document.getElementById(elementId);
+	if (element.style.display != 'none')
+	{
+		element.style.display = 'none';
+	}
+	else
+	{
+		element.style.display = 'inline';
 	}
 }

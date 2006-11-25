@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>Php Object Generator Setup <?=$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']?></title>
-<link rel="stylesheet" href="./setup.css" type="text/css" />
 <link rel="stylesheet" type="text/css" href="./setup_library/xPandMenu.css"/>
+<link rel="stylesheet" href="./setup.css" type="text/css" />
 <script src="./setup_library/xPandMenu.js"></script>
 </head>
 <body>
@@ -27,7 +27,7 @@ google_color_text = "CCC078";
 </script>
 <script type="text/javascript"><!--
 function PleaseWait(id)
-{	
+{
 	var div = document.getElementById("pleasewait"+id);
 	div.style.display = "block";
 	return false;

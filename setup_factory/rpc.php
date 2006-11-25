@@ -3,16 +3,19 @@ include "./setup_library/xPandMenu.php";
 include "./setup_library/setup_misc.php";
 if(file_exists("../configuration.php"))
 {
-	include "../configuration.php";
+	include_once("../configuration.php");
 }
 
 if(file_exists("../objects/class.database.php"))
 {
-	include "../objects/class.database.php";
+	include_once("../objects/class.database.php");
 }
 
-$objectName = $_REQUEST['objectname'];
-$anchor = $_REQUEST['anchor'];
+$objectName = isset($_REQUEST['objectname']) ? $_REQUEST['objectname'] : '';
+$anchor = isset($_REQUEST['anchor']) ? $_REQUEST['anchor'] : '';
+$offset = isset($_REQUEST['offset']) ? $_REQUEST['offset'] : '';
+$limit = isset($_REQUEST['limit']) ? $_REQUEST['limit'] : '';
+
 
 //include all classes (possible relations)
 $dir = opendir('../objects/');
@@ -27,7 +30,7 @@ while(($file = readdir($dir)) !== false)
 closedir($dir);
 foreach ($objects as $object)
 {
-	include("../objects/{$object}");
+	include_once("../objects/{$object}");
 }
 
 eval ('$instance = new '.$objectName.'();');
@@ -35,10 +38,10 @@ $attributeList = array_keys(get_object_vars($instance));
 $noOfExternalAttributes = sizeof($attributeList) - 3;
 
 // get object id to perform action. required for Delete() and Update()
-$objectId = $_REQUEST['objectid'];
+$objectId = isset($_REQUEST['objectid']) ? $_REQUEST['objectid'] : '';
 
 // get the ids of all open nodes before action is performed
-$openNodes = explode('-', $_REQUEST['opennodes']);
+$openNodes = isset($_REQUEST['opennodes']) ? explode('-', $_REQUEST['opennodes']) : '';
 
 // get action to perform
 $action = $_GET['action'];
@@ -56,19 +59,21 @@ if (isset($_GET['currentnode']))
 }
 $root = new XMenu();
 
-foreach ($openNodes as $openNode)
+if ($openNodes != '')
 {
-	$openNodeParts = explode('Xtree', $openNode);
-	$noParts = sizeof($openNodeParts);
-
-	// all open nodes when action is initiated
-	if ($noParts > 0 && is_numeric($openNodeParts[$noParts - 1]))
+	foreach ($openNodes as $openNode)
 	{
-		// initialize all open nodes
-		$root->visibleNodes[] = $openNodeParts[$noParts - 1];
+		$openNodeParts = explode('Xtree', $openNode);
+		$noParts = sizeof($openNodeParts);
+
+		// all open nodes when action is initiated
+		if ($noParts > 0 && is_numeric($openNodeParts[$noParts - 1]))
+		{
+			// initialize all open nodes
+			$root->visibleNodes[] = $openNodeParts[$noParts - 1];
+		}
 	}
 }
-
 // perform requested action
 switch($action)
 {
@@ -79,7 +84,7 @@ switch($action)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 			{
-				if (isset($instance->pog_attribute_type[strtolower($attribute)]))
+				if (isset($instance->pog_attribute_type[$attribute]))
 				{
 					if (isset($_GET[$attribute]))
 					{
@@ -100,13 +105,17 @@ switch($action)
 		}
     	RefreshTree($anchor, $root);
     break;
-    case 'GetList':
-		RefreshTree($anchor, $root);
+    case 'Refresh':
+		RefreshTree($objectName, $root, $offset, $limit);
     break;
+    case 'GetList':
+		RefreshTree($anchor, $root, $offset, $limit);
+    break;
+    case 'DeleteDeep':
     case 'Delete':
     	eval ('$instance = new '.$objectName.'();');
     	$instance->Get($objectId);
-    	$instance->Delete();
+    	$instance->Delete(($action == 'DeleteDeep'));
     	for ($i = 0; $i < sizeof($root->visibleNodes); $i++)
 		{
 			if ($root->visibleNodes[$i] > ($noOfExternalAttributes + 2))
@@ -131,7 +140,7 @@ switch($action)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 			{
-				if (isset($instance->pog_attribute_type[strtolower($attribute)]))
+				if (isset($instance->pog_attribute_type[$attribute]))
 				{
 					if (isset($_GET[$attribute]))
 					{
@@ -151,12 +160,22 @@ switch($action)
   * @param unknown_type $objectName
   * @param unknown_type $root
   */
- function RefreshTree($objectName, $root)
+ function RefreshTree($objectName, $root, $offset = '', $limit = '')
  {
+ 		if ($limit == '')
+ 		{
+ 			$offset = 0;
+ 			$limit = 50;
+ 		}
+		$sqlLimit = "$offset, $limit";
+
  		$js = "new Array(";
  		eval ('$instance = new '.$objectName.'();');
+
+ 		$recCount = GetNumberOfRecords(strtolower($objectName));
+
 		$attributeList = array_keys(get_object_vars($instance));
-		$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0,)), strtolower($objectName)."Id", false);
+		$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0)), strtolower($objectName)."Id", false, $sqlLimit);
 		$x = 0;
 		$masterNode = &$root->addItem(new XNode("<span style='color:#998D05'>".$objectName."</span>&nbsp;<span style='font-weight:normal'>{Dimensions:[".sizeof($instanceList)."]}</span>", false, "setup_images/folderclose.gif","setup_images/folderopen.gif"));
 		$node = &$masterNode->addItem(new XNode("<span style='color:#998D05'>ADD RECORD</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
@@ -164,11 +183,11 @@ switch($action)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 			{
-				if ($x != 0 && isset($instance->pog_attribute_type[strtolower($attribute)]))
+				if ($x != 0 && isset($instance->pog_attribute_type[$attribute]))
 				{
 					$js .= '"'.$attribute.'",';
-					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
-					$subnode = &$node->addItem(new XNode("<br/><span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
+					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]});
+					$subnode = &$node->addItem(new XNode("<br/><span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
 				}
 			}
 			$x++;
@@ -184,8 +203,26 @@ switch($action)
 				ConvertObjectToNode($instance, $masterNode, $js, $objectName);
 			}
 		}
+
 		$menu_html_code = $root->generateTree();
-		$table = "<div id='container'>".$menu_html_code."</div>";
+		$menu_html_code .= "<div class='nav'>";
+		$pre = "<div class='nav'>";
+		if ($offset != '' && $offset != 0)
+		{
+			$pre .= "&#8249;&#8249;<a href='#' onclick='javascript:refTree(".($offset-$limit).", $limit, \"$objectName\");return false;'>Newer</a> | ";
+			$menu_html_code.= "&#8249;&#8249;<a href='#' onclick='javascript:refTree(".($offset-$limit).", $limit, \"$objectName\");return false;'>Newer</a> | ";
+		}
+		$pre .= "<b>".($recCount-$offset-$limit < 0 ? 0 : $recCount-$offset-$limit)." - ".($recCount-$offset)." of $recCount </b>";
+		$menu_html_code .= "<b>".($recCount-$offset-$limit < 0 ? 0 : $recCount-$offset-$limit)." - ".($recCount-$offset)." of $recCount </b>";
+
+		if ($offset <= $recCount - $limit)
+		{
+			$pre .= "| <a href='#' onclick='javascript:refTree(".($offset+$limit).", $limit, \"$objectName\");return false;'>Older</a>&#8250;&#8250;";
+			$menu_html_code.= "| <a href='#' onclick='javascript:refTree(".($offset+$limit).", $limit, \"$objectName\");return false;'>Older</a>&#8250;&#8250;";
+		}
+		$menu_html_code .= "</div>";
+		$pre  .= "</div>";
+		$table = "<div id='container'><br/><br/>".$pre.$menu_html_code."</div>";
 		echo $table;
  }
 ?>

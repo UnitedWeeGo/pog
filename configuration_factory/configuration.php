@@ -5,6 +5,7 @@ if (!isset($_SESSION))
 }
 global $configuration;
 $configuration['soap'] = "&soap";
+$configuration['homepage'] = "&homepage";
 $configuration['revisionNumber'] = "&revisionNumber";
 $configuration['versionNumber'] = "&versionNumber";
 

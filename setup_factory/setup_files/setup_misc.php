@@ -61,7 +61,7 @@
 				{
 					$attribute_testValues[$attribute] = "1234.56";
 				}
-				else if ($property[1] != "HASMANY" && $property[1] != "BELONGSTO")
+				else if ($property[1] != "HASMANY" && $property[1] != "BELONGSTO" && $property[1] != "JOIN")
 				{
 					$attribute_testValues[$attribute] = ${$property[1]};
 				}
@@ -100,8 +100,7 @@
 					$html .= "</select>";
 			break;
 			case "HASMANY":
-				$html = $attributeValue;
-			break;
+			case "JOIN":
 			case "BELONGSTO":
 				$html = $attributeValue;
 			break;
@@ -154,29 +153,29 @@
 	 *
 	 * @param unknown_type $child
 	 */
-	function ConvertObjectToNode(&$instance, &$masterNode, $js, $anchor)
+	function ConvertObjectToNode(&$instance, &$masterNode, $js, $anchor, $once = false)
 	{
 		$attributeList = array_keys(get_object_vars($instance));
 		$objectName = $className = get_class($instance);
-		$node = &$masterNode->addItem(new XNode("<span style='color:#0BAA9D'>[".$instance->{strtolower($className)."Id"}."]</span>  <a href='#' onclick='javascript:sndReq(\"Delete\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js, \"$anchor\");return false;'><img src=\"./setup_images/button_delete.gif\" border=\"0\"/></a>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
+		$node = &$masterNode->addItem(new XNode("<span style='color:#0BAA9D'>[".$instance->{strtolower($className)."Id"}."]</span>  <a href='#' onclick='ToggleElementVisibility(\"deleteConfirm_".$instance->{strtolower($objectName).'Id'}."\");return false;'><img src=\"./setup_images/button_delete.gif\" border=\"0\"/></a> <span id='deleteConfirm_".$instance->{strtolower($objectName).'Id'}."' style='display:none;width:250px;'><a href='#' class='deleteDeep' onclick='javascript:sndReq(\"DeleteDeep\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js, \"$anchor\");return false;'>Delete(deep)</a> | <a href='#' class='deleteShallow' onclick='javascript:sndReq(\"Delete\", getOpenNodes(), \"$objectName\", \"".$instance->{strtolower($objectName).'Id'}."\", this.parentNode.parentNode.parentNode.parentNode.id, $js, \"$anchor\");return false;'>Delete(shallow)</a> | <a href='#' class='deleteCancel' onclick='ToggleElementVisibility(\"deleteConfirm_".$instance->{strtolower($objectName).'Id'}."\");return false;'>Cancel</a></span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
 
 		//regular attributes
 		foreach($attributeList as $attribute)
 		{
 			if ($attribute != "pog_attribute_type" && $attribute!= "pog_query" )
 			{
-				if (isset($instance->pog_attribute_type[strtolower($attribute)]))
+				if (isset($instance->pog_attribute_type[$attribute]))
 				{
-					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[strtolower($attribute)], $instance->{$attribute}, $instance->{$attributeList[0]});
-					$subnode = &$node->addItem(new XNode($attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[strtolower($attribute)][1]."}</span><br/>".$thisValue."<br/><br/>", false,'',"setup_images/folderopen.gif"));
+					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]});
+					$subnode = &$node->addItem(new XNode("<br/>".$attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute][1]."}</span><br/>".str_replace("\0", "", $thisValue)."<br/><br/>", false,'',"setup_images/folderopen.gif"));
 				}
 			}
 		}
 
-		//parents and children
+		//parents, children and mapping
 		foreach ($instance->pog_attribute_type as $attribute_name => $attrubute_type)
 		{
-			if ($attrubute_type[1] == "HASMANY" || $attrubute_type[1] == "BELONGSTO")
+			if ($attrubute_type[1] == "HASMANY" || $attrubute_type[1] == "BELONGSTO" || $attrubute_type[1] == "JOIN")
 			{
 				if ($attrubute_type[1] == "BELONGSTO")
 				{
@@ -190,7 +189,7 @@
 					eval('$childrenList = $instance->Get'.ucfirst(strtolower($attribute_name)).'List();');
 					if (sizeof($childrenList) > 0)
 					{
-						$myNode = &$node->addItem(new XNode("<span style='color:#4d4a4a'>[".$attribute_name."List]{Dimensions:[".sizeof($childrenList)."]}</span>", false, "setup_images/folderclose.gif","setup_images/folderopen.gif"));
+						$myNode = &$node->addItem(new XNode("<span style='color:#4d4a4a'>[".$attribute_name."List]{Dimensions:[".sizeof($childrenList)."]}</span>", false, "setup_images/folderclose.gif","setup_images/folderopen.gif", true));
 						$child = $childrenList[0];
 						$js2 = "new Array(";
 						$attributeList = array_keys(get_object_vars($child));
@@ -199,7 +198,7 @@
 						{
 							if ($attribute != "pog_attribute_type" && $attribute!= "pog_query")
 							{
-								if ($x != 0 && isset($child->pog_attribute_type[strtolower($attribute)]))
+								if ($x != 0 && isset($child->pog_attribute_type[$attribute]))
 								{
 									$js2 .= '"'.$attribute.'",';
 								}
@@ -209,10 +208,20 @@
 						$js2 = trim($js2, ",");
 						$js2 .= ")";
 
-						foreach ($childrenList as $child)
+						if (!$once)
 						{
-							/*$value .= $child->{strtolower($attribute_name)."Id"} . ",";*/
-							ConvertObjectToNode($child, $myNode, $js2, $anchor);
+							foreach ($childrenList as $child)
+							{
+								/*$value .= $child->{strtolower($attribute_name)."Id"} . ",";*/
+								if ($attrubute_type[1] == "JOIN")
+								{
+									ConvertObjectToNode($child, $myNode, $js2, $anchor, true);
+								}
+								else
+								{
+									ConvertObjectToNode($child, $myNode, $js2, $anchor);
+								}
+							}
 						}
 					}
 					else
@@ -240,13 +249,13 @@
 		$objectName = get_class($object);
 		foreach($attributeList as $attribute)
 		{
-			if (isset($object->pog_attribute_type[strtolower($attribute)]))
+			if (isset($object->pog_attribute_type[$attribute]))
 			{
-				if (isset($type_value[strtolower($attribute)]))
+				if (isset($type_value[$attribute]))
 				{
-					$object->{$attribute} = $type_value[strtolower($attribute)];
+					$object->{$attribute} = $type_value[$attribute];
 				}
-				else if ($object->pog_attribute_type[strtolower($attribute)][0] != "OBJECT")
+				else if ($object->pog_attribute_type[$attribute][0] != "OBJECT")
 				{
 					$object->{$attribute} = "1";
 				}
@@ -264,6 +273,7 @@
 	 */
 	function GetAtLink($objectFilePath)
 	{
+		$link = '';
 		$content = file_get_contents($objectFilePath);
 		$contentParts = split("<b>",$content);
 		if (isset($contentParts[1]))
@@ -278,7 +288,18 @@
 		{
 			$linkParts1 = split("\*\/", $contentParts[1]);
 			$linkParts2 = split("\@link", $linkParts1[0]);
-			$link = $linkParts2[1];
+			if (isset($linkParts2[1]))
+			{
+				$link = $linkParts2[1];
+			}
+			if (isset($GLOBALS['configuration']['homepage']) && isset($link))
+			{
+				$linkParts = explode('?', $link);
+				if (isset($linkParts[1]))
+				{
+					$link = $GLOBALS['configuration']['homepage'].'/?'.$linkParts[1];
+				}
+			}
 		}
 		return $link;
 	}
@@ -358,10 +379,13 @@
 	 */
 	function TestEssentials($instance, $optimizeAsWell = true)
 	{
+		if(TestIsMapping($instance))
+		{
+			return  true;
+		}
 		$errors = 0;
 		if (!TestSave($instance))
 		{
-
 			$errors++;
 		}
 
@@ -400,6 +424,11 @@
 	 */
 	function TestRelationsPreRequisites($instance, $allObjectsList, $thisObjectName)
 	{
+		if(TestIsMapping($instance))
+		{
+			AddTrace("\tIs Mapping (OK)");
+			return true;
+		}
 		if (TestIsSingle($instance))
 		{
 			AddTrace("\tIs single (OK)");
@@ -407,7 +436,7 @@
 		}
 		else
 		{
-			if (!TestParentChildLink($instance, $allObjectsList, $thisObjectName))
+			if (!TestParentChildLink($instance, $allObjectsList, $thisObjectName) || !TestAssociationLink($instance, $allObjectsList, $thisObjectName))
 			{
 				return false;
 			}
@@ -459,6 +488,10 @@
 			{
 				$errors++;
 			}
+		}
+		if (TestIsAssociate($instance))
+		{
+
 		}
 		if ($errors == 0)
 		{
@@ -582,7 +615,30 @@
 	 * Drops the table for the corresponding object
 	 *
 	 */
-	function TestDeleteStorage($objectName, $databaseType = "mysql")
+	function TestDeleteStorage($object, $databaseType = "mysql")
+	{
+		$tableName = strtolower(get_class($object));
+		if (!isset($GLOBALS['configuration']['pdoDriver']))
+		{
+			$databaseConnection = new DatabaseConnection();
+		}
+		else
+		{
+			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+		}
+		if ($databaseConnection->Query('drop table `'.strtolower($tableName).'`'))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Executes an arbitrary query
+	 *
+	 * @param unknown_type $query
+	 */
+	function TestExecuteQuery($query)
 	{
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
@@ -592,7 +648,11 @@
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
-		if ($databaseConnection->Query('drop table '.strtolower($objectName)))
+		if ($query == "")
+		{
+			return true;
+		}
+		if ($databaseConnection->Query($query))
 		{
 			return true;
 		}
@@ -609,7 +669,7 @@
 	{
 		if ($databaseType != "mysql")
 		{
-			AddError("POG Setup doesn't support table automatic alteration for non-MySQL databases yet. Therefore, your objects/tables may be misaligned. If POG Essential tests failed, this may very well be the case. Drop and recreate the tables and re-run setup.");
+			AddTrace("POG Setup doesn't support table automatic alteration for non-MySQL databases yet. Therefore, your objects/tables may be misaligned. If POG Essential tests failed, this may very well be the case. Drop and recreate the tables and re-run setup.");
 			return true;
 		}
 
@@ -644,25 +704,30 @@
 			}
 
 			$attribute_types = $object -> pog_attribute_type;
+			$lowerAttributes = array();
+			foreach (array_keys($attribute_types) as $key)
+			{
+				$lowerAttributes[strtolower($key)] = $attribute_types[$key];
+			}
 
 			//columns to remove
-			$columnsToRemove = array_diff(array_keys($columns), array_keys($attribute_types));
+			$columnsToRemove = array_diff(array_keys($columns), array_keys($lowerAttributes));
 
 			//columns to add
-			$columnsToAdd = array_diff(array_keys($attribute_types), array_keys($columns));
+			$columnsToAdd = array_diff(array_keys($lowerAttributes), array_keys($columns));
 
 			//columns whose type has changed
-			$otherColumns = array_intersect(array_keys($attribute_types), array_keys($columns));
+			$otherColumns = array_intersect(array_keys($lowerAttributes), array_keys($columns));
 
 			$columnsToModify = array();
 			foreach ($otherColumns as $otherColumn)
 			{
-				$type = strtolower($attribute_types[$otherColumn][1]);
-				if (isset($attribute_types[$otherColumn][2]))
+				$type = strtolower($lowerAttributes[$otherColumn][1]);
+				if (isset($lowerAttributes[$otherColumn][2]))
 				{
-					$type .= "(".$attribute_types[$otherColumn][2].")";
+					$type .= "(".$lowerAttributes[$otherColumn][2].")";
 				}
-				if (strpos(strtolower($columns[$otherColumn]), $type) === false && $type != "hasmany")
+				if (strpos(strtolower($columns[$otherColumn]), $type) === false && $type != "hasmany" && $type != "join")
 				{
 					if ($type == "belongsto")
 					{
@@ -686,9 +751,9 @@
 			$columnsToAdd2 = array();
 			foreach ($columnsToAdd as $c)
 			{
-				if ($attribute_types[$c][1] != "HASMANY")
+				if ($lowerAttributes[$c][1] != "HASMANY" && $lowerAttributes[$c][1] != "JOIN")
 				{
-					if ($attribute_types[$c][1] == "BELONGSTO")
+					if ($lowerAttributes[$c][1] == "BELONGSTO")
 					{
 						$colMarkedForDeletion = array_search(strtolower($c)."id", $columnsToRemove);
 						if ($colMarkedForDeletion === false) //this is clumsy, until we think of something better
@@ -744,10 +809,10 @@
 
 			foreach ($columnsToAdd as $add)
 			{
-				$columnType = strtolower($attribute_types[$add][1]);
-				if (isset($attribute_types[$add][2]))
+				$columnType = strtolower($lowerAttributes[$add][1]);
+				if (isset($lowerAttributes[$add][2]))
 				{
-					$columnType .= "(".$attribute_types[$add][2].")";
+					$columnType .= "(".$lowerAttributes[$add][2].")";
 				}
 				$query .= "add column $add $columnType,";
 			}
@@ -803,6 +868,7 @@
 		$objectId = false;
 		$object->{strtolower($className)."Id"} = "";
 		$objectId = $object->Save(false);
+
 		if(!$objectId)
 		{
 			if ($trace)
@@ -813,7 +879,7 @@
 			return false;
 		}
 		//cleanup test data
-		$query = "delete from ".strtolower($className)." where ".strtolower($className)."Id = '".$objectId."';";
+		$query = "delete from ".strtolower($className)." where ".strtolower($className)."id = '".$objectId."';";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
 			$databaseConnection = new DatabaseConnection();
@@ -884,7 +950,7 @@
 		{
 			$className = get_class($object);
 			$objectList = $object->GetList(array(array(strtolower($className)."Id", ">", 0)));
-			$oldCount = count($instanceList);
+			$oldCount = count($objectList);
 			$object = PopulateTestValues($object);
 			$objectId = false;
 			$object->{strtolower($className)."Id"} = 0;
@@ -927,13 +993,13 @@
 					$attributeList = array_keys(get_object_vars($object));
 					foreach ($attributeList as $attribute)
 					{
-						if (isset($object->pog_attribute_type[strtolower($attribute)]))
+						if (isset($object->pog_attribute_type[$attribute]))
 						{
-							if (isset($type_value[strtolower($attribute)]))
+							if (isset($type_value[$attribute]))
 							{
-								if ($object->{$attribute} != $type_value[strtolower($attribute)])
+								if ($object->{$attribute} != $type_value[$attribute])
 								{
-									AddError("WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[strtolower($attribute)]."`; found `".$object->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$object->pog_attribute_type[strtolower($attribute)][1]."`");
+									AddError("WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$object->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$object->pog_attribute_type[$attribute][1]."`");
 								}
 							}
 						}
@@ -1013,7 +1079,17 @@
 			}
 		}
 
-		if (sizeof($childrenList) == 0 && sizeof($parentsList) == 0)
+		//get all associations
+		$associationsList = array();
+		foreach ($attribute_types as $key => $attribute_array)
+		{
+			if ($attribute_array[1] == "JOIN")
+			{
+				$associationsList[] = $key;
+			}
+		}
+
+		if (sizeof($childrenList) == 0 && sizeof($parentsList) == 0 && sizeof($associationsList) == 0)
 		{
 			return true;
 		}
@@ -1101,6 +1177,55 @@
 	}
 
 	/**
+	 * Tests that all Joins have reciprocal links
+	 *
+	 * @param unknown_type $object
+	 * @param unknown_type $allObjectsList
+	 * @param unknown_type $thisObjectName
+	 */
+	function TestAssociationLink($object, $allObjectsList, $thisObjectName = '')
+	{
+		$attribute_types = $object->pog_attribute_type;
+
+		//get all join classes
+		$associationsList = array();
+		foreach ($attribute_types as $key => $attribute_array)
+		{
+			if ($attribute_array[1] == "JOIN")
+			{
+				$associationsList[] = $key;
+			}
+		}
+
+		$errors = 0;
+		foreach ($associationsList as $association)
+		{
+			if (array_search($association, $allObjectsList) === false)
+			{
+				$errors++;
+				AddError("$thisObjectName refers to $association as {SIBLING}, which couldn't be found. Generate the $association object with reference to $thisObjectName as {SIBLING}");
+			}
+			else
+			{
+				//test that association refers to this object as map
+				eval ("\$associationInstance = new $association();");
+				$associationAttributes = array_keys($associationInstance->pog_attribute_type);
+				if (array_search($thisObjectName, $associationAttributes) === false)
+				{
+					$errors++;
+					AddError("$thisObjectName refers to $association as {SIBLING}, but $association does not refer to $thisObjectName as {SIBLING}. Relations need to be reciprocal.");
+				}
+			}
+		}
+
+		if ($errors == 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Unit test to see if object is a parent
 	 *
 	 * @param unknown_type $object
@@ -1134,6 +1259,43 @@
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Unit test to see if object is Associate
+	 *
+	 * @param unknown_type $object
+	 * @return unknown
+	 */
+	function TestIsAssociate($object)
+	{
+		$attribute_types = $object->pog_attribute_type;
+		foreach ($attribute_types as $attribute_array)
+		{
+			if ($attribute_array[1] == "JOIN")
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Unit test to see if object is a Mapping object
+	 *
+	 * @param unknown_type $object
+	 */
+	function TestIsMapping($object)
+	{
+		$funcs = get_class_methods(get_class($object));
+		foreach ($funcs as $func)
+		{
+			if (strtolower($func) == "addmapping")
+			{
+				return true;
+			}
+		}
+		return  false;
 	}
 
 	/**
@@ -1502,7 +1664,8 @@
 			}
 			//clean up
 			$childInstance->Delete();
-			eval ("\$object -> Set".$child."List(new array());");
+			$arr = array();
+			eval ("\$object -> Set".$child."List(\$arr);");
 		}
 
 		$object -> Delete(false);
@@ -1589,5 +1752,51 @@
 			return true;
 		}
 		return false;
+	}
+
+
+	/**
+	 * Creates the mapping name
+	 *
+	 * @param unknown_type $objectName1
+	 * @param unknown_type $objectName2
+	 * @return unknown
+	 */
+	function MappingName($objectName1, $objectName2)
+	{
+		$array = array($objectName1, $objectName2);
+		sort($array);
+		return implode($array)."Map";
+	}
+
+	/**
+	 * Gets total no. of records;
+	 */
+	function GetNumberOfRecords($objectName)
+	{
+		$sql = 'select count(*) from '.strtolower($objectName);
+		if (!isset($GLOBALS['configuration']['pdoDriver']))
+		{
+			$databaseConnection = new DatabaseConnection();
+		}
+		else
+		{
+			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+		}
+		if (isset($GLOBALS['configuration']['pdoDriver']))
+		{
+			foreach ($databaseConnection->query($sql) as $row)
+			{
+				return $row['count(*)'];
+			}
+		}
+		else
+		{
+			if ($databaseConnection->Query($sql))
+			{
+				return $databaseConnection->Result(0, "count(*)");
+			}
+		}
+		return 0;
 	}
 ?>

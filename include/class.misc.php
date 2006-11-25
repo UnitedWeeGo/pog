@@ -247,5 +247,19 @@ class Misc
 		}
 
 	}
+
+	/**
+	 * Creates the mapping name
+	 *
+	 * @param unknown_type $objectName1
+	 * @param unknown_type $objectName2
+	 * @return unknown
+	 */
+	function MappingName($objectName1, $objectName2)
+	{
+		$array = array($objectName1, $objectName2);
+		sort($array);
+		return implode($array)."Map";
+	}
 }
 ?>

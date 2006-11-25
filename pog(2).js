@@ -260,11 +260,22 @@ function WarnMinInput()
 {
 	var inputCount = 0;
 	trs=document.getElementsByTagName("input");
+	var allVals = new Array();
+	var allCount = 0;
 	for(var w=0;w<trs.length;w++)
 	{
 		if (trs[w].value != "" && trs[w].type != "hidden" && trs[w].name != "object")
 		{
 			inputCount++;
+			if (InArray(allVals, trs[w].value))
+			{
+				alert("Warning:\nYou have more than 1 attribute with the same value. Attributes must be unique.");
+				return;
+			}
+			else
+			{
+				allVals[allCount] = trs[w].value;
+			}
 		}
 	}
 	if (inputCount > 0)
@@ -285,7 +296,20 @@ function WarnMinInput()
 	}
 	else
 	{
-		alert("Warning:\nWithout any object attributes, POG will generate an invalid PHP object. You need to have at least 1 non-parent/child attribute");
+		alert("Warning:\nWithout any object attributes, POG may generate an invalid PHP object. You need to have at least 1 non-parent/child attribute");
 	}
 	return false;
+}
+function InArray(array, val)
+{
+	var found = false;
+	for(var i = 0; i < array.length; i++)
+	{
+		if (array[i] == val)
+		{
+			found = true;
+			break;
+		}
+	}
+	return found;
 }

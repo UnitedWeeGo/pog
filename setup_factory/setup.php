@@ -18,6 +18,7 @@ if(file_exists("../configuration.php"))
 }
 include_once("setup_library/authentication.php");
 include_once("setup_library/setup_misc.php");
+include_once("data_initialization/read_dump_lib.php");
 if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET['step']=="diagnostics"))
 {
 	$_SESSION['diagnosticsSuccessful'] = false;
@@ -26,7 +27,6 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 <?php include "setup_library/inc.header.php";?>
 <form action="./index.php" method="POST">
 <?php
-ini_set("error_reporting", 0);
 ini_set("max_execution_time", 0);
 if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 {
@@ -82,7 +82,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php")
 			{
 				$objects[] = $file;
-				include("../objects/{$file}");
+				include_once("../objects/{$file}");
 			}
 		}
 		closedir($dir);
@@ -127,14 +127,37 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				eval ('$instance = new '.$objectName.'();');
 				if (TestStorageExists($objectName, "mysql"))
 				{
-					if (!TestAlterStorage($instance))
+					if (isset($_POST['pog_table']) && ($_POST['pog_table'] == "recreate" || $_POST['pog_table'] == "recreate_import"))
 					{
-						$errors++;
-						AddError("Aligning [$objectName] with table '".strtolower($objectName)."' failed. Alter the table manually so that object attributes and table columns match.");
+						if (!TestDeleteStorage($instance))
+						{
+							$errors++;
+							AddError("Dropping table '".strtolower($objectName)."' failed. Drop and recreate the table manually.");
+						}
+						else
+						{
+							if (!TestCreateStorage("../objects/".$object))
+							{
+								$errors++;
+								AddError("Creating table [".strtolower($objectName)."] failed. Create the table manually using the generated SQL query in the object header.");
+							}
+							else
+							{
+								AddTrace("\tDropping & Recreating table [".strtolower($objectName)."]....OK!");
+							}
+						}
 					}
 					else
 					{
-						AddTrace("\tAligning [$objectName] with table '".strtolower($objectName)."'....OK!");
+						if (!TestAlterStorage($instance))
+						{
+							$errors++;
+							AddError("Aligning [$objectName] with table '".strtolower($objectName)."' failed. Alter the table manually so that object attributes and table columns match.");
+						}
+						else
+						{
+							AddTrace("\tAligning [$objectName] with table '".strtolower($objectName)."'....OK!");
+						}
 					}
 				}
 				else
@@ -151,14 +174,51 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 				}
 			}
 		}
+
+		$objectNameList = array();
+
+		/**
+		 * Initialize test data?
+		 */
+		if (isset($_POST['pog_table']) && $_POST['pog_table'] == 'recreate_import')
+		{
+			$initialData = file_get_contents('data_initialization\data_initialization.sql');
+			PMA_splitSqlFile($statements, $initialData, 4);
+			if (sizeof($statements) > 0)
+			{
+				foreach ($statements as $statement)
+				{
+					if (!TestExecuteQuery($statement['query']))
+
+					{
+						$errors++;
+						AddError('Statement "'.$statement['query'].'" failed');
+					}
+				}
+			}
+		}
+
+
 		/**
 		 * verify object status
 		 */
-		if ($errors == 0)
+		if (isset($_POST['pog_test']) && $_POST['pog_test'] == 'no')
+		{
+			$objectNameList = array();
+			foreach($objects as $object)
+			{
+				$objectName = GetObjectName("../objects/".$object);
+				if (isset($objectName))
+				{
+					$objectNameList[] = $objectName;
+				}
+			}
+		}
+
+		if ($errors == 0 && isset($_POST['pog_test']) && $_POST['pog_test'] == 'yes')
 		{
 			AddTrace("\nPOG Essentials");
 
-			$objectNameList = array();
 			$_SESSION['links'] = array();
 
 			$objectCount = 1;
@@ -189,7 +249,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		}
 
 
-		if ($errors == 0)
+		if ($errors == 0 && isset($_POST['pog_test']) && $_POST['pog_test'] == 'yes')
 		{
 			AddTrace("\nPOG Relations PreRequisites");
 			$objectCount = 1;
@@ -203,7 +263,6 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					if (!TestRelationsPreRequisites($instance, $objectNameList, $objectName))
 					{
 						$errors++;
-						//AddError("Object $objectName failed prerequisite tests");
 					}
 					if ($objectCount != sizeof($objects))
 					{
@@ -214,7 +273,8 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			}
 		}
 
-		if ($errors == 0)
+
+		if ($errors == 0 && isset($_POST['pog_test']) && $_POST['pog_test'] == 'yes')
 		{
 			AddTrace("\nPOG Relations");
 			$objectCount = 1;
@@ -242,18 +302,31 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		{
 			$_SESSION['diagnosticsSuccessful'] = true;
 		}
-		AddTrace("\nCHECKED ".count($objectNameList)." OBJECT(S). FOUND $errors ERROR(S)".($errors == 0 ? ". HURRAY!" : ":"));
+		if(isset($_POST['pog_test']) && $_POST['pog_test'] == 'no')
+		{
+			AddTrace("\nUNIT TESTS NOT PERFORMED. FOUND $errors ERROR(S)");
+		}
+		else
+		{
+			AddTrace("\nCHECKED ".count($objectNameList)." OBJECT(S). FOUND $errors ERROR(S)".($errors == 0 ? ". HURRAY!" : ":"));
+		}
 		AddTrace("---------------------------------------------------");
-		$errorMessages = unserialize($_SESSION['errorMessages']);
+		if (isset($_SESSION['errorMessages']))
+		{
+			$errorMessages = unserialize($_SESSION['errorMessages']);
+		}
 		$traceMessages = unserialize($_SESSION['traceMessages']);
 		$diagnostics = '';
 		foreach ($traceMessages as $traceMessage)
 		{
 			$diagnostics .= "\n$traceMessage";
 		}
-		foreach ($errorMessages as $errorMessage)
+		if (isset($errorMessages))
 		{
-			$diagnostics .= "\n$errorMessage\n";
+			foreach ($errorMessages as $errorMessage)
+			{
+				$diagnostics .= "\n$errorMessage\n";
+			}
 		}
 		$_SESSION['fileNames'] = serialize($objects);
 		$_SESSION['objectNameList'] = serialize($objectNameList);
@@ -305,7 +378,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	$fileNames = unserialize($_SESSION['fileNames']);
 	foreach($fileNames as $filename)
 	{
-		include("../objects/{$filename}");
+		include_once("../objects/{$filename}");
 	}
 	$objectNameList = unserialize($_SESSION['objectNameList']);
 	if (isset($_GET['objectName']))
@@ -325,14 +398,19 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	}
 	for($i=0; $i<count($objectNameList); $i++)
 	{
-		echo "<li ".($_SESSION['objectName']==$objectNameList[$i]?"id='current'":'')."><a href='./index.php?objectName=".$objectNameList[$i]."'>".$objectNameList[$i]."</a></li>";
-		//echo "<a href='./index.php?objectName=".$objectNameList[$i]."'".(isset($_SESSION['objectName']) && $_SESSION['objectName']==$objectNameList[$i]?"class='activetab'":(!isset($_SESSION['objectName'])&&$i==0?"class='activetab'":"inactivetab")).">".$objectNameList[$i]."</a> ";
+		$name = $objectNameList[$i];
+		eval('$instance = new '.$name.'();');
+		if (!TestIsMapping($instance))
+		{
+			echo "<li ".($_SESSION['objectName']==$objectNameList[$i]?"id='current'":'')."><a href='./index.php?objectName=".$objectNameList[$i]."'>".$objectNameList[$i]."</a></li>";
+			//echo "<a href='./index.php?objectName=".$objectNameList[$i]."'".(isset($_SESSION['objectName']) && $_SESSION['objectName']==$objectNameList[$i]?"class='activetab'":(!isset($_SESSION['objectName'])&&$i==0?"class='activetab'":"inactivetab")).">".$objectNameList[$i]."</a> ";
+		}
 	}
 	?>
 	</ul>
 	</div><!--header-->
 	</div><!--subtabs-->
-	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" title="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="./?thrashall=true" title="Delete all objects"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="./setup_library/upgrade.php" target="_blank" title="update all objects to newest POG version"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><div class="middle3">
+	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" title="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="#" title="Delete all objects" onclick="if (confirm('Are you sure you want to delete all objects in this table? Press OK to Delete.')){window.location='./?thrashall=true';}else{alert('Phew, nothing was deleted ;)');}"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="#" title="update all objects to newest POG version" onclick="if (confirm('Setup will now attempt to upgrade your objects by contacting the POG SOAP server. Would you like to continue?')){window.location='./setup_library/upgrade.php';}else{alert('Upgrade aborted');}"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><div class="middle3">
 	<?php
 	//is there an action to perform?
 	if (isset($_GET['thrashall']))
@@ -346,7 +424,6 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 		}
 		unset($_GET);
 	}
-	echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</script>";
 	echo '<div id="container"></div>';
 	$_SESSION['fileNames'] = serialize($fileNames);
 	$_SESSION['objectNameList'] = serialize($objectNameList);
@@ -356,6 +433,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 </div><!--middle33-->
 </div><!--container-->
 <?php
+echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</script>";
 }
 else
 {
@@ -387,11 +465,29 @@ else
 			<div class="col2"><img src="./setup_images/pog_setup_open.jpg"/><div class="gold">What is POG Setup?</div>You've generated one or more objects using Php Object Generator ... Now what?<br/>
 			<br/>POG SETUP is an answer to this question and takes the POG experience one step further. The Setup process automates <b>table creation</b>, <b>unit testing</b> and provides a light <b>scaffolding</b> environment.</div>
 			<div class="col3">
-			<div class="gold">If you are ready to get POG'd up, click on thebutton below to proceed. Doing this will:</div>
-			<br/>1. Establish a database connection.<br/>
-			2. Create table(s) for your objec(s), if required.<br/>
-			3. Perform diagnostics tests on your object(s).<br/>
-			4. Provide you with the test results.<br/><input type="image" onclick="PleaseWait('');" src="./setup_images/setup_pogmeup.gif" name="submit"/>
+			<div class="gold">If you are ready to get POG'd up, click on thebutton below to proceed. Doing this will:</div><br/>
+			<table>
+			<tr>
+			<td>TABLES:</td>
+			<td>
+			<select class="ss" name="pog_table">
+				<option value="align">Align tables with objects (default)</option>
+				<option value="recreate">Recreate tables</option>
+				<option value="recreate_import">Recreate tables and initialize data</option>
+			</select>
+			</td>
+			</tr>
+			<tr>
+			<td>TESTS:</td>
+			<td>
+			<select class="ss" name="pog_test">
+				<option value="yes">Perform unit tests (default)</option>
+				<option value="no">Bypass unit tests</option>
+			</select>
+			</td>
+			</tr>
+			</table><br/>
+			<br/><input type="image" onclick="PleaseWait('');" src="./setup_images/setup_pogmeup.gif" name="submit"/>
 			<div align="center" id="pleasewait" style="display:none;"><img src="./setup_images/loading.gif"/></div>
 			</div>
 			</div>

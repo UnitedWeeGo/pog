@@ -10,8 +10,9 @@
 * zip then and present them to the user to 'download'
 */
 ini_set("max_execution_time", 0);
-include "../../configuration.php";
-include "class.zipfile.php";
+include_once "../../configuration.php";
+include_once "class.zipfile.php";
+include_once "setup_misc.php";
 
 	/**
 	 * Connects to POG SOAP server defined in configuration.php and
@@ -47,24 +48,45 @@ include "class.zipfile.php";
 			}
 			if (isset($className))
 			{
-				$objectNameList[] = $className;
+				eval ('include_once("../../objects/class.'.strtolower($className).'.php");');
+				$instance = new $className();
+				if (!TestIsMapping($instance))
+				{
+					$objectNameList[] = $className;
 
-				$linkParts1 = split("\*\/", $contentParts[1]);
-				$linkParts2 = split("\@link", $linkParts1[0]);
-				$link = $linkParts2[1];
-				$client = new SoapClient($GLOBALS['configuration']['soap']) ;
-				if ($i == 0)
-				{
-					$package = unserialize($client->GeneratePackageFromLink($link));
-				}
-				else
-				{
-					$objectString = $client->GenerateObjectFromLink($link);
-					$package["objects"]["class.".strtolower($className).".php"] = $objectString;
+					$linkParts1 = split("\*\/", $contentParts[1]);
+					$linkParts2 = split("\@link", $linkParts1[0]);
+					$link = $linkParts2[1];
+					$client = new SoapClient($GLOBALS['configuration']['soap']) ;
+					if ($i == 0)
+					{
+						$package = unserialize($client->GeneratePackageFromLink($link));
+					}
+					else
+					{
+						$objectString = $client->GenerateObjectFromLink($link);
+						$package["objects"]["class.".strtolower($className).".php"] = $objectString;
+					}
 				}
 			}
 			$i++;
 		}
+
+
+		//upgrade mapping classes if any
+		foreach ($objectNameList as $objectName)
+		{
+			$instance = new $objectName();
+			foreach ($instance->pog_attribute_type as $key => $attribute_type)
+			{
+				if ($attribute_type[1] == "JOIN")
+				{
+					$mappingString = $client->GenerateMapping($objectName, $key, (isset($GLOBALS['configuration']['pdoDriver']) ? 'php5.1' :'php5'), (isset($GLOBALS['configuration']['pdoDriver']) ? 'pdo' :'pog'), (isset($GLOBALS['configuration']['pdoDriver']) ? 'mysql' :''));
+					$package["objects"]['class.'.strtolower(MappingName($objectName, $key)).'.php'] = $mappingString;
+				}
+			}
+		}
+
 		$zipfile = new createZip();
 		$zipfile -> addPOGPackage($package);
 		$zipfile -> forceDownload("pog.".time().".zip");

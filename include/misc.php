@@ -8,7 +8,7 @@
 		}
 		return false;
 	}
-	
+
 	// -------------------------------------------------------------
 	function GetVariable($variableName)
 	{
