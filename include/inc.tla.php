@@ -26,7 +26,7 @@ function tla_ads() {
 	if ( is_array($arr_xml) ) {
 		echo "\n<ul style=\"border: 0px; border-spacing: 0px; width: 100%; overflow: hidden; list-style: none; margin: 0; padding: 0;\">\n";
 		for ($i = 0; $i < count($arr_xml['URL']); $i++) {
-			echo "<li style=\"clear: none; float: left; width: 100%; margin: 0; padding: 0; display: inline;\"><span style=\"padding: 3px; display: block; font-size: 12px; color: #000000; width: 100%; margin: 0;\">".$arr_xml['BeforeText'][$i]." <a style=\"font-size: 9px; color: 837E3C;\" href=\"".$arr_xml['URL'][$i]."\">".$arr_xml['Text'][$i]."</a> ".$arr_xml['AfterText'][$i]."</span></li>\n";
+			echo "<li style=\"clear: none; float: left; width: 100%; margin: 0; padding: 0; display: inline;\"><span style=\"padding: 3px; display: block; font-size: 12px; color: #000000; width: 100%; margin: 0;line-height:7px;\">".$arr_xml['BeforeText'][$i]." <a style=\"font-size: 9px; color: 837E3C;\" href=\"".$arr_xml['URL'][$i]."\">".$arr_xml['Text'][$i]."</a> ".$arr_xml['AfterText'][$i]."</span></li>\n";
 		}
 		echo "</ul>";
 	}
