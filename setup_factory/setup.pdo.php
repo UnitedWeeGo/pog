@@ -185,7 +185,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		 */
 		if (isset($_POST['pog_table']) && $_POST['pog_table'] == 'recreate_import')
 		{
-			$initialData = file_get_contents('data_initialization\data_initialization.sql');
+			$initialData = file_get_contents('data_initialization/data_initialization.sql');
 			PMA_splitSqlFile($statements, $initialData, 4);
 			if (sizeof($statements) > 0)
 			{
