@@ -807,6 +807,7 @@ class Object
 		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
 		$this->string .= "\n\t\tfor(\$i=0; \$i < \$Database->Rows(); \$i++)";
 		$this->string .= "\n\t\t{";
+		$this->string .= "\n\t\t\t\$".strtolower($sibling)." = new ".$sibling."();";
 		$this->string .= "\n\t\t\t\$".strtolower($sibling)."->Get(\$Database->Result(\$i, \"".strtolower($sibling)."id\"));";
 		$this->string .= "\n\t\t\t\$".strtolower($sibling)."List[] = $".strtolower($sibling).";";
 		$this->string .= "\n\t\t}";
