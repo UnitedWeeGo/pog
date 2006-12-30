@@ -312,7 +312,7 @@ function GenerateObjectFromLink($link)
 		}
 		else if (strlen($value) > 5 && substr(strtolower($value), 0, 5) == "array" && $arguments[0] == "typeLis")
 		{
-			if (strpos($value, "enum") == false && strpos($value, "set") == false)
+			if (strpos(strtolower($value), "enum") == false && strpos(strtolower($value), "set") == false)
 			{
 				eval ("$".$arguments[0]." = ".urldecode($value).";");
 			}
@@ -324,13 +324,13 @@ function GenerateObjectFromLink($link)
 				for($j = 1; $j < sizeof($value_parts); $j++)
 				{
 					$value_part = $value_parts[$j];
-					if (strpos($value_part, "enum") != false)
+					if (strpos(strtolower($value_part), "enum") != false)
 					{
 						$val = explode("(", $value_part);
 						$val = explode(")", $val[1]);
 						$typeLis[] = "enum(".$val[0].")";
 					}
-					else if (strpos($value_part, "set") != false)
+					else if (strpos(strtolower($value_part), "set") != false)
 					{
 						$val = explode("(", $value_part);
 						$val = explode(")", $val[1]);
@@ -524,7 +524,15 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$data = file_get_contents("../setup_factory/setup_files/setup.css");
 	$package["setup"]["setup.css"] = base64_encode($data);
 
-	$data = file_get_contents("../setup_factory/setup_files/setup_misc.php");
+
+	if (strtolower($language) == "php4")
+	{
+		$data = file_get_contents("../setup_factory/setup_files/setup_miscphp4.php");
+	}
+	else
+	{
+		$data = file_get_contents("../setup_factory/setup_files/setup_misc.php");
+	}
 	$package["setup"]["setup_library"]["setup_misc.php"] = base64_encode($data);
 
 	$data = file_get_contents("../setup_factory/setup_files/inc.header.php");

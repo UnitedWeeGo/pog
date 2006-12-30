@@ -102,7 +102,7 @@ function CascadePhpVersion()
 		select.options[i] =  NewOpt;
 	}
 	IsPDO();
-	GenerateSQLTypesForDriver('mysql');
+	//GenerateSQLTypesForDriver('mysql');
 }
 function GenerateSQLTypesForDriver(driver)
 {

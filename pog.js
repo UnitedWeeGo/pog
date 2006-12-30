@@ -25,7 +25,6 @@ trs2.value="mysql"
 trs2.style.display="inline"}
 else{select=document.getElementById("PDOdriver")
 select.style.display="none"
-GenerateSQLTypesForDriver('mysql')
 link=document.getElementById("disappear")
 link.style.display="inline"}}
 function CascadePhpVersion(){trs2=document.getElementById("FirstField")
@@ -37,8 +36,7 @@ for(var i=0;i<optionsArray.length;i++){NewOpt=new Option
 NewOpt.value=optionsArray[i].toLowerCase()
 NewOpt.text=optionsArray[i]
 select.options[i]=NewOpt}
-IsPDO()
-GenerateSQLTypesForDriver('mysql')}
+IsPDO()}
 function GenerateSQLTypesForDriver(driver){for(var j=1;j<50;j++){ddlist=document.getElementById("type_"+j)
 ddlist.length=0
 switch(driver){case"mysql":optionsArray=new Array("VARCHAR(255)","TINYINT","TEXT","DATE","SMALLINT","MEDIUMINT","INT","BIGINT","FLOAT","DOUBLE","DECIMAL","DATETIME","TIMESTAMP","TIME","YEAR","CHAR(255)","TINYBLOB","TINYTEXT","BLOB","MEDIUMBLOB","MEDIUMTEXT","LONGBLOB","LONGTEXT","BINARY","OTHER","{ CHILD }","{ PARENT }","{ SIBLING }")
@@ -101,8 +99,10 @@ attribute2[0].focus()}
 function WarnMinInput()
 {var inputCount=0;trs=document.getElementsByTagName("input");var allVals=new Array();var allCount=0;for(var w=0;w<trs.length;w++)
 {if(trs[w].value!=""&&trs[w].type!="hidden"&&trs[w].name!="object")
-{inputCount++;if(InArray(allVals,trs[w].value))
+{inputCount++;if(allVals,trs[w].value != '' && InArray(allVals,trs[w].value))
 {alert("Warning:\nYou have more than 1 attribute with the same value. Attributes must be unique.");return;}
+else if(trs[w].value == document.getElementById('objName').value)
+{alert("An object cannot relate to itself recursively. Make sure attribute names are different from the object name.");return;}
 else
 {allVals[allCount]=trs[w].value;}}}
 if(inputCount>0)

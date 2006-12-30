@@ -371,7 +371,6 @@ class Object
 			{
 				if ($type == "HASMANY")
 				{
-					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst(strtolower($this->attributeList[$i]))."List();";
 					$this->string .= "\n\t\t\tforeach (\$this->_".strtolower($this->attributeList[$i])."List as $".strtolower($this->attributeList[$i]).")";
 					$this->string .= "\n\t\t\t{";
 					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
@@ -452,10 +451,10 @@ class Object
 				}
 				else if ($type == "JOIN")
 				{
-					$this->string .= "\n\t\t\t\$this->Get".ucfirst(strtolower($this->attributeList[$i]))."List();";
+					$this->string .= "\n\t\t\t$".strtolower($this->attributeList[$i])."List = \$this->Get".ucfirst(strtolower($this->attributeList[$i]))."List();";
 					$this->string .= "\n\t\t\t\$map = new ".$misc->MappingName($this->objectName, $this->attributeList[$i])."();";
 					$this->string .= "\n\t\t\t\$map->RemoveMapping(\$this);";
-					$this->string .= "\n\t\t\tforeach (\$this->_".strtolower($this->attributeList[$i])."List as \$".strtolower($this->attributeList[$i]).")";
+					$this->string .= "\n\t\t\tforeach (\$".strtolower($this->attributeList[$i])."List as \$".strtolower($this->attributeList[$i]).")";
 					$this->string .= "\n\t\t\t{";
 					$this->string .= "\n\t\t\t\t\$".strtolower($this->attributeList[$i])."->Delete(\$deep);";
 					$this->string .= "\n\t\t\t}";
@@ -541,7 +540,7 @@ class Object
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."}";
-		$this->string .= $indentation."\$Database->Query(\$pog_query);";
+		$this->string .= $indentation."return \$Database->Query(\$pog_query);";
 		if ($deep)
 		{
 			$this->string .= "\n\t\t\t}";
@@ -608,10 +607,10 @@ class Object
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) != 1)";
-		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\$pog_query .= \" AND \";";
-		$this->string .= "\n\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) != 1)";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$pog_query .= \" AND \";";
+		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]) && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\$pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"'\";";
@@ -702,11 +701,7 @@ class Object
 		$this->string .= "\n\t\t\$".strtolower($child)." = new ".$child."();";
 		$this->string .= "\n\t\t\$fcv_array[] = array(\"".strtolower($this->objectName)."Id\", \"=\", \$this->".strtolower($this->objectName)."Id);";
 		$this->string .= "\n\t\t\$dbObjects = \$".strtolower($child)."->GetList(\$fcv_array, \$sortBy, \$ascending, \$limit);";
-		$this->string .= "\n\t\tforeach (\$dbObjects as \$dbObject)";
-		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$this->Add".ucfirst(strtolower($child))."(\$dbObject);";
-		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\treturn \$this->_".strtolower($child)."List;";
+		$this->string .= "\n\t\treturn \$dbObjects;";
 		$this->string .= "\n\t}";
 	}
 
@@ -717,8 +712,8 @@ class Object
 		$this->string .= $this->CreateComments("Makes this the parent of all $child objects in the $child List array. Any existing $child will become orphan(s)",'',"null");
 		$this->string .= "\tfunction Set".ucfirst(strtolower($child))."List(&\$list)\n\t{";
 		$this->string .= "\n\t\t\$this->_".strtolower($child)."List = array();";
-		$this->string .= "\n\t\t\$this->Get".ucfirst(strtolower($child))."List();";
-		$this->string .= "\n\t\tforeach (\$this->_".strtolower($child)."List as \$".strtolower($child).")";
+		$this->string .= "\n\t\t\$existing".ucfirst(strtolower($child))."List = \$this->Get".ucfirst(strtolower($child))."List();";
+		$this->string .= "\n\t\tforeach (\$existing".ucfirst(strtolower($child))."List as \$".strtolower($child).")";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($child)."->".strtolower($this->objectName)."Id = '';";
 		$this->string .= "\n\t\t\t\$".strtolower($child)."->Save(false);";
@@ -798,24 +793,28 @@ class Object
 		$this->string .= "\n\t\tif (sizeof(\$fcv_array) > 0)";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->pog_query .= \" AND \";";
-		$this->string .= "\n\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array)-1; \$i<\$c; \$i++)";
+		$this->string .= "\n\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array); \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]) && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
+		$this->string .= "\n\t\t\t\tif (sizeof(\$fcv_array[\$i]) == 1)";
 		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"' AND\";";
+		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \" \".\$fcv_array[\$i][0].\" \";";
+		$this->string .= "\n\t\t\t\t\tcontinue;";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"' AND\";";
+		$this->string .= "\n\t\t\t\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) != 1)";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \" AND \";";
+		$this->string .= "\n\t\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]) && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= "\n\t\t\t\t\t}";
+		$this->string .= "\n\t\t\t\t\telse";
+		$this->string .= "\n\t\t\t\t\t{";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
+		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
-		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]) && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
-		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$Database->Escape(\$fcv_array[\$i][2]).\"'\";";
-		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\telse";
-		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\t\$this->pog_query .= \" order by m.".strtolower($sibling)."id asc \$sqlLimit\";";
@@ -855,11 +854,7 @@ class Object
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\tforeach (\$".strtolower($sibling)."List as \$".strtolower($sibling).")";
-		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$this->Add".ucfirst(strtolower($sibling))."(\$".strtolower($sibling).");";
-		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\treturn \$this->_".strtolower($sibling)."List;";
+		$this->string .= "\n\t\treturn \$".strtolower($sibling)."List;";
 		$this->string .= "\n\t}";
 	}
 
