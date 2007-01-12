@@ -2205,7 +2205,10 @@
 
 			if (!TestAddSibling($siblingInstance, false))
 			{
-				AddTrace("\tGetSiblingList() ignored");
+				if ($trace)
+				{
+					AddTrace("\tGetSiblingList() ignored");
+				}
 				return  false;
 			}
 			eval("\$object->Add".$sibling."(\$siblingInstance);");

@@ -10,7 +10,7 @@
 /**
 * <b>parent_</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6 / PHP4
+* @version POG 2.6.1 / PHP4
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 * @link http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=parent_&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27HASMANY%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
@@ -282,7 +282,7 @@ class parent_
 	* Makes this the parent of all object objects in the object List array. Any existing object will become orphan(s)
 	* @return null
 	*/
-	function SetObjectList(&$list)
+	function SetObjectList($list)
 	{
 		$this->_objectList = array();
 		$existingObjectList = $this->GetObjectList();
@@ -299,7 +299,7 @@ class parent_
 	* Associates the object object to this one
 	* @return 
 	*/
-	function AddObject(&$object)
+	function AddObject($object)
 	{
 		$object->parent_Id = $this->parent_Id;
 		$found = false;

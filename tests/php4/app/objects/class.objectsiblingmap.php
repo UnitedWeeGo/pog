@@ -10,7 +10,7 @@
 /**
 * <b>objectsiblingMap</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6 / PHP5
+* @version POG 2.6.1 / PHP5
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */
 class objectsiblingMap

@@ -23,20 +23,20 @@ class child
 	 * @var INT(11)
 	 */
 	public $objectId;
-	
+
 	/**
 	 * @var VARCHAR(255)
 	 */
 	public $attribute;
-	
+
 	public $pog_attribute_type = array(
 		"childId" => array("NUMERIC", "INT"),
 		"object" => array("OBJECT", "BELONGSTO"),
 		"attribute" => array("TEXT", "VARCHAR", "255"),
 		);
 	public $pog_query;
-	
-	
+
+
 	/**
 	* Getter for some private attributes
 	* @return mixed $attribute
@@ -52,16 +52,16 @@ class child
 			return false;
 		}
 	}
-	
+
 	function child($attribute='')
 	{
 		$this->attribute = $attribute;
 	}
-	
-	
+
+
 	/**
 	* Gets object from database
-	* @param integer $childId 
+	* @param integer $childId
 	* @return object $child
 	*/
 	function Get($childId)
@@ -74,14 +74,14 @@ class child
 		$this->attribute = $Database->Unescape($Database->Result(0, "attribute"));
 		return $this;
 	}
-	
-	
+
+
 	/**
 	* Returns a sorted array of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array $childList
 	*/
 	function GetList($fcv_array, $sortBy='', $ascending=true, $limit='')
@@ -158,8 +158,8 @@ class child
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	* Saves the object to the database
 	* @return integer $childId
@@ -171,14 +171,14 @@ class child
 		$Database->Query($this->pog_query);
 		if ($Database->Rows() > 0)
 		{
-			$this->pog_query = "update `child` set 
-			`objectid`='".$this->objectId."', 
+			$this->pog_query = "update `child` set
+			`objectid`='".$this->objectId."',
 			`attribute`='".$Database->Escape($this->attribute)."' where `childid`='".$this->childId."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `child` (`objectid`, `attribute` ) values (
-			'".$this->objectId."', 
+			'".$this->objectId."',
 			'".$Database->Escape($this->attribute)."' )";
 		}
 		$Database->InsertOrUpdate($this->pog_query);
@@ -188,8 +188,8 @@ class child
 		}
 		return $this->childId;
 	}
-	
-	
+
+
 	/**
 	* Clones the object and saves it to the database
 	* @return integer $childId
@@ -199,8 +199,8 @@ class child
 		$this->childId = '';
 		return $this->Save();
 	}
-	
-	
+
+
 	/**
 	* Deletes the object from the database
 	* @return boolean
@@ -211,13 +211,13 @@ class child
 		$this->pog_query = "delete from `child` where `childid`='".$this->childId."'";
 		return $Database->Query($this->pog_query);
 	}
-	
-	
+
+
 	/**
 	* Deletes a list of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param bool $deep 
-	* @return 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param bool $deep
+	* @return
 	*/
 	function DeleteList($fcv_array)
 	{
@@ -251,8 +251,8 @@ class child
 			return $Database->Query($pog_query);
 		}
 	}
-	
-	
+
+
 	/**
 	* Associates the object object to this one
 	* @return boolean
@@ -262,11 +262,11 @@ class child
 		$object = new object();
 		return $object->Get($this->objectId);
 	}
-	
-	
+
+
 	/**
 	* Associates the object object to this one
-	* @return 
+	* @return
 	*/
 	function SetObject(&$object)
 	{

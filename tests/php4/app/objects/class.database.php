@@ -2,7 +2,7 @@
 /**
 * <b>Database Connection</b> class.
 * @author Php Object Generator
-* @version POG 2.6 / PHP4
+* @version POG 2.6.1 / PHP4
 * @see http://www.phpobjectgenerator.com/
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */

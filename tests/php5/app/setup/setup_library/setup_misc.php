@@ -2032,7 +2032,7 @@
 		$thisObjectName = get_class($object);
 		if (!TestSaveDeep_Child($object, false))
 		{
-			AddTrace("\SetChildrenList(deep) ignored");
+			AddTrace("\tSetChildrenList(deep) ignored");
 			AddError("SetChildrenList ignored since SaveDeep could not be performed");
 			return false;
 		}
@@ -2221,8 +2221,11 @@
 			eval ("\$siblings = \$object -> Get".$sibling."List();");
 			if (sizeof($siblings) != 1)
 			{
-				AddTrace("\tGet".$sibling."List() failed");
-				AddError("Could not get sibling list");
+				if ($trace)
+				{
+					AddTrace("\tGet".$sibling."List() failed");
+					AddError("Could not get sibling list");
+				}
 				$errors++;
 			}
 			else if ($trace)
@@ -2256,7 +2259,7 @@
 		$thisObjectName = get_class($object);
 		if (!TestSaveDeep_Sibling($object, false))
 		{
-			AddTrace("\SetSiblingList(deep) ignored");
+			AddTrace("\tSetSiblingList(deep) ignored");
 			AddError("SetSiblingList ignored since SaveDeep could not be performed");
 			return false;
 		}
@@ -2305,10 +2308,13 @@
 			eval("\$siblingArray = \$object->Get".$sibling."List();");
 			if (sizeof($siblingArray) == 0)
 			{
-				AddTrace("\tSet($sibling)List failed");
+				if ($trace)
+				{
+					AddTrace("\tSet($sibling)List failed");
+				}
 				$errors++;
 			}
-			else
+			else if ($trace)
 			{
 				AddTrace("\tSet($sibling)List....OK!");
 			}

@@ -10,7 +10,7 @@
 /**
 * <b>sibling</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6 / PHP4
+* @version POG 2.6.1 / PHP4
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 * @link http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=sibling&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27JOIN%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
@@ -274,7 +274,7 @@ class sibling
 	* Creates mappings between this and all objects in the object List array. Any existing mapping will become orphan(s)
 	* @return null
 	*/
-	function SetObjectList(&$objectList)
+	function SetObjectList($objectList)
 	{
 		$map = new objectsiblingMap();
 		$map->RemoveMapping($this, null);
@@ -369,7 +369,7 @@ class sibling
 	* Associates the object object to this one
 	* @return 
 	*/
-	function AddObject(&$object)
+	function AddObject($object)
 	{
 		if (is_a($object, "object"))
 		{

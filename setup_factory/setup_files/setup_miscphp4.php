@@ -1522,7 +1522,6 @@
 		{
 			//instantiate
 			eval("\$siblingInstance = new $sibling();");
-			$siblingStore[] =& $siblingInstance;
 			$siblingInstance = PopulateTestValues($siblingInstance);
 
 			//add children
@@ -1558,11 +1557,11 @@
 		}
 
 		//cleanup
-		$object->Delete();
-		foreach($siblingStore as $stored)
+		foreach($siblingList as $sibling)
 		{
-			$stored->Delete();
+			eval ("\$object ->_".strtolower($sibling)."List[0]->Delete();");
 		}
+		$object->Delete();
 
 		if ($errors == 0)
 		{
@@ -1610,7 +1609,7 @@
 			$childInstance = PopulateTestValues($childInstance);
 			eval("\$childInstance -> Set".$thisObjectName."(\$object);");
 			$childInstance -> Save();
-			$childrenStore[] = &$childInstance;
+			$childrenStore[] = $childInstance;
 		}
 
 		//test
@@ -1726,7 +1725,6 @@
 
 
 		//cleanup
-		$object->Delete();
 		$x = 0;
 		foreach ($siblingList as $sibling)
 		{
@@ -1738,6 +1736,7 @@
 			}
 			$x++;
 		}
+		$object->Delete();
 
 		if ($errors == 0)
 		{
@@ -2200,7 +2199,6 @@
 		{
 			//instantiate
 			eval("\$siblingInstance = new $sibling();");
-			$siblingsStore[] =& $siblingInstance;
 			$siblingInstance = PopulateTestValues($siblingInstance);
 
 			if (!TestAddSibling($siblingInstance, false))
@@ -2237,9 +2235,9 @@
 			}
 		}
 
-		foreach ($siblingsStore as $stored)
+		foreach ($siblingList as $sibling)
 		{
-			$stored->Delete();
+			eval ("\$object ->_".strtolower($sibling)."List[0]->Delete();");
 		}
 
 		$object->Delete(false);

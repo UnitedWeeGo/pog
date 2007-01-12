@@ -662,7 +662,7 @@ class Object
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $child object to this one",'',"");
-		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(&\$".strtolower($child).")\n\t{";
+		$this->string .= "\tfunction Add".ucfirst(strtolower($child))."(\$".strtolower($child).")\n\t{";
 		$this->string .= "\n\t\t\$".strtolower($child)."->".strtolower($this->objectName)."Id = \$this->".strtolower($this->objectName)."Id;";
 		$this->string .= "\n\t\t\$found = false;";
 		$this->string .= "\n\t\tforeach(\$this->_".strtolower($child)."List as \$".strtolower($child)."2)";
@@ -698,7 +698,7 @@ class Object
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Makes this the parent of all $child objects in the $child List array. Any existing $child will become orphan(s)",'',"null");
-		$this->string .= "\tfunction Set".ucfirst(strtolower($child))."List(&\$list)\n\t{";
+		$this->string .= "\tfunction Set".ucfirst(strtolower($child))."List(\$list)\n\t{";
 		$this->string .= "\n\t\t\$this->_".strtolower($child)."List = array();";
 		$this->string .= "\n\t\t\$existing".ucfirst(strtolower($child))."List = \$this->Get".ucfirst(strtolower($child))."List();";
 		$this->string .= "\n\t\tforeach (\$existing".ucfirst(strtolower($child))."List as \$".strtolower($child).")";
@@ -739,7 +739,7 @@ class Object
 	{
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Associates the $sibling object to this one",'',"");
-		$this->string .= "\tfunction Add".ucfirst(strtolower($sibling))."(&\$".strtolower($sibling).")\n\t{";
+		$this->string .= "\tfunction Add".ucfirst(strtolower($sibling))."(\$".strtolower($sibling).")\n\t{";
 		$this->string .= "\n\t\tif (is_a(\$".strtolower($sibling).", \"".$sibling."\"))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\tforeach (array_keys(\$".strtolower($sibling)."->_".strtolower($this->objectName)."List) as \$key)";
@@ -853,7 +853,7 @@ class Object
 		$misc = new Misc(array());
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Creates mappings between this and all objects in the $sibling List array. Any existing mapping will become orphan(s)",'',"null");
-		$this->string .= "\tfunction Set".ucfirst(strtolower($sibling))."List(&\$".strtolower($sibling)."List)\n\t{";
+		$this->string .= "\tfunction Set".ucfirst(strtolower($sibling))."List(\$".strtolower($sibling)."List)\n\t{";
 		$this->string .= "\n\t\t\$map = new ".$misc->MappingName($this->objectName, $sibling)."();";
 		$this->string .= "\n\t\t\$map->RemoveMapping(\$this, null);";
 		$this->string .= "\n\t\t\$this->_".strtolower($sibling)."List =& \$".strtolower($sibling)."List;";
