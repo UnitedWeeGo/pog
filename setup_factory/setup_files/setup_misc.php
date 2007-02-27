@@ -1522,7 +1522,7 @@
 		{
 			//instantiate
 			eval("\$siblingInstance = new $sibling();");
-			$siblingStore[] =& $siblingInstance;
+			$siblingStore[] = $siblingInstance;
 			$siblingInstance = PopulateTestValues($siblingInstance);
 
 			//add children
@@ -2200,7 +2200,7 @@
 		{
 			//instantiate
 			eval("\$siblingInstance = new $sibling();");
-			$siblingsStore[] =& $siblingInstance;
+			$siblingsStore[] = $siblingInstance;
 			$siblingInstance = PopulateTestValues($siblingInstance);
 
 			if (!TestAddSibling($siblingInstance, false))
