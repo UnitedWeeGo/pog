@@ -701,7 +701,7 @@
 		$tableName = strtolower(get_class($object));
 		$columns = array();
 
-		$query = "describe $tableName";
+		$query = "describe `$tableName` ";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
 			$databaseConnection = new DatabaseConnection();
@@ -824,7 +824,7 @@
 			}
 
 			//construct query
-			$query = "alter table $tableName ";
+			$query = "alter table `$tableName` ";
 
 			foreach ($columnsToRemove2 as $remove)
 			{
@@ -873,7 +873,7 @@
 		{
 			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
-		if ($databaseConnection->Query("optimize table ".strtolower($objectName)))
+		if ($databaseConnection->Query("optimize table `".strtolower($objectName)."`"))
 		{
 			AddTrace("\tOptimizing....OK!");
 			return true;
@@ -903,7 +903,7 @@
 			return false;
 		}
 		//cleanup test data
-		$query = "delete from ".strtolower($className)." where ".strtolower($className)."id = '".$objectId."';";
+		$query = "delete from `".strtolower($className)."` where ".strtolower($className)."id = '".$objectId."';";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
 			$databaseConnection = new DatabaseConnection();
@@ -938,7 +938,7 @@
 		$objectId = $object->SaveNew(false);
 		if ($objectId)
 		{
-			$query = "delete from ".strtolower($className)." where ".strtolower($className)."Id = '".$objectId."';";
+			$query = "delete from `".strtolower($className)."` where ".strtolower($className)."Id = '".$objectId."';";
 			if (!isset($GLOBALS['configuration']['pdoDriver']))
 			{
 				$databaseConnection = new DatabaseConnection();
@@ -2352,7 +2352,7 @@
 	 */
 	function GetNumberOfRecords($objectName)
 	{
-		$sql = 'select count(*) from '.strtolower($objectName);
+		$sql = 'select count(*) from `'.strtolower($objectName)."`";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
 			$databaseConnection = new DatabaseConnection();
