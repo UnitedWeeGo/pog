@@ -14,10 +14,10 @@ body {margin:0 auto;padding:0;color:#828282;background:#fff;font:normal 10px Ver
 .footer img {vertical-align:middle;height:35px}
 .toolbar img {display:inline}
 .bottom3 img {display:inline}
-.left {width:234px;height:550px;position:absolute}
+.left {width:234px;height:550px;z-Index:9;position:absolute;}
 .text {width:194px;height:319px;line-height:15px;position:relative;float:left;padding:22px}
 .gold {color:#998D05;font-weight:bold;display:block;}
-.middle {width:617px;position:relative;padding-left:234px;height:596px;color:#404855}
+.middle {width:617px;padding-left:234px;height:596px;color:#404855}
 .middle2 {float:left;position:relative;padding:20px 0 0 22px;width:594px;background:#E7E9EE}
 .middle33 {height:596px;position:relative;padding-left:234px;color:#404855}
 .middle3 {float:left;position:relative;width:100%;background:#E7E9EE}

@@ -325,6 +325,22 @@
 	}
 
 	/**
+	 * Gets plugin name based on filename
+	 *
+	 * @param unknown_type $fileName
+	 * @return unknown
+	 */
+	function GetPluginName($fileName)
+	{
+		$fileNameParts = explode('.', $fileName);
+		if (strtolower($fileName) != "iplugin.php" && strtolower($fileNameParts[0]) == 'plugin' && strtolower($fileNameParts[2]) == 'php')
+		{
+			return $fileNameParts[1];
+		}
+		return '';
+	}
+
+	/**
 	 * Adds message to error queue
 	 *
 	 * @param unknown_type $error
@@ -425,7 +441,7 @@
 	 * @param unknown_type $instance
 	 * @return unknown
 	 */
-	function TestRelationsPreRequisites($instance, $allObjectsList, $thisObjectName)
+	function TestRelationsPreRequisites($instance, $allObjectsList, $thisObjectName, $ignoreObjects)
 	{
 		if(TestIsMapping($instance))
 		{
@@ -439,7 +455,7 @@
 		}
 		else
 		{
-			if (!TestParentChildLink($instance, $allObjectsList, $thisObjectName) || !TestAssociationLink($instance, $allObjectsList, $thisObjectName))
+			if (!TestParentChildLink($instance, $allObjectsList, $thisObjectName, $ignoreObjects) || !TestAssociationLink($instance, $allObjectsList, $thisObjectName, $ignoreObjects))
 			{
 				return false;
 			}
@@ -457,62 +473,62 @@
 	 * @param unknown_type $instance
 	 * @return unknown
 	 */
-	function TestRelations($instance)
+	function TestRelations($instance, $ignoreObjects)
 	{
 		$errors=0;
 		if (TestIsParent($instance))
 		{
-			if (!TestAddChild($instance))
+			if (!TestAddChild($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestGetChildrenList($instance))
+			if (!TestGetChildrenList($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestDeleteDeep_Child($instance))
+			if (!TestDeleteDeep_Child($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestSaveDeep_Child($instance))
+			if (!TestSaveDeep_Child($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestSetChildrenList($instance))
+			if (!TestSetChildrenList($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
 		}
 		if (TestIsChild($instance))
 		{
-			if (!TestSetParent($instance))
+			if (!TestSetParent($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestGetParent($instance))
+			if (!TestGetParent($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
 		}
 		if (TestIsSibling($instance))
 		{
-			if (!TestAddSibling($instance))
+			if (!TestAddSibling($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestGetSiblingList($instance))
+			if (!TestGetSiblingList($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if  (!TestSaveDeep_Sibling($instance))
+			if  (!TestSaveDeep_Sibling($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestDeleteDeep_Sibling($instance))
+			if (!TestDeleteDeep_Sibling($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
-			if (!TestSetSiblingList($instance))
+			if (!TestSetSiblingList($instance, true, $ignoreObjects))
 			{
 				$errors++;
 			}
@@ -552,18 +568,18 @@
 		}
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
-			$databaseConnection->Query($query);
+			$connection = Database::Connect();
+			$result = Database::Query($query, $connection);
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-			$affectedRows = $databaseConnection->query($query);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$affectedRows = Database::Query($query, $connection);
 		}
 
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			if ($databaseConnection->Rows() > 0)
+			if (Database::Rows($result) > 0)
 			{
 				return  true;
 			}
@@ -616,17 +632,17 @@
 			//execute sql
 			if ($databaseType == "mysql" && !isset($GLOBALS['configuration']['pdoDriver']))
 			{
-				$databaseConnection = new DatabaseConnection();
+				$connection = Database::Connect();
 			}
 			else if ($databaseType == "sqlite" || $databaseType == "pgsql" || $databaseType == "mysql")
 			{
-				$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+				$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 			}
 			else if ($databaseType == "odbc")
 			{
-				$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
+				$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
 			}
-			if ($databaseConnection->Query($sql))
+			if (Database::Query($sql, $connection))
 			{
 				return true;
 			}
@@ -644,13 +660,13 @@
 		$tableName = strtolower(get_class($object));
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
+			$connection = Database::Connect();
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
-		if ($databaseConnection->Query('drop table `'.strtolower($tableName).'`'))
+		if (Database::Query('drop table `'.strtolower($tableName).'`', $connection))
 		{
 			return true;
 		}
@@ -666,17 +682,17 @@
 	{
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
+			$connection = Database::Connect();
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
 		if ($query == "")
 		{
 			return true;
 		}
-		if ($databaseConnection->Query($query))
+		if (Database::Query($query, $connection))
 		{
 			return true;
 		}
@@ -704,24 +720,25 @@
 		$query = "describe `$tableName` ";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
+			$connection = Database::Connect();
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
-		if ($databaseConnection->Query($query))
+		$result = Database::Query($query, $connection);
+		if ($result != false)
 		{
 			if (!isset($GLOBALS['configuration']['pdoDriver']))
 			{
-				for($i = 0; $i < $databaseConnection -> AffectedRows(); $i++)
+				while ($row = mysql_fetch_assoc($result))
 				{
-					$columns[$databaseConnection->Result($i, "Field")] = $databaseConnection->Result($i, "Type");
+					$columns[$row["Field"]] = $row["Type"];
 				}
 			}
 			else
 			{
-				foreach ($databaseConnection->Query($query) as $row)
+				foreach ($result as $row)
 				{
 			       $columns[$row['Field']] = $row['Type'];
 				}
@@ -828,27 +845,39 @@
 
 			foreach ($columnsToRemove2 as $remove)
 			{
-				$query .= "drop column $remove,";
+				$query .= "drop column `$remove`,";
 			}
 
 			foreach ($columnsToAdd as $add)
 			{
-				$columnType = strtolower($lowerAttributes[$add][1]);
+				$columnType = '';
+				if (isset($lowerAttributes[$add]))
+				{
+					$columnType = strtolower($lowerAttributes[$add][1]);
+				}
 				if (isset($lowerAttributes[$add][2]))
 				{
 					$columnType .= "(".$lowerAttributes[$add][2].")";
 				}
-				$query .= "add column $add $columnType,";
+				if ($columnType != '')
+				{
+					$query .= "add column `$add` $columnType,";
+				}
+				else
+				{
+					$query .= "add column $add,";
+				}
 			}
 
 
 			foreach (array_keys($columnsToModify) as $modify)
 			{
-				$query .= "modify $modify ".$columnsToModify[$modify].",";
+				$query .= "modify `$modify` ".$columnsToModify[$modify].",";
 			}
 			$query = trim($query, ',');
 			//execute query
-			if ($databaseConnection -> Query($query))
+
+			if (Database::Query($query, $connection))
 			{
 				return true;
 			}
@@ -867,13 +896,13 @@
 	{
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
+			$connection = Database::Connect();
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
-		if ($databaseConnection->Query("optimize table `".strtolower($objectName)."`"))
+		if (Database::Query("optimize table `".strtolower($objectName)."`", $connection))
 		{
 			AddTrace("\tOptimizing....OK!");
 			return true;
@@ -906,13 +935,13 @@
 		$query = "delete from `".strtolower($className)."` where ".strtolower($className)."id = '".$objectId."';";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
+			$connection = Database::Connect();
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
-		$databaseConnection->Query($query);
+		Database::Query($query, $connection);
 		if ($trace)
 		{
 			AddTrace("\tSave()....OK!");
@@ -941,13 +970,13 @@
 			$query = "delete from `".strtolower($className)."` where ".strtolower($className)."Id = '".$objectId."';";
 			if (!isset($GLOBALS['configuration']['pdoDriver']))
 			{
-				$databaseConnection = new DatabaseConnection();
+				$connection = Database::Connect();
 			}
 			else
 			{
-				$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+				$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 			}
-			$databaseConnection->Query($query);
+			Database::Query($query, $connection);
 			if ($trace)
 			{
 				AddTrace("\tSaveNew()....OK!");
@@ -966,9 +995,12 @@
 	 * Unit test for GetList(). Implicitly tests Get()
 	 *
 	 */
-	function TestGetList($object)
+	function TestGetList($object, $trace = true)
 	{
-		AddTrace("\tGetList()");
+		if ($trace)
+		{
+			AddTrace("\tGetList()");
+		}
 		$errors = 0;
 		if (TestSave($object,false) && TestSaveNew($object, false) && TestDelete($object, false))
 		{
@@ -988,26 +1020,38 @@
 			if (sizeof($objectList) != 2)
 			{
 				//Test Limit
-				AddTrace("\t\tLimit failed");
-				AddError('ERROR: GetList() :sizeof(list) != \$limit\n');
-				AddError("Query failed: ".$object->pog_query);
+				if ($trace)
+				{
+					AddTrace("\t\tLimit failed");
+					AddError('ERROR: GetList() :sizeof(list) != \$limit\n');
+					AddError("Query failed: ".$object->pog_query);
+				}
 				$errors++;
 			}
 			else
 			{
-				AddTrace("\t\tLimit....OK!");
+				if ($trace)
+				{
+					AddTrace("\t\tLimit....OK!");
+				}
 			}
 			if ($objectList[1]->{strtolower($className)."Id"} > $objectList[0]->{strtolower($className)."Id"})
 			{
 				//Test Sorting
-				AddTrace("\t\tSorting failed");
-				AddError("ERROR: GetList() :list is not properly sorted");
-				AddError("Query failed: ".$object->pog_query);
+				if ($trace)
+				{
+					AddTrace("\t\tSorting failed");
+					AddError("ERROR: GetList() :list is not properly sorted");
+					AddError("Query failed: ".$object->pog_query);
+				}
 				$errors++;
 			}
 			else
 			{
-				AddTrace("\t\tSorting....OK!");
+				if ($trace)
+				{
+					AddTrace("\t\tSorting....OK!");
+				}
 			}
 			if ($errors == 0)
 			{
@@ -1023,7 +1067,10 @@
 							{
 								if ($object->{$attribute} != $type_value[$attribute])
 								{
-									AddError("WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$object->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$object->pog_attribute_type[$attribute][1]."`");
+									if($trace)
+									{
+										AddError("WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$object->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$object->pog_attribute_type[$attribute][1]."`");
+									}
 								}
 							}
 						}
@@ -1034,12 +1081,18 @@
 			}
 			else
 			{
-				AddTrace("\tGetList() failed");
-				AddError("Query failed: ".$object->pog_query);
+				if ($trace)
+				{
+					AddTrace("\tGetList() failed");
+					AddError("Query failed: ".$object->pog_query);
+				}
 				return  false;
 			}
 		}
-		AddTrace("\tGetList() ignored");
+		if ($trace)
+		{
+			AddTrace("\tGetList() ignored");
+		}
 		return false;
 	}
 
@@ -1082,7 +1135,7 @@
 	function TestDeleteList($object, $trace = true)
 	{
 		$className = get_class($object);
-		if(!TestSave($object, false) || !TestGetList($object))
+		if(!TestSave($object, false) || !TestGetList($object, false))
 		{
 			if ($trace)
 			{
@@ -1110,7 +1163,7 @@
 		{
 			if ($trace)
 			{
-				AddTrace("\tDelete()....OK!");
+				AddTrace("\tDeleteList()....OK!");
 			}
 			return true;
 		}
@@ -1178,7 +1231,7 @@
 	 * @param unknown_type $thisObjectName
 	 * @return unknown
 	 */
-	function TestParentChildLink($object, $allObjectsList, $thisObjectName = '')
+	function TestParentChildLink($object, $allObjectsList, $thisObjectName = '', $ignoreObjects)
 	{
 		$attribute_types = $object->pog_attribute_type;
 
@@ -1257,7 +1310,7 @@
 	 * @param unknown_type $allObjectsList
 	 * @param unknown_type $thisObjectName
 	 */
-	function TestAssociationLink($object, $allObjectsList, $thisObjectName = '')
+	function TestAssociationLink($object, $allObjectsList, $thisObjectName = '', $ignoreObjects)
 	{
 		$attribute_types = $object->pog_attribute_type;
 
@@ -1377,10 +1430,10 @@
 	 *
 	 * @param unknown_type $object
 	 */
-	function TestSaveDeep_Child($object, $trace = true)
+	function TestSaveDeep_Child($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
-		if (!TestAddChild($object, false))
+		if (!TestAddChild($object, false, $ignoreObjects))
 		{
 			if ($trace)
 			{
@@ -1389,7 +1442,7 @@
 			}
 			return false;
 		}
-		if (!TestGetChildrenList($object, false))
+		if (!TestGetChildrenList($object, false, $ignoreObjects))
 		{
 			if ($trace)
 			{
@@ -1398,7 +1451,7 @@
 			}
 			return false;
 		}
-		if (!TestDeleteDeep_Child($object, false))
+		if (!TestDeleteDeep_Child($object, false, $ignoreObjects))
 		{
 			if ($trace)
 			{
@@ -1478,10 +1531,10 @@
 	 * @param unknown_type $object
 	 * @return unknown
 	 */
-	function TestSaveDeep_Sibling($object, $trace = true)
+	function TestSaveDeep_Sibling($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
-		if (!TestAddSibling($object, false))
+		if (!TestAddSibling($object, false, $ignoreObjects))
 		{
 			if ($trace)
 			{
@@ -1490,7 +1543,7 @@
 			}
 			return false;
 		}
-		if (!TestGetSiblingList($object, false))
+		if (!TestGetSiblingList($object, false, $ignoreObjects))
 		{
 			if ($trace)
 			{
@@ -1576,12 +1629,12 @@
 	 *
 	 * @param unknown_type $object
 	 */
-	function TestDeleteDeep_Child($object, $trace = true)
+	function TestDeleteDeep_Child($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		$attribute_types = $object->pog_attribute_type;
 
-		if (!TestSetParent($object, false))
+		if (!TestSetParent($object, false, $ignoreObjects))
 		{
 			AddTrace("\tDelete(deep) ignored");
 			return false;
@@ -1659,12 +1712,12 @@
 	 * @param unknown_type $object
 	 * @param unknown_type $trace
 	 */
-	function TestDeleteDeep_Sibling($object, $trace = true)
+	function TestDeleteDeep_Sibling($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		$attribute_types = $object->pog_attribute_type;
 
-		if (!TestAddSibling($object, false) || !TestSaveDeep_Sibling($object, false))
+		if (!TestAddSibling($object, false, $ignoreObjects) || !TestSaveDeep_Sibling($object, false, $ignoreObjects))
 		{
 			AddTrace("\tDelete(deep) ignored");
 			return false;
@@ -1696,7 +1749,7 @@
 		}
 
 		//test
-		if (!$object->Delete(true))
+		if (!$object->Delete(false, true))
 		{
 			$errors++;
 		}
@@ -1751,7 +1804,7 @@
 	 *
 	 * @param unknown_type $object
 	 */
-	function TestSetParent($object, $trace = true)
+	function TestSetParent($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		$attribute_types = $object->pog_attribute_type;
@@ -1816,7 +1869,7 @@
 	 *
 	 * @param unknown_type $object
 	 */
-	function TestGetParent($object)
+	function TestGetParent($object, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		eval ("\$object = new $thisObjectName();");
@@ -1887,7 +1940,7 @@
 	 *
 	 * @param unknown_type $object
 	 */
-	function TestAddChild($object, $trace = true)
+	function TestAddChild($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		eval ("\$object = new $thisObjectName();");
@@ -1954,7 +2007,7 @@
 	 *
 	 * @param unknown_type $object
 	 */
-	function TestGetChildrenList($object, $trace = true)
+	function TestGetChildrenList($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		eval ("\$object = new $thisObjectName();");
@@ -1982,7 +2035,7 @@
 			eval("\$childInstance = new $child();");
 			$childInstance = PopulateTestValues($childInstance);
 
-			if (!TestSetParent($childInstance, false))
+			if (!TestSetParent($childInstance, false, $ignoreObjects))
 			{
 				AddTrace("\tGetChildrenList() ignored");
 				return  false;
@@ -2027,10 +2080,10 @@
 	 * @param unknown_type $trace
 	 * @return unknown
 	 */
-	function TestSetChildrenList($object, $trace = true)
+	function TestSetChildrenList($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
-		if (!TestSaveDeep_Child($object, false))
+		if (!TestSaveDeep_Child($object, false, $ignoreObjects))
 		{
 			AddTrace("\tSetChildrenList(deep) ignored");
 			AddError("SetChildrenList ignored since SaveDeep could not be performed");
@@ -2107,7 +2160,7 @@
 	 * @param unknown_type $trace
 	 * @return unknown
 	 */
-	function TestAddSibling($object, $trace = true)
+	function TestAddSibling($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		eval ("\$object = new $thisObjectName();");
@@ -2175,7 +2228,7 @@
 	 * @param unknown_type $trace
 	 * @return unknown
 	 */
-	function TestGetSiblingList($object, $trace = true)
+	function TestGetSiblingList($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
 		eval ("\$object = new $thisObjectName();");
@@ -2203,7 +2256,7 @@
 			$siblingsStore[] = $siblingInstance;
 			$siblingInstance = PopulateTestValues($siblingInstance);
 
-			if (!TestAddSibling($siblingInstance, false))
+			if (!TestAddSibling($siblingInstance, false, $ignoreObjects))
 			{
 				if ($trace)
 				{
@@ -2257,10 +2310,10 @@
 	 * @param unknown_type $object
 	 * @param unknown_type $trace
 	 */
-	function TestSetSiblingList($object, $trace = true)
+	function TestSetSiblingList($object, $trace = true, $ignoreObjects)
 	{
 		$thisObjectName = get_class($object);
-		if (!TestSaveDeep_Sibling($object, false))
+		if (!TestSaveDeep_Sibling($object, false, $ignoreObjects))
 		{
 			AddTrace("\tSetSiblingList(deep) ignored");
 			AddError("SetSiblingList ignored since SaveDeep could not be performed");
@@ -2324,7 +2377,7 @@
 		}
 
 		//cleanup
-		$object->Delete(true);
+		$object->Delete(false, true);
 
 		if ($errors == 0)
 		{
@@ -2355,24 +2408,28 @@
 		$sql = 'select count(*) from `'.strtolower($objectName)."`";
 		if (!isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			$databaseConnection = new DatabaseConnection();
+			$connection = Database::Connect();
 		}
 		else
 		{
-			$databaseConnection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
 		}
 		if (isset($GLOBALS['configuration']['pdoDriver']))
 		{
-			foreach ($databaseConnection->query($sql) as $row)
+			foreach ($connection->query($sql) as $row)
 			{
 				return $row['count(*)'];
 			}
 		}
 		else
 		{
-			if ($databaseConnection->Query($sql))
+			$result = Database::Query($sql, $connection);
+			if ($result != false)
 			{
-				return $databaseConnection->Result(0, "count(*)");
+				while ($row = mysql_fetch_assoc($result))
+				{
+					return $row['count(*)'];
+				}
 			}
 		}
 		return 0;

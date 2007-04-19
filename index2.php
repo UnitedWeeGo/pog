@@ -18,7 +18,7 @@ if (IsPostback())
 	$attributeList=Array();
 	$typeList=Array();
 	$z=0;
-	for ($i=1; $i<50; $i++)
+	for ($i=1; $i<100; $i++)
 	{
 		if (GetVariable(('fieldattribute_'.$i)) != null)
 		{
@@ -133,7 +133,7 @@ if (IsPostback())
 					</div>
 					<!-- result -->
 					<div class="greybox2">
-						<textarea cols="200" rows="30"><?=$object;?></textarea>
+						<textarea cols="200" rows="30"><?echo $object;?></textarea>
 					</div>
 					<!-- greybox -->
 					<div class="generate2"></div>

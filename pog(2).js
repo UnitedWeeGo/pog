@@ -106,7 +106,7 @@ function CascadePhpVersion()
 }
 function GenerateSQLTypesForDriver(driver)
 {
-	for (var j=1; j<50; j++)
+	for (var j=1; j<100; j++)
 	{
 		ddlist = document.getElementById("type_"+j);
 		ddlist.length=0;

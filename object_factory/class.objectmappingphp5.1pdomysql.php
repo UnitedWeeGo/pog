@@ -21,6 +21,7 @@ class ObjectMap
 	{
 		$this->string = "<?php\n";
 		$this->string .= $this->CreatePreface();
+		$this->string .= "\ninclude_once('class.pog_base.php');";
 		$this->string .= "\nclass ".$this->object1.$this->object2."Map\n{\n\t";
 		$this->string .= "public \$".strtolower($this->object1)."Id = '';\n\n\t";
 		$this->string .= "public \$".strtolower($this->object2)."Id = '';\n\n\t";
@@ -64,9 +65,9 @@ class ObjectMap
 		$this->string .= "\tfunction Save()\n\t{";
 		$this->string .= "\n\t\ttry";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';port='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
+		$this->string .= "\n\t\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"select count(`".strtolower($this->object1)."id`) as count from `".strtolower($this->object1).strtolower($this->object2)."map` where `".strtolower($this->object1)."id`='\".\$this->".strtolower($this->object1)."Id.\"' AND `".strtolower($this->object2)."id`='\".\$this->".strtolower($this->object2)."Id.\"' LIMIT 1\";";
-		$this->string .= "\n\t\t\tforeach (\$Database->query(\$this->pog_query) as \$row)";
+		$this->string .= "\n\t\t\tforeach (\$connection->query(\$this->pog_query) as \$row)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$rows = \$row[\"count\"];";
 		$this->string .= "\n\t\t\t\tbreak;";
@@ -74,7 +75,7 @@ class ObjectMap
 		$this->string .= "\n\t\t\tif (\$rows == 0)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$this->pog_query = \"insert into `".strtolower($this->object1).strtolower($this->object2)."map` (`".strtolower($this->object1)."id`, `".strtolower($this->object2)."id`) values ('\".\$this->".strtolower($this->object1)."Id.\"', '\".\$this->".strtolower($this->object2)."Id.\"')\";";
-		$this->string .= "\n\t\t\t\t\$Database->query(\$this->pog_query);";
+		$this->string .= "\n\t\t\t\t\$connection->query(\$this->pog_query);";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\tcatch(PDOException \$e)";
@@ -92,7 +93,7 @@ class ObjectMap
 		$this->string .= "\tfunction RemoveMapping(&\$object, &\$otherObject = null)\n\t{";
 		$this->string .= "\n\t\ttry";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$Database = new PDO(\$GLOBALS['configuration']['pdoDriver'].':host='.\$GLOBALS['configuration']['host'].';port='.\$GLOBALS['configuration']['port'].';dbname='.\$GLOBALS['configuration']['db'], \$GLOBALS['configuration']['user'], \$GLOBALS['configuration']['pass']);";
+		$this->string .= "\n\t\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\tif (\$object instanceof ".$this->object1.")";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\t\$this->pog_query = \"delete from `".strtolower($this->object1).strtolower($this->object2)."map` where `".strtolower($this->object1)."id` = '\".\$object->".strtolower($this->object1)."Id.\"'\";";
@@ -109,7 +110,7 @@ class ObjectMap
 		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \" and `".strtolower($this->object1)."id` = '\".\$otherObject->".strtolower($this->object1)."Id.\"'\";";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
-		$this->string .= "\n\t\t\t\$Database->Query(\$this->pog_query);";
+		$this->string .= "\n\t\t\t\$connection->Query(\$this->pog_query);";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\tcatch(PDOException \$e)";
 		$this->string .= "\n\t\t{";

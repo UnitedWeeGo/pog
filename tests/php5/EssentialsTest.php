@@ -48,7 +48,7 @@ class EssentialsTest extends PHPUnit_Framework_TestCase
      */
 	protected function setUp()
 	{
-		$this->object = new object('obj att');
+		$this->object = new object('obj att', 'obj att2');
 	}
 
 	/**
@@ -216,6 +216,30 @@ class EssentialsTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals(2, sizeof($objectList));
 		$this->assertEquals("obj att", $objectList[0]->attribute);
 		$this->assertEquals("efg", $objectList[1]->attribute);
+	}
+
+	/**
+	 * Tests column comparison
+	 *
+	 */
+	public function testGetListColumn()
+	{
+		$this->object->Save();
+		$newObject1 = new object("obj att", 'obj att2');
+		$newObject2 = new object("obj att_diff", 'obj att_diff');
+		$newObject3 = new object("obj att", 'obj att');
+
+		$newObject1->Save();
+		$newObject2->Save();
+		$newObject3->Save();
+
+		$objectList = $newObject1->GetList(array(array("attribute", "<>", "`attribute2`")));
+
+		$this->assertEquals(2, sizeof($objectList));
+
+		$objectList = $newObject1->GetList(array(array("attribute", "=", "`attribute2`")));
+
+		$this->assertEquals(2, sizeof($objectList));
 	}
 
 	/**

@@ -62,14 +62,14 @@ class ObjectMap
 		$this->string .= "\n\t".$this->separator."\n\t";
 		$this->string .= $this->CreateComments("Physically saves the mapping to the database",'', '');
 		$this->string .= "\tfunction Save()\n\t{";
-		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
+		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\$this->pog_query = \"select `".strtolower($this->object1)."id` from `".strtolower($this->object1).strtolower($this->object2)."map` where `".strtolower($this->object1)."id`='\".\$this->".strtolower($this->object1)."Id.\"' AND `".strtolower($this->object2)."id`='\".\$this->".strtolower($this->object2)."Id.\"' LIMIT 1\";";
-		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
-		$this->string .= "\n\t\tif (\$Database->Rows() == 0)";
+		$this->string .= "\n\t\t\$result = Database::Query(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\tif (Database::Rows(\$result) == 0)";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"insert into `".strtolower($this->object1).strtolower($this->object2)."map` (`".strtolower($this->object1)."id`, `".strtolower($this->object2)."id`) values ('\".\$this->".strtolower($this->object1)."Id.\"', '\".\$this->".strtolower($this->object2)."Id.\"')\";";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\treturn \$Database->InsertOrUpdate(\$this->pog_query);";
+		$this->string .= "\n\t\treturn Database::InsertOrUpdate(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t}";
 	}
 
@@ -79,7 +79,7 @@ class ObjectMap
 		$this->string .= "\n\t$this->separator\n\t";
 		$this->string .= $this->CreateComments("Removes the mapping between the two objects", array("Object \$object", "Object \$object2"), "");
 		$this->string .= "\tfunction RemoveMapping(\$object, \$otherObject = null)\n\t{";
-		$this->string .= "\n\t\t\$Database = new DatabaseConnection();";
+		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\tif (is_a(\$object, \"".$this->object1."\"))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"delete from `".strtolower($this->object1).strtolower($this->object2)."map` where `".strtolower($this->object1)."id` = '\".\$object->".strtolower($this->object1)."Id.\"'\";";
@@ -96,7 +96,7 @@ class ObjectMap
 		$this->string .= "\n\t\t\t\t\$this->pog_query .= \" and `".strtolower($this->object1)."id` = '\".\$otherObject->".strtolower($this->object1)."Id.\"'\";";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\t\$Database->Query(\$this->pog_query);";
+		$this->string .= "\n\t\tDatabase::Query(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t}";
 	}
 

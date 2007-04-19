@@ -670,7 +670,7 @@ class RelationsTest extends PHPUnit_Framework_TestCase
 		$this->object->AddSibling($this->sibling);
 		$this->parent_->Save();
 
-		$this->parent_->Delete(true);
+		$this->parent_->Delete(true, true);
 
 		$someParent = new parent_();
 		$parentList = $someParent->GetList(array(array("parent_Id", ">", 0)));

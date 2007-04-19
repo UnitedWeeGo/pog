@@ -10,6 +10,7 @@ if(file_exists("../objects/class.database.php"))
 {
 	include_once("../objects/class.database.php");
 }
+include_once('../objects/class.pog_base.php');
 
 $objectName = isset($_REQUEST['objectname']) ? $_REQUEST['objectname'] : '';
 $anchor = isset($_REQUEST['anchor']) ? $_REQUEST['anchor'] : '';
@@ -22,7 +23,7 @@ $dir = opendir('../objects/');
 $objects = array();
 while(($file = readdir($dir)) !== false)
 {
-	if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php")
+	if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php" && $file != "class.pog_base.php")
 	{
 		$objects[] = $file;
 	}
@@ -171,9 +172,7 @@ switch($action)
 
  		$js = "new Array(";
  		eval ('$instance = new '.$objectName.'();');
-
  		$recCount = GetNumberOfRecords(strtolower($objectName));
-
 		$attributeList = array_keys(get_object_vars($instance));
 		$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0)), strtolower($objectName)."Id", false, $sqlLimit);
 		$x = 0;

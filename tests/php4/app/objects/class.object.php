@@ -11,10 +11,11 @@
 /**
 * <b>object</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6.1 / PHP4
+* @version POG 3.0 / PHP4
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 * @link http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=object&attributeList=array+%28%0A++0+%3D%3E+%27child%27%2C%0A++1+%3D%3E+%27parent_%27%2C%0A++2+%3D%3E+%27attribute%27%2C%0A++3+%3D%3E+%27sibling%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27HASMANY%27%2C%0A++1+%3D%3E+%27BELONGSTO%27%2C%0A++2+%3D%3E+%27VARCHAR%28255%29%27%2C%0A++3+%3D%3E+%27JOIN%27%2C%0A%29
 */
+include_once('class.pog_base.php');
 include_once('class.objectsiblingmap.php');
 class object
 {
@@ -64,12 +65,15 @@ class object
 	*/
 	function Get($objectId)
 	{
-		$Database = new DatabaseConnection();
+		$connection = Database::Connect();
 		$this->pog_query = "select * from `object` where `objectid`='".intval($objectId)."' LIMIT 1";
-		$Database->Query($this->pog_query);
-		$this->objectId = $Database->Result(0, "objectid");
-		$this->parent_Id = $Database->Result(0, "parent_id");
-		$this->attribute = $Database->Unescape($Database->Result(0, "attribute"));
+		$result = Database::Query($this->pog_query, $connection);
+		while ($rows = mysql_fetch_assoc($result))
+		{
+			$this->objectId = $rows["objectid"];
+			$this->parent_Id = $rows["parent_id"];
+			$this->attribute = POG_Base::Unescape($rows["attribute"]);
+		}
 		return $this;
 	}
 	
@@ -82,14 +86,15 @@ class object
 	* @param int limit 
 	* @return array $objectList
 	*/
-	function GetList($fcv_array, $sortBy='', $ascending=true, $limit='')
+	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
 	{
-		$sqlLimit = ($limit != '' && $sortBy == ''?"LIMIT $limit":'');
+		$sqlLimit = ($limit != '' ? "LIMIT $limit" : '');
+		$this->pog_query = "select * from `object` ";
 		if (sizeof($fcv_array) > 0)
 		{
 			$objectList = Array();
-			$Database = new DatabaseConnection();
-			$this->pog_query = "select objectid from `object` where ";
+			$this->pog_query .= " where ";
+			$connection = Database::Connect();
 			for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 			{
 				if (sizeof($fcv_array[$i]) == 1)
@@ -105,56 +110,59 @@ class object
 					}
 					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 					{
-						$this->pog_query .= "`".strtolower($fcv_array[$i][0])."` ".$fcv_array[$i][1]." '".$Database->Escape($fcv_array[$i][2])."'";
+						if ($GLOBALS['configuration']['db_encoding'] == 1)
+						{
+							$value = POG_Base::IsColumn($fcv_array[$i][2]) ? "BASE64_DECODE(".$fcv_array[$i][2].")" : "'".$fcv_array[$i][2]."'";
+							$this->pog_query .= "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
+						}
+						else
+						{
+							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".POG_Base::Escape($fcv_array[$i][2])."'";
+							$this->pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+						}
 					}
 					else
 					{
-						$this->pog_query .= "`".strtolower($fcv_array[$i][0])."` ".$fcv_array[$i][1]." '".$fcv_array[$i][2]."'";
+						$value = POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$fcv_array[$i][2]."'";
+						$this->pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 					}
 				}
 			}
-			$this->pog_query .= " order by objectid asc $sqlLimit";
-			$Database->Query($this->pog_query);
-			$thisObjectName = get_class($this);
-			for ($i=0; $i < $Database->Rows(); $i++)
-			{
-				$object = new $thisObjectName();
-				$object->Get($Database->Result($i, "objectid"));
-				$objectList[] = $object;
-			}
-			if ($sortBy != '')
-			{
-				$f = '';
-				$object = new object();
-				if (isset($object->pog_attribute_type[$sortBy]) && ($object->pog_attribute_type[$sortBy][0] == "NUMERIC" || $object->pog_attribute_type[$sortBy][0] == "SET"))
-				{
-					$f = 'return $object1->'.$sortBy.' > $object2->'.$sortBy.';';
-				}
-				else if (isset($object->pog_attribute_type[$sortBy]))
-				{
-					$f = 'return strcmp(strtolower($object1->'.$sortBy.'), strtolower($object2->'.$sortBy.'));';
-				}
-				usort($objectList, create_function('$object1, $object2', $f));
-				if (!$ascending)
-				{
-					$objectList = array_reverse($objectList);
-				}
-				if ($limit != '')
-				{
-					$limitParts = explode(',', $limit);
-					if (sizeof($limitParts) > 1)
-					{
-						return array_slice($objectList, $limitParts[0], $limitParts[1]);
-					}
-					else
-					{
-						return array_slice($objectList, 0, $limit);
-					}
-				}
-			}
-			return $objectList;
 		}
-		return null;
+		if ($sortBy != '')
+		{
+			if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+			{
+				if ($GLOBALS['configuration']['db_encoding'] == 1)
+				{
+					$sortBy = "BASE64_DECODE($sortBy) ";
+				}
+				else
+				{
+					$sortBy = "$sortBy ";
+				}
+			}
+			else
+			{
+				$sortBy = "$sortBy ";
+			}
+		}
+		else
+		{
+			$sortBy = "objectid";
+		}
+		$this->pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
+		$thisObjectName = get_class($this);
+		$result = Database::Query($this->pog_query, $connection);
+		while ($row = mysql_fetch_assoc($result))
+		{
+			$object = new $thisObjectName();
+			$object->objectId = $row['objectid'];
+			$object->parent_Id = $row['parent_id'];
+			$object->attribute = POG_Base::Unescape($row['attribute']);
+			$objectList[] = $object;
+		}
+		return $objectList;
 	}
 	
 	
@@ -164,25 +172,25 @@ class object
 	*/
 	function Save($deep = true)
 	{
-		$Database = new DatabaseConnection();
+		$connection = Database::Connect();
 		$this->pog_query = "select `objectid` from `object` where `objectid`='".$this->objectId."' LIMIT 1";
-		$Database->Query($this->pog_query);
-		if ($Database->Rows() > 0)
+		$result = Database::Query($this->pog_query, $connection);
+		if (Database::Rows($result) > 0)
 		{
 			$this->pog_query = "update `object` set 
 			`parent_id`='".$this->parent_Id."', 
-			`attribute`='".$Database->Escape($this->attribute)."'where `objectid`='".$this->objectId."'";
+			`attribute`='".POG_Base::Escape($this->attribute)."'where `objectid`='".$this->objectId."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `object` (`parent_id`, `attribute`) values (
 			'".$this->parent_Id."', 
-			'".$Database->Escape($this->attribute)."')";
+			'".POG_Base::Escape($this->attribute)."')";
 		}
-		$Database->InsertOrUpdate($this->pog_query);
+		Database::InsertOrUpdate($this->pog_query, $connection);
 		if ($this->objectId == "")
 		{
-			$this->objectId = $Database->GetCurrentId();
+			$this->objectId = Database::GetCurrentId($connection);
 		}
 		if ($deep)
 		{
@@ -219,31 +227,34 @@ class object
 	* Deletes the object from the database
 	* @return boolean
 	*/
-	function Delete($deep = false)
+	function Delete($deep = false, $across = false)
 	{
 		if ($deep)
 		{
 			$childList = $this->GetChildList();
 			foreach ($childList as $child)
 			{
-				$child->Delete($deep);
+				$child->Delete($deep, $across);
 			}
+		}
+		if ($across)
+		{
 			$siblingList = $this->GetSiblingList();
 			$map = new objectsiblingMap();
-			$map->RemoveMapping($this, null);
+			$map->RemoveMapping($this);
 			foreach ($siblingList as $sibling)
 			{
-				$sibling->Delete($deep);
+				$sibling->Delete($deep, $across);
 			}
 		}
 		else
 		{
 			$map = new objectsiblingMap();
-			$map->RemoveMapping($this, null);
+			$map->RemoveMapping($this);
 		}
-		$Database = new DatabaseConnection();
+		$connection = Database::Connect();
 		$this->pog_query = "delete from `object` where `objectid`='".$this->objectId."'";
-		return $Database->Query($this->pog_query);
+		return Database::Query($this->pog_query, $connection);
 	}
 	
 	
@@ -253,21 +264,21 @@ class object
 	* @param bool $deep 
 	* @return 
 	*/
-	function DeleteList($fcv_array, $deep = false)
+	function DeleteList($fcv_array, $deep = false, $across = false)
 	{
 		if (sizeof($fcv_array) > 0)
 		{
-			if ($deep)
+			if ($deep || $across)
 			{
 				$objectList = $this->GetList($fcv_array);
 				foreach ($objectList as $object)
 				{
-					$object->Delete($deep);
+					$object->Delete($deep, $across);
 				}
 			}
 			else
 			{
-				$Database = new DatabaseConnection();
+				$connection = Database::Connect();
 				$pog_query = "delete from `object` where ";
 				for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 				{
@@ -284,7 +295,7 @@ class object
 						}
 						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 						{
-							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$Database->Escape($fcv_array[$i][2])."'";
+							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".POG_Base::Escape($fcv_array[$i][2])."'";
 						}
 						else
 						{
@@ -292,7 +303,7 @@ class object
 						}
 					}
 				}
-				return $Database->Query($pog_query);
+				return Database::Query($pog_query, $connection);
 			}
 		}
 	}
@@ -398,11 +409,11 @@ class object
 	*/
 	function GetSiblingList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
 	{
-		$sqlLimit = ($limit != '' && $sortBy == ''?"LIMIT $limit":'');
-		$Database = new DatabaseConnection();
+		$sqlLimit = ($limit != '' ? "LIMIT $limit" : '');
+		$connection = Database::Connect();
 		$sibling = new sibling();
 		$siblingList = Array();
-		$this->pog_query = "select distinct(a.siblingid) from `sibling` a INNER JOIN `objectsiblingmap` m ON m.siblingid = a.siblingid where m.objectid = '$this->objectId' ";
+		$this->pog_query = "select distinct * from `sibling` a INNER JOIN `objectsiblingmap` m ON m.siblingid = a.siblingid where m.objectid = '$this->objectId' ";
 		if (sizeof($fcv_array) > 0)
 		{
 			$this->pog_query .= " AND ";
@@ -421,51 +432,65 @@ class object
 					}
 					if (isset($sibling->pog_attribute_type[$fcv_array[$i][0]]) && $sibling->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $sibling->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 					{
-						$this->pog_query .= "a.`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$Database->Escape($fcv_array[$i][2])."'";
+						if ($GLOBALS['configuration']['db_encoding'] == 1)
+						{
+							$value = POG_Base::IsColumn($fcv_array[$i][2]) ? "BASE64_DECODE(".$fcv_array[$i][2].")" : "'".$fcv_array[$i][2]."'";
+							$this->pog_query .= "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
+						}
+						else
+						{
+							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".POG_Base::Escape($fcv_array[$i][2])."'";
+							$this->pog_query .= "a.`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+						}
 					}
 					else
 					{
-						$this->pog_query .= "a.`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$fcv_array[$i][2]."'";
+						$value = POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$fcv_array[$i][2]."'";
+						$this->pog_query .= "a.`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 					}
 				}
 			}
 		}
-		$this->pog_query .= " order by m.siblingid asc $sqlLimit";
-		$Database->Query($this->pog_query);
-		for($i=0; $i < $Database->Rows(); $i++)
-		{
-			$sibling = new sibling();
-			$sibling->Get($Database->Result($i, "siblingid"));
-			$siblingList[] = $sibling;
-		}
 		if ($sortBy != '')
 		{
-			$f = '';
-			if (isset($sibling->pog_attribute_type[$sortBy]) && ($sibling->pog_attribute_type[$sortBy][0] == "NUMERIC" || $sibling->pog_attribute_type[$sortBy][0] == "SET"))
+			if (isset($sibling->pog_attribute_type[$sortBy]) && $sibling->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $sibling->pog_attribute_type[$sortBy][0] != 'SET')
 			{
-				$f = 'return $sibling1->'.$sortBy.' > $sibling2->'.$sortBy.';';
-			}
-			else if (isset($sibling->pog_attribute_type[$sortBy]))
-			{
-				$f = 'return strcmp(strtolower($sibling1->'.$sortBy.'), strtolower($sibling2->'.$sortBy.'));';
-			}
-			usort($siblingList, create_function('$sibling1, $sibling2', $f));
-			if (!$ascending)
-			{
-				$siblingList = array_reverse($siblingList);
-			}
-			if ($limit != '')
-			{
-				$limitParts = explode(',', $limit);
-				if (sizeof($limitParts) > 1)
+				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
-					return array_slice($siblingList, $limitParts[0], $limitParts[1]);
+					$sortBy = "BASE64_DECODE(a.$sortBy) ";
 				}
 				else
 				{
-					return array_slice($siblingList, 0, $limit);
+					$sortBy = "a.$sortBy ";
 				}
 			}
+			else
+			{
+				$sortBy = "a.$sortBy ";
+			}
+		}
+		else
+		{
+			$sortBy = "a.siblingid";
+		}
+		$this->pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
+		$result = Database::Query($this->pog_query, $connection);
+		while($rows = mysql_fetch_assoc($result))
+		{
+			$sibling = new sibling();
+			foreach ($sibling->pog_attribute_type as $attribute_name => $attrubute_type)
+			{
+				if ($attrubute_type[1] != "HASMANY" && $attrubute_type[1] != "JOIN")
+				{
+					if ($attrubute_type[1] == "BELONGSTO")
+					{
+						$sibling->{strtolower($attribute_name).'Id'} = $rows[strtolower($attribute_name).'id'];
+						continue;
+					}
+					$sibling->{$attribute_name} = POG_Base::Unescape($rows[strtolower($attribute_name)]);
+				}
+			}
+			$siblingList[] = $sibling;
 		}
 		return $siblingList;
 	}

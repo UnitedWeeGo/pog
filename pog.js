@@ -37,7 +37,7 @@ NewOpt.value=optionsArray[i].toLowerCase()
 NewOpt.text=optionsArray[i]
 select.options[i]=NewOpt}
 IsPDO()}
-function GenerateSQLTypesForDriver(driver){for(var j=1;j<50;j++){ddlist=document.getElementById("type_"+j)
+function GenerateSQLTypesForDriver(driver){for(var j=1;j<100;j++){ddlist=document.getElementById("type_"+j)
 ddlist.length=0
 switch(driver){case"mysql":optionsArray=new Array("VARCHAR(255)","TINYINT","TEXT","DATE","SMALLINT","MEDIUMINT","INT","BIGINT","FLOAT","DOUBLE","DECIMAL","DATETIME","TIMESTAMP","TIME","YEAR","CHAR(255)","TINYBLOB","TINYTEXT","BLOB","MEDIUMBLOB","MEDIUMTEXT","LONGBLOB","LONGTEXT","BINARY","OTHER","{ CHILD }","{ PARENT }","{ SIBLING }")
 break

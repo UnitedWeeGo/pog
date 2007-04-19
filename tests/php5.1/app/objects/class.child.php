@@ -11,7 +11,7 @@
 /**
 * <b>child</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6 / PHP5.1 MYSQL
+* @version POG 3.0 / PHP5.1 MYSQL
 * @see http://www.phpobjectgenerator.com/plog/tutorials/45/pdo-mysql
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 * @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=mysql&objectName=child&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array%2B%2528%250A%2B%2B0%2B%253D%253E%2B%2527BELONGSTO%2527%252C%250A%2B%2B1%2B%253D%253E%2B%2527VARCHAR%2528255%2529%2527%252C%250A%2529
@@ -70,16 +70,16 @@ class child
 	{
 		try
 		{
-			$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = Database::Connect();
 			$this->pog_query = "select * from `child` where `childid`= ? LIMIT 1";
-			$stmt = $Database->prepare($this->pog_query);
+			$stmt = $connection->prepare($this->pog_query);
 			if ($stmt->execute(array($childId)))
 			{
 				while ($row = $stmt->fetch())
 				{
 					$this->childId = $row['childid'];
 					$this->objectId = $row['objectid'];
-					$this->attribute = $this->Unescape($row['attribute']);
+					$this->attribute = POG_Base::Unescape($row['attribute']);
 				}
 			}
 			return $this;
@@ -99,16 +99,17 @@ class child
 	* @param int limit 
 	* @return array $childList
 	*/
-	function GetList($fcv_array, $sortBy='', $ascending=true, $limit='')
+	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
 	{
-		$sqlLimit = ($limit != '' && $sortBy == ''?"LIMIT $limit":'');
-		if (sizeof($fcv_array) > 0)
+		$sqlLimit = ($limit != '' ? "LIMIT $limit" : '');
+		$pog_query = "select * from `child` ";
+		try
 		{
 			$childList = Array();
-			try
+			$pog_query .= " where ";
+			if (sizeof($fcv_array) > 0)
 			{
-				$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-				$pog_query = "select `childid` from `child` where ";
+				$connection = Database::Connect();
 				for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 				{
 					if (sizeof($fcv_array[$i]) == 1)
@@ -124,60 +125,63 @@ class child
 						}
 						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 						{
-							$pog_query .= "`".strtolower($fcv_array[$i][0])."` ".$fcv_array[$i][1]." '".child::Escape($fcv_array[$i][2])."'";
+							if ($GLOBALS['configuration']['db_encoding'] == 1)
+							{
+								$value = POG_Base::IsColumn($fcv_array[$i][2]) ? "BASE64_DECODE(".$fcv_array[$i][2].")" : "'".$fcv_array[$i][2]."'";
+								$pog_query .= "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
+							}
+							else
+							{
+								$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".POG_Base::Escape($fcv_array[$i][2])."'";
+								$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+							}
 						}
 						else
 						{
-							$pog_query .= "`".strtolower($fcv_array[$i][0])."` ".$fcv_array[$i][1]." '".$fcv_array[$i][2]."'";
+							$value = POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$fcv_array[$i][2]."'";
+							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 						}
 					}
 				}
-				$pog_query .= " order by childid asc $sqlLimit";
-				$thisObjectName = get_class($this);
-				foreach ($Database->query($pog_query) as $row)
-				{
-					$child = new $thisObjectName();
-					$child->Get($row['childid']);
-					$childList[] = $child;
-				}
-				if ($sortBy != '')
-				{
-					$f = '';
-					$child = new $thisObjectName();
-					if (isset($child->pog_attribute_type[$sortBy]) && ($child->pog_attribute_type[$sortBy][0] == "NUMERIC" || $child->pog_attribute_type[$sortBy][0] == "SET"))
-					{
-						$f = 'return $child1->'.$sortBy.' > $child2->'.$sortBy.';';
-					}
-					else if (isset($child->pog_attribute_type[$sortBy]))
-					{
-						$f = 'return strcmp(strtolower($child1->'.$sortBy.'), strtolower($child2->'.$sortBy.'));';
-					}
-					usort($childList, create_function('$child1, $child2', $f));
-					if (!$ascending)
-					{
-						$childList = array_reverse($childList);
-					}
-					if ($limit != '')
-					{
-						$limitParts = explode(',', $limit);
-						if (sizeof($limitParts) > 1)
-						{
-							return array_slice($childList, $limitParts[0], $limitParts[1]);
-						}
-						else
-						{
-							return array_slice($childList, 0, $limit);
-						}
-					}
-				}
-				return $childList;
 			}
-			catch(PDOException $e)
+			if ($sortBy != '')
 			{
-				throw new Exception($e->getMessage());
+				if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+				{
+					if ($GLOBALS['configuration']['db_encoding'] == 1)
+					{
+						$sortBy = "BASE64_DECODE($sortBy) ";
+					}
+					else
+					{
+						$sortBy = "$sortBy ";
+					}
+				}
+				else
+				{
+					$sortBy = "$sortBy ";
+				}
+			}
+			else
+			{
+				$sortBy = "childid";
+			}
+			$pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
+			$thisObjectName = get_class($this);
+			foreach ($connection->query($pog_query) as $row)
+			{
+				$child = new $thisObjectName();
+				$child->childId = $row['childid'];
+				$child->objectId = $row['objectid'];
+				$child->attribute = POG_Base::Unescape($row['attribute']);
+				$childList[] = $child;
 			}
 		}
-		return null;
+		catch(PDOException $e)
+		{
+			throw new Exception($e->getMessage());
+		}
+		return $childList;
 	}
 	
 	
@@ -189,9 +193,9 @@ class child
 	{
 		try
 		{
-			$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = Database::Connect();
 			$this->pog_query = "select count(`childid`) as count from `child` where `childid`='$this->childId' limit 1";
-			foreach ($Database->query($this->pog_query) as $row)
+			foreach ($connection->query($this->pog_query) as $row)
 			{
 				$rows = $row["count"];
 				break;
@@ -200,23 +204,23 @@ class child
 			{
 				// update object
 				$this->pog_query = "update `child` set `objectid`=?, `attribute`=? where `childid`=?";
-				$stmt = $Database->prepare($this->pog_query);
+				$stmt = $connection->prepare($this->pog_query);
 				$stmt->bindParam(1, $this->objectId);
-				$stmt->bindParam(2, $this->Escape($this->attribute));
+				$stmt->bindParam(2, POG_Base::Escape($this->attribute));
 				$stmt->bindParam(3, $this->childId);
 			}
 			else
 			{
 				// insert object
 				$this->pog_query = "insert into `child` (`objectid`, `attribute`) values (?, ?)";
-				$stmt = $Database->prepare($this->pog_query);
+				$stmt = $connection->prepare($this->pog_query);
 				$stmt->bindParam(1, $this->objectId);
-				$stmt->bindParam(2, $this->Escape($this->attribute));
+				$stmt->bindParam(2, POG_Base::Escape($this->attribute));
 			}
 			$stmt->execute();
 			if ($this->childId == "")
 			{
-				$this->childId = $Database->lastInsertId();
+				$this->childId = $connection->lastInsertId();
 			}
 			return $this->childId;
 		}
@@ -246,9 +250,9 @@ class child
 	{
 		try
 		{
-			$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = Database::Connect();
 			$this->pog_query = "delete from `child` where `childid` = '$this->childId'";
-			$affectedRows = $Database->query($this->pog_query);
+			$affectedRows = $connection->query($this->pog_query);
 			if ($affectedRows != null)
 			{
 				return $affectedRows;
@@ -277,7 +281,7 @@ class child
 		{
 			try
 			{
-				$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+				$connection = Database::Connect();
 				$pog_query = "delete from `child` where ";
 				for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 				{
@@ -294,7 +298,7 @@ class child
 						}
 						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 						{
-							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
+							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".POG_Base::Escape($fcv_array[$i][2])."'";
 						}
 						else
 						{
@@ -302,7 +306,7 @@ class child
 						}
 					}
 				}
-				return $Database->Query($pog_query);
+				return $connection->Query($pog_query);
 			}
 			catch(PDOException $e)
 			{
@@ -330,31 +334,6 @@ class child
 	function SetObject(&$object)
 	{
 		$this->objectId = $object->objectId;
-	}
-	
-	
-	/**
-	* This function will always try to encode $text to base64, except when $text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.
-	* @param string $text 
-	* @return base64_encoded $text
-	*/
-	function Escape($text)
-	{
-		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
-		{
-			return base64_encode($text);
-		}
-		return mysql_escape_string($text);
-	}
-	
-	
-	function Unescape($text)
-	{
-		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
-		{
-			return base64_decode($text);
-		}
-		return stripcslashes($text);
 	}
 }
 ?>

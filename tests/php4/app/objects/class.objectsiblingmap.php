@@ -10,7 +10,7 @@
 /**
 * <b>objectsiblingMap</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6.1 / PHP5
+* @version POG 3.0 / PHP5
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */
 class objectsiblingMap
@@ -60,7 +60,7 @@ class objectsiblingMap
 	*/
 	function RemoveMapping($object, $otherObject = null)
 	{
-		$Database = new DatabaseConnection();
+		$connection = Database::Connect();
 		if (is_a($object, "object"))
 		{
 			$this->pog_query = "delete from `objectsiblingmap` where `objectid` = '".$object->objectId."'";
@@ -77,7 +77,7 @@ class objectsiblingMap
 				$this->pog_query .= " and `objectid` = '".$otherObject->objectId."'";
 			}
 		}
-		$Database->Query($this->pog_query);
+		Database::Query($this->pog_query, $connection);
 	}
 	
 	
@@ -87,14 +87,14 @@ class objectsiblingMap
 	*/
 	function Save()
 	{
-		$Database = new DatabaseConnection();
+		$connection = Database::Connect();
 		$this->pog_query = "select `objectid` from `objectsiblingmap` where `objectid`='".$this->objectId."' AND `siblingid`='".$this->siblingId."' LIMIT 1";
-		$Database->Query($this->pog_query);
-		if ($Database->Rows() == 0)
+		$result = Database::Query($this->pog_query, $connection);
+		if (Database::Rows($result) == 0)
 		{
 			$this->pog_query = "insert into `objectsiblingmap` (`objectid`, `siblingid`) values ('".$this->objectId."', '".$this->siblingId."')";
 		}
-		return $Database->InsertOrUpdate($this->pog_query);
+		return Database::InsertOrUpdate($this->pog_query, $connection);
 	}
 }
 ?>

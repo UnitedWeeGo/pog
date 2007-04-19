@@ -28,7 +28,7 @@ include_once "setup_misc.php";
 		$objects = array();
 		while(($file = readdir($dir)) !== false)
 		{
-			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php")
+			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "configuration.php" && $file != "setup.php" && $file != "class.pog_base.php")
 			{
 				$objects[] = $file;
 			}

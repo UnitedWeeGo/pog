@@ -1,8 +1,4 @@
 <?php
-if (!isset($_SESSION))
-{
-	session_start();
-}
 global $configuration;
 $configuration['soap'] = "&soap";
 $configuration['homepage'] = "&homepage";
@@ -11,6 +7,12 @@ $configuration['versionNumber'] = "&versionNumber";
 
 $configuration['pdoDriver']	= 'mysql';
 $configuration['setup_password'] = '';
+
+
+// to enable automatic data encoding, run setup, go to the manage plugins tab and install the base64 plugin.
+// then set db_encoding = 1 below.
+// when enabled, db_encoding transparently encodes and decodes data to and from the database without any
+// programmatic effort on your part.
 $configuration['db_encoding'] = &db_encoding;
 
 // edit the information below to match your database settings

@@ -208,7 +208,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	}
 	$object->CreateConstructor();
 	$object->CreateGetFunction();
-	$object->CreateGetAllFunction();
+	$object->CreateGetListFunction();
 	$object->CreateSaveFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
 	$object->CreateSaveNewFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
 	$object->CreateDeleteFunction((in_array("HASMANY", $typeList) || in_array("JOIN", $typeList)));
@@ -237,13 +237,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 		$i++;
 	}
 
-	if(strtoupper($wrapper) == "PDO")
-	{
-		$object->CreateEscapeFunction();
-		$object->CreateUnescapeFunction();
-	}
 	$object->EndObject();
-
 	return base64_encode($object->string);
 }
 
@@ -430,12 +424,12 @@ function GeneratePackageFromLink($link)
  * @param string $wrapper
  * @return base64 encoded string
  */
-function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding = 1)
+function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding = 0)
 {
 	require_once("../include/configuration.php");
 	if ($db_encoding == "")
 	{
-		$db_encoding = 1;
+		$db_encoding = 0;
 	}
 	if (strtoupper($wrapper) == "PDO")
 	{
@@ -465,7 +459,7 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
  * @param string $wrapper
  * @param string $pdoDriver
  */
-function GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver = null, $db_encoding = 1)
+function GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver = null, $db_encoding = 0)
 {
 	require_once ("../include/configuration.php");
 	require_once ("../include/class.misc.php");
@@ -480,22 +474,30 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["configuration.php"] = GenerateConfiguration($wrapper, $pdoDriver, $db_encoding);
 
 	//generate objects
-	if (strtoupper($wrapper) != "PDO")
+
+	if (strtolower($language) == "php4")
 	{
-		if (strtolower($language) == "php4")
-		{
-			$data = file_get_contents("../object_factory/class.database.php4.php");
-		}
-		else
-		{
-			$data = file_get_contents("../object_factory/class.database.php5.php");
-		}
-		$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber'], $data);
-		$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber'], $data);
-		$data = str_replace('&language', strtoupper($language), $data);
-		$package["objects"]["class.database.php"] = base64_encode($data);
+		$data = file_get_contents("../object_factory/class.database.php4.php");
 	}
+	else if (strtolower($language) == "php5")
+	{
+		$data = file_get_contents("../object_factory/class.database.php5.php");
+	}
+	else
+	{
+		$data = file_get_contents("../object_factory/class.database.php5.1.php");
+	}
+	$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber'], $data);
+	$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber'], $data);
+	$data = str_replace('&language', strtoupper($language), $data);
+	$package["objects"]["class.database.php"] = base64_encode($data);
+
+	$data = file_get_contents("../object_factory/class.pog_base.".strtolower($language).".php");
+	$package["objects"]["class.pog_base.php"] = base64_encode($data);
+
 	$package["objects"]["class.".strtolower($objectName).".php"] =  GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver);
+
+	$package["objects"]["ignore_objects.txt"] = "";
 
 	//generate mapping object if necessary
 	$misc = new Misc(array());
@@ -593,12 +595,28 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$data = file_get_contents("../setup_factory/setup_files/data_initialization/data_initialization.sql");
 	$package["setup"]["data_initialization"]["data_initialization.sql"] = base64_encode($data);
 
+	$package["setup"]["data_initialization"]["additional_table_structures.sql"] = "";
+
 	$data = file_get_contents("../setup_factory/setup_files/data_initialization/howto.txt");
 	$package["setup"]["data_initialization"]["howto.txt"] = base64_encode($data);
 
 	$data = file_get_contents("../setup_factory/setup_files/data_initialization/read_dump_lib.php");
 	$package["setup"]["data_initialization"]["read_dump_lib.php"] = base64_encode($data);
 
+	$package["plugins"] = array();
+
+	if (strtolower($language) != "php4")
+	{
+		$data = file_get_contents("../plugin_factory/IPlugin.php");
+		$package["plugins"]["IPlugin.php"] = base64_encode($data);
+	}
+	//add default base64 plugin
+	$data = file_get_contents("../plugin_factory/base64_install.sql");
+	$package["plugins"]["base64_install.sql"] = base64_encode($data);
+	$data = file_get_contents("../plugin_factory/base64_uninstall.sql");
+	$package["plugins"]["base64_uninstall.sql"] = base64_encode($data);
+	$data = file_get_contents("../plugin_factory/plugin.base64.".strtolower($language).".php");
+	$package["plugins"]["plugin.base64.php"] = base64_encode($data);
 
 	return serialize($package);
 }

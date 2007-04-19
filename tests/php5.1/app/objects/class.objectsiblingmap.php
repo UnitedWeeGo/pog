@@ -10,9 +10,10 @@
 /**
 * <b>objectsiblingMap</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 2.6 / PHP5.1 MYSQL
+* @version POG 3.0 / PHP5.1 MYSQL
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */
+include_once('class.pog_base.php');
 class objectsiblingMap
 {
 	public $objectId = '';
@@ -62,7 +63,7 @@ class objectsiblingMap
 	{
 		try
 		{
-			$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = Database::Connect();
 			if ($object instanceof object)
 			{
 				$this->pog_query = "delete from `objectsiblingmap` where `objectid` = '".$object->objectId."'";
@@ -79,7 +80,7 @@ class objectsiblingMap
 					$this->pog_query .= " and `objectid` = '".$otherObject->objectId."'";
 				}
 			}
-			$Database->Query($this->pog_query);
+			$connection->Query($this->pog_query);
 		}
 		catch(PDOException $e)
 		{
@@ -96,9 +97,9 @@ class objectsiblingMap
 	{
 		try
 		{
-			$Database = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';port='.$GLOBALS['configuration']['port'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
+			$connection = Database::Connect();
 			$this->pog_query = "select count(`objectid`) as count from `objectsiblingmap` where `objectid`='".$this->objectId."' AND `siblingid`='".$this->siblingId."' LIMIT 1";
-			foreach ($Database->query($this->pog_query) as $row)
+			foreach ($connection->query($this->pog_query) as $row)
 			{
 				$rows = $row["count"];
 				break;
@@ -106,7 +107,7 @@ class objectsiblingMap
 			if ($rows == 0)
 			{
 				$this->pog_query = "insert into `objectsiblingmap` (`objectid`, `siblingid`) values ('".$this->objectId."', '".$this->siblingId."')";
-				$Database->query($this->pog_query);
+				$connection->query($this->pog_query);
 			}
 		}
 		catch(PDOException $e)

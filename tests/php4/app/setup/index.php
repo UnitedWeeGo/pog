@@ -12,6 +12,10 @@
 * 5. Tests 5 CRUD functions and determine if everything is OK for all objects within the current directory
 * 6. When all tests pass, provides an interface to the database and a way to manage objects.
 */
+if (!isset($_SESSION))
+{
+	session_start();
+}
 if(file_exists("../configuration.php"))
 {
 	include_once("../configuration.php");
@@ -25,12 +29,12 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 }
 ?>
 <?php include "setup_library/inc.header.php";?>
-<form action="./index.php" method="POST">
 <?php
 ini_set("max_execution_time", 0);
 if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 {
 ?>
+<form action="./index.php" method="POST">
 <div class="container">
 <div class="left">
 	<div class="logo2"></div>
@@ -46,6 +50,9 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		<img src="./setup_images/tab_diagnosticresults_on.gif"/>
 		<img src="./setup_images/tab_separator.gif"/>
 		<img src="./setup_images/tab_manageobjects.gif"/>
+		<img src="./setup_images/tab_separator.gif"/>
+		<img src="./setup_images/tab_manageplugins_off.gif"/>
+
 	</div><div class="subtabs">&nbsp;</div><a href="./index.php?step=diagnostics"><img src="./setup_images/setup_recheck.jpg" border="0"/></a><div class="middle2">
 <?php
 	$errors = 0;
@@ -53,7 +60,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 	if (isset($GLOBALS['configuration']['pdoDriver']))
 	{
 		$errors++;
-		AddError('POG setup for PHP4 objects cannot be run with a PDO configuration file. Regenerate configuration.php');
+		AddError('POG setup for PHP4/5 objects cannot be run with a PDO configuration file. Regenerate configuration.php');
 	}
 	else
 	{
@@ -69,17 +76,41 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		{
 			include "../objects/class.database.php";
 		}
+		if(!file_exists("../objects/class.pog_base.php"))
+		{
+			$errors++;
+			AddError('POG Base class (class.pog_base.php) is missing.');
+		}
+		else
+		{
+			include "../objects/class.pog_base.php";
+		}
 		if (!file_exists("../configuration.php"))
 		{
 			$errors++;
 			AddError('Configuration file (configuration.php) is missing');
+		}
+		if (!file_exists("../plugins/plugin.base64.php"))
+		{
+			$errors++;
+			AddError('Base64 plugin file (plugins/plugin.base64.php) is missing');
+		}
+		else
+		{
+			include_once("../plugins/plugin.base64.php");
+		}
+
+		//load object names to be ignored
+		$ignoreObjects = file("../objects/ignore_objects.txt");
+		foreach ($ignoreObjects as $key=>$ignoreObject){
+			$ignoreObjects[$key] = trim($ignoreObject);
 		}
 
 		$dir = opendir('../objects/');
 		$objects = array();
 		while(($file = readdir($dir)) !== false)
 		{
-			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php")
+			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "class.pog_base.php")
 			{
 				$objects[] = $file;
 				include_once("../objects/{$file}");
@@ -92,20 +123,46 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			AddError("[objects] folder does not contain any POG object.");
 		}
 
+		$dir = opendir('../plugins/');
+		$plugins = array();
+		while(($file = readdir($dir)) !== false)
+		{
+			if(file_exists("../plugins/IPlugin.php"))
+			{
+				include_once("../plugins/IPlugin.php");
+			}
+			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && strtolower(substr($file, 0, 6)) == 'plugin')
+			{
+				include_once("../plugins/{$file}");
+				$pluginName = GetPluginName($file);
+				if ($pluginName != '')
+				{
+					$plugins[] = $file;
+				}
+
+			}
+		}
+		closedir($dir);
+
 		/**
 		 * verify configuration info
 		 */
 		if ($errors == 0)
 		{
 			AddTrace('File Structure....OK!');
-			if (!mysql_connect ($GLOBALS['configuration']['host'].":".$GLOBALS['configuration']['port'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']))
+			if (!@mysql_connect ($GLOBALS['configuration']['host'].":".$GLOBALS['configuration']['port'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']))
 			{
 				$errors++;
 				AddError('Cannot connect to the specified database server. Edit configuration.php');
 			}
+			if (isset($GLOBALS['configuration']['db_encoding']) && $GLOBALS['configuration']['db_encoding'] == 1 && !Base64::IsBase64FunctionInstalled())
+			{
+				$errors++;
+				AddError('$configuration[db_encoding] needs to be set to 0 until you install the base64 plugin. Set db_encoding to 0 by editing configuration.php, run setup again and go to the "Manage Plugins" tab. Install the base64 plugin. Then you can set db_encoding = 1');
+			}
 			if ($errors == 0)
 			{
-				if (!mysql_select_db ($GLOBALS['configuration']['db']))
+				if (!@mysql_select_db ($GLOBALS['configuration']['db']))
 				{
 					$errors++;
 					AddError('Cannot find the specified database "'.$GLOBALS['configuration']['db'].'". Edit configuration.php');
@@ -196,24 +253,47 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 					}
 				}
 			}
+			$structure_changes = file_get_contents('data_initialization/additional_table_structures.sql');
+			unset($statements);
+			PMA_splitSqlFile($statements, $structure_changes, 4);
+			if (sizeof($statements) > 0)
+			{
+				foreach ($statements as $statement)
+				{
+					if (!TestExecuteQuery($statement['query']))
+
+					{
+						$errors++;
+						AddError('Statement "'.$statement['query'].'" failed');
+					}
+				}
+			}
 		}
 
 
 		/**
 		 * verify object status
 		 */
-		if (isset($_POST['pog_test']) && $_POST['pog_test'] == 'no')
+		$objectNameList = array();
+		foreach($objects as $object)
 		{
-			$objectNameList = array();
-			foreach($objects as $object)
+			$objectName = GetObjectName("../objects/".$object);
+			if (isset($objectName) && array_search($objectName, $ignoreObjects) ===false)
 			{
-				$objectName = GetObjectName("../objects/".$object);
-				if (isset($objectName))
-				{
-					$objectNameList[] = $objectName;
-				}
+				$objectNameList[] = $objectName;
 			}
 		}
+
+		$pluginNameList = array();
+		foreach($plugins as $plugin)
+		{
+			$pluginName = GetPluginName($plugin);
+			if ($pluginName != '')
+			{
+				$pluginNameList[] = $pluginName;
+			}
+		}
+
 
 		if ($errors == 0 && isset($_POST['pog_test']) && $_POST['pog_test'] == 'yes')
 		{
@@ -225,11 +305,10 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			foreach($objects as $object)
 			{
 				$objectName = GetObjectName("../objects/".$object);
-				if (isset($objectName))
+				if (isset($objectName) && array_search($objectName, $ignoreObjects) ===false)
 				{
 					eval('$instance = new '.$objectName.'();');
 					AddTrace("\t[".$objectName."]");
-					$objectNameList[] = $objectName;
 
 					$link = GetAtLink("../objects/".$object);
 					$_SESSION['links'][$objectName] = $link;
@@ -256,11 +335,11 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			foreach ($objects as $object)
 			{
 				$objectName = GetObjectName("../objects/".$object);
-				if (isset($objectName))
+				if (isset($objectName) && array_search($objectName, $ignoreObjects) ===false)
 				{
 					eval('$instance = new '.$objectName.'();');
 					AddTrace("\t[".$objectName."]");
-					if (!TestRelationsPreRequisites($instance, $objectNameList, $objectName))
+					if (!TestRelationsPreRequisites($instance, $objectNameList, $objectName, $ignoreObjects))
 					{
 						$errors++;
 					}
@@ -281,11 +360,11 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			foreach ($objects as $object)
 			{
 				$objectName = GetObjectName("../objects/".$object);
-				if (isset($objectName))
+				if (isset($objectName) && array_search($objectName, $ignoreObjects) ===false)
 				{
 					eval('$instance = new '.$objectName.'();');
 					AddTrace("\t[".$objectName."]");
-					if (!TestRelations($instance, $objectNameList))
+					if (!TestRelations($instance, $objectNameList, $ignoreObjects))
 					{
 						$errors++;
 						AddError("Object $objectName failed relations tests");
@@ -330,6 +409,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 		}
 		$_SESSION['fileNames'] = serialize($objects);
 		$_SESSION['objectNameList'] = serialize($objectNameList);
+		$_SESSION['pluginNameList'] = serialize($pluginNameList);
 	}
 	echo "<textarea>".$diagnostics."</textarea><br/><br/><br/></div>";
 	if ($_SESSION['diagnosticsSuccessful'])
@@ -339,11 +419,14 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 	unset($_POST, $instanceId, $_SESSION['traceMessages'], $_SESSION['errorMessages']);
 ?>
 </div></div>
+</form>
 <?php
 }
-else if($_SESSION['diagnosticsSuccessful'] == true)
+else if($_SESSION['diagnosticsSuccessful'] == true && (!isset($_GET['plugins']) ||  $_GET['plugins'] != true) )
 {
+	$pluginNameList = unserialize($_SESSION['pluginNameList']);
 ?>
+<form action="./index.php" method="POST">
 <div class="container">
 	<div class="left">
 		<div class="logo3"></div>
@@ -361,6 +444,15 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 		<img src="./setup_images/tab_diagnosticresults.gif"/>
 		<img src="./setup_images/tab_separator.gif"/>
 		<a href="./index.php"><img src="./setup_images/tab_manageobjects_on.gif"/></a>
+		<img src="./setup_images/tab_separator.gif"/>
+<?php
+	if (sizeof($pluginNameList) > 0)
+	{
+?>
+		<a href="./index.php?plugins=true"><img src="./setup_images/tab_manageplugins_off.gif" border="0"/></a>
+<?php
+	}
+?>
 	</div><!--tabs3--><div class="subtabs">
 <?php
 	//provide interface to the database
@@ -410,7 +502,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	</ul>
 	</div><!--header-->
 	</div><!--subtabs-->
-	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" title="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="#" title="Delete all objects" onclick="if (confirm('Are you sure you want to delete all objects in this table? Press OK to Delete.')){window.location='./?thrashall=true';}else{alert('Phew, nothing was deleted ;)');}"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="#" title="update all objects to newest POG version" onclick="if (confirm('Setup will now attempt to upgrade your objects by contacting the POG SOAP server. Would you like to continue?')){window.location='./setup_library/upgrade.php';}else{alert('Upgrade aborted');}"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><div class="middle3">
+	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" title="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="#" title="Delete all objects" onclick="if (confirm('Are you sure you want to delete all objects in this table? TPress OK to Delete.')){window.location='./?thrashall=true';}else{alert('Phew, nothing was deleted ;)');}"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="#" title="update all objects to newest POG version" onclick="if (confirm('Setup will now attempt to upgrade your objects by contacting the POG SOAP server. Would you like to continue?')){window.location='./setup_library/upgrade.php';}else{alert('Upgrade aborted');}"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><div class="middle3">
 	<?php
 	//is there an action to perform?
 	if (isset($_GET['thrashall']))
@@ -432,14 +524,111 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 </div><!--middle3-->
 </div><!--middle33-->
 </div><!--container-->
+</form>
 <?php
 echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</script>";
 }
+else if ($_SESSION['diagnosticsSuccessful'] && $_GET['plugins'])
+{
+?>
+<form action="./index.php?plugins=true" method="POST">
+	<div class="container">
+	<div class="left">
+		<div class="logo3"></div>
+		<div class="text"><div class="gold">POG documentation summary</div>
+		<br/><br/>The following 3 documents summarize what POG is all about:<br/><br/>
+		1. <a href="http://www.phpobjectgenerator.com/plog/file_download/15">POG Essentials</a><br/><br/>
+		2. <a href="http://www.phpobjectgenerator.com/plog/file_download/21" target="_blank">POG Object Relations</a><br/><br/>
+		3. <a href="http://www.phpobjectgenerator.com/plog/file_download/18">POG SOAP API</a>
+		</div><!--text-->
+	</div><!--left-->
+<div class="middle33">
+	<div id="tabs3">
+		<a href="./index.php?step=diagnostics"><img src="./setup_images/tab_setup.gif"/></a>
+		<img src="./setup_images/tab_separator.gif"/>
+		<img src="./setup_images/tab_diagnosticresults.gif"/>
+		<img src="./setup_images/tab_separator.gif"/>
+		<a href="./index.php"><img src="./setup_images/tab_manageobjects.gif"/></a>
+		<img src="./setup_images/tab_separator.gif"/>
+		<img src="./setup_images/tab_manageplugins_on.gif"/>
+	</div><!--tabs3--><div class="subtabs">
+<?php
+	//provide interface to the database
+	include "./setup_library/xPandMenu.php";
+	$root = new XMenu();
+	if(file_exists("configuration.php"))
+	{
+		include "../configuration.php";
+	}
+	if(file_exists("../objects/class.database.php"))
+	{
+		include "../objects/class.database.php";
+	}
+	include_once('../objects/class.pog_base.php');
+	if(file_exists("../plugins/IPlugin.php"))
+	{
+		include_once('../plugins/IPlugin.php');
+	}
+	$pluginNameList = unserialize($_SESSION['pluginNameList']);
+	foreach($pluginNameList as $pluginName)
+	{
+		include_once("../plugins/plugin.".$pluginName.".php");
+	}
+
+	?>
+	<div id="header">
+  	<ul>
+  	<li id='inactive'>My Plugins:</li>
+	<?php
+	if (isset($_GET['pluginName']))
+	{
+		$_SESSION['pluginName'] = $_GET['pluginName'];
+	}
+	$pluginName = (isset($_SESSION['pluginName'])?$_SESSION['pluginName']:$pluginNameList[0]);
+	$_SESSION['pluginName'] = $pluginName;
+	for($i=0; $i<count($pluginNameList); $i++)
+	{
+		$name = $pluginNameList[$i];
+		echo "<li ".($_SESSION['pluginName']==$pluginNameList[$i]?"id='current'":'')."><a href='./index.php?plugins=true&pluginName=".$pluginNameList[$i]."'>".$pluginNameList[$i]."</a></li>";
+	}
+	$pluginInstance = new $_SESSION['pluginName']('', '');
+	?>
+	</ul>
+	</div><!--header-->
+	</div><!--subtabs-->
+	<div class="toolbar"><img src="setup_images/button_toolbar_left.gif"/>
+		<a href='http://plugins.phpobjectgenerator.com/?id=' target="_blank"><img src="setup_images/button_toolbar_homepage.gif" border='0'/></a>
+		<img src="setup_images/toolbar_separator.gif"/>
+	<?php
+	if ($pluginInstance->AuthorPage() != null)
+	{
+	?>
+		<a href='<?php echo $pluginInstance->AuthorPage();?>' target="_blank"><img src="setup_images/button_toolbar_author.gif" border='0'/></a>
+		<img src="setup_images/toolbar_separator.gif"/>
+	<?php
+	}
+	?>
+		<a href='http://plugins.phpobjectgenerator.com/?id=&help' target="_blank"><img src="setup_images/button_toolbar_help.gif" border='0'/></a>
+	</div><div class="middle3">
+	<?php
+	echo '<div id="container"><div style="padding:30px;">';
+	$pluginInstance->SetupRender();
+	echo '</div></div>';
+	$_SESSION['pluginNameList'] = serialize($pluginNameList);
+?>
+<b class="rbottom"><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></b>
+</div><!--middle3-->
+</div><!--middle33-->
+</div><!--container-->
+</form>
+<?php
+}
 else
 {
-	unset($_SESSION['objectNameList'], $_SESSION['fileNames'], $_SESSION['links']);
+	unset($_SESSION['objectNameList'], $_SESSION['fileNames'], $_SESSION['links'], $_SESSION['pluginNameList']);
 	//welcome screen
 ?>
+<form action="./index.php" method="POST">
 <div class="container">
 	<div class="left">
 		<div class="logo"></div>
@@ -451,11 +640,13 @@ else
 	</div>
 	<div class="middle">
 		<div id="tabs">
-			<img src="./setup_images/tab_setup_on.gif" height="20px" width="70px"/>
+			<img src="./setup_images/tab_setup_on.gif"/>
 			<img src="./setup_images/tab_separator.gif" height="20px" width="17px"/>
 			<img src="./setup_images/tab_diagnosticresults.gif" height="20px" width="137px"/>
 			<img src="./setup_images/tab_separator.gif" height="20px" width="17px"/>
 			<img src="./setup_images/tab_manageobjects.gif" height="20px" width="129px"/>
+			<img src="./setup_images/tab_separator.gif"/>
+			<img src="./setup_images/tab_manageplugins_off.gif"/>
 		</div>
 		<div id="nifty">
 			<div style="height:500px">
@@ -495,10 +686,10 @@ else
 		</div>
 	</div>
 </div>
+</form>
 <?php
 }
 ?>
-</form>
 <div class="footer">
 <?php include "setup_library/inc.footer.php";?>
 </div>
