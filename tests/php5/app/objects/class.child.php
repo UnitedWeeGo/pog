@@ -16,7 +16,7 @@
 * @link http://www.phpobjectgenerator.com/?language=php5&wrapper=pog&objectName=child&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27BELONGSTO%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
 include_once('class.pog_base.php');
-class child
+class child extends POG_Base
 {
 	public $childId = '';
 
@@ -69,12 +69,12 @@ class child
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select * from `child` where `childid`='".intval($childId)."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		while ($row = mysql_fetch_assoc($result))
+		$cursor = Database::Reader($this->pog_query, $connection);
+		while ($row = Database::Read($cursor))
 		{
 			$this->childId = $row['childid'];
 			$this->objectId = $row['objectid'];
-			$this->attribute = POG_Base::Unescape($row['attribute']);
+			$this->attribute = $this->Unescape($row['attribute']);
 		}
 		return $this;
 	}
@@ -119,7 +119,7 @@ class child
 						}
 						else
 						{
-							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".POG_Base::Escape($fcv_array[$i][2])."'";
+							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$this->Escape($fcv_array[$i][2])."'";
 							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 						}
 					}
@@ -155,13 +155,13 @@ class child
 		}
 		$pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
 		$thisObjectName = get_class($this);
-		$result = Database::Query($pog_query, $connection);
-		while ($row = mysql_fetch_assoc($result))
+		$cursor = Database::Reader($pog_query, $connection);
+		while ($row = Database::Read($cursor))
 		{
 			$child = new $thisObjectName();
 			$child->childId = $row['childid'];
 			$child->objectId = $row['objectid'];
-			$child->attribute = POG_Base::Unescape($row['attribute']);
+			$child->attribute = $this->Unescape($row['attribute']);
 			$childList[] = $child;
 		}
 		return $childList;
@@ -176,23 +176,23 @@ class child
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select `childid` from `child` where `childid`='".$this->childId."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		if (Database::Rows($result) > 0)
+		$rows = Database::Query($this->pog_query, $connection);
+		if ($rows > 0)
 		{
 			$this->pog_query = "update `child` set 
 			`objectid`='".$this->objectId."', 
-			`attribute`='".POG_Base::Escape($this->attribute)."' where `childid`='".$this->childId."'";
+			`attribute`='".$this->Escape($this->attribute)."' where `childid`='".$this->childId."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `child` (`objectid`, `attribute` ) values (
 			'".$this->objectId."', 
-			'".POG_Base::Escape($this->attribute)."' )";
+			'".$this->Escape($this->attribute)."' )";
 		}
-		Database::InsertOrUpdate($this->pog_query, $connection);
+		$insertId = Database::InsertOrUpdate($this->pog_query, $connection);
 		if ($this->childId == "")
 		{
-			$this->childId = Database::GetCurrentId($connection);
+			$this->childId = $insertId;
 		}
 		return $this->childId;
 	}
@@ -217,7 +217,7 @@ class child
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "delete from `child` where `childid`='".$this->childId."'";
-		return Database::Query($this->pog_query, $connection);
+		return Database::NonQuery($this->pog_query, $connection);
 	}
 	
 	
@@ -248,7 +248,7 @@ class child
 					}
 					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 					{
-						$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".POG_Base::Escape($fcv_array[$i][2])."'";
+						$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 					}
 					else
 					{
@@ -256,7 +256,7 @@ class child
 					}
 				}
 			}
-			return Database::Query($pog_query, $connection);
+			return Database::NonQuery($pog_query, $connection);
 		}
 	}
 	

@@ -64,8 +64,8 @@ class ObjectMap
 		$this->string .= "\tfunction Save()\n\t{";
 		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\$this->pog_query = \"select `".strtolower($this->object1)."id` from `".strtolower($this->object1).strtolower($this->object2)."map` where `".strtolower($this->object1)."id`='\".\$this->".strtolower($this->object1)."Id.\"' AND `".strtolower($this->object2)."id`='\".\$this->".strtolower($this->object2)."Id.\"' LIMIT 1\";";
-		$this->string .= "\n\t\t\$result = Database::Query(\$this->pog_query, \$connection);";
-		$this->string .= "\n\t\tif (Database::Rows(\$result) == 0)";
+		$this->string .= "\n\t\t\$rows = Database::Query(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\tif (\$rows == 0)";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"insert into `".strtolower($this->object1).strtolower($this->object2)."map` (`".strtolower($this->object1)."id`, `".strtolower($this->object2)."id`) values ('\".\$this->".strtolower($this->object1)."Id.\"', '\".\$this->".strtolower($this->object2)."Id.\"')\";";
 		$this->string .= "\n\t\t}";
@@ -96,7 +96,7 @@ class ObjectMap
 		$this->string .= "\n\t\t\t\t\$this->pog_query .= \" and `".strtolower($this->object1)."id` = '\".\$otherObject->".strtolower($this->object1)."Id.\"'\";";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\tDatabase::Query(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\tDatabase::NonQuery(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t}";
 	}
 

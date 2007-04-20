@@ -41,33 +41,38 @@
 		return $database->connection;
 	}
 
+	public static function Reader($query, $connection)
+	{
+		$cursor = mysql_query($query, $connection);
+		return $cursor;
+	}
+
+	public static function Read($cursor)
+	{
+		return mysql_fetch_assoc($cursor);
+	}
+
+	public static function NonQuery($query, $connection)
+	{
+		mysql_query($query, $connection);
+		$result = mysql_affected_rows($connection);
+		if ($result == -1)
+		{
+			return false;
+		}
+		return $result;
+
+	}
+
 	public static function Query($query, $connection)
 	{
 		$result = mysql_query($query, $connection);
-		if (!$result)
-		{
-			throw new Exception(mysql_errno().":".mysql_error().';'.$query);
-		}
-		return $result;
-	}
-
-	public static function Rows($result)
-	{
-		if ($result != false)
-		{
-			return mysql_num_rows($result);
-		}
-		return null;
+		return mysql_num_rows($result);
 	}
 
 	public static function InsertOrUpdate($query, $connection)
 	{
 		$result = mysql_query($query, $connection);
-		return (mysql_affected_rows() > 0);
-	}
-
-	public static function GetCurrentId($connection)
-	{
 		return intval(mysql_insert_id($connection));
 	}
 }

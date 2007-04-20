@@ -19,71 +19,7 @@ class Base64 implements POG_Plugin
 
 	public function Execute()
 	{
-		echo "im searching!<br/>\n";
-		foreach ($this->argv as $arg)
-		{
-			echo $arg."<br/>\n";
-		}
-
-		$attributeList = array_keys($this->sourceObject->pog_attribute_type);
-
-		foreach ($attributeList as $attribute)
-		{
-			echo $attribute."<br />\n";
-		}
-
-		$tableName = substr($attributeList[0],0,strpos($attributeList[0],"Id"));
-
-		$createSyntax = 'create temporary table `temporary_'.$tableName.'` like `'.$tableName.'`';
-		$copySyntax = 'insert into `temporary_'.$tableName.'` (';
-		// probably should restrict to text/varchar only fields
-		for ($i=1;$i<count($attributeList);$i++)
-		{
-			$copySyntax .= '`'.$attributeList[$i].'` ';
-			if ($i < (count($attributeList)-1))
-			{
-				$copySyntax .= ', ';
-			}
-		}
-		$copySyntax .= ') select ';
-		// probably should restrict to text/varchar only fields
-		for ($i=1;$i<count($attributeList);$i++)
-		{
-			$copySyntax .= 'base64_decode(`'.$attributeList[$i].'`) ';
-			if ($i < (count($attributeList)-1))
-			{
-				$copySyntax .= ', ';
-			}
-		}
-
-		$copySyntax .= ' from `'.$tableName.'`';
-
-		$connection = Database::Connect();
-
-		echo $createSyntax."<br />\n";
-		echo $copySyntax."<br />\n";
-		$database->query($createSyntax);
-		echo $database->AffectedRows()."<br />\n";
-		$database->query($copySyntax);
-		echo $database->AffectedRows()."<br />\n";
-
-		$searchSyntax = 'select `'.$attributeList[0].'`'
-			.' from `temporary_'.$tableName.'`'
-			.' where `'.$this->argv[0].'`'
-			.' like \'%'.$this->argv[1].'%\'';
-
-		echo $searchSyntax."<br />\n";
-
-		$result = Database::Query($searchSyntax, $connection);
-
-		$r = array();
-
-		foreach ($result as $row)
-		{
-			$r[] = $row[$attributeList[0]];
-		}
-
-		return $r;
+		return null;
 	}
 
 	public function SetupRender()
@@ -150,7 +86,7 @@ class Base64 implements POG_Plugin
 				{
 					if (trim($statement) != '')
 					{
-						Database::Query($statement, $connection);
+						Database::NonQuery($statement, $connection);
 					}
 				}
 			}
@@ -167,7 +103,7 @@ class Base64 implements POG_Plugin
 				{
 					if (trim($statement) != '')
 					{
-						Database::Query($statement, $connection);
+						Database::NonQuery($statement, $connection);
 					}
 				}
 			}
@@ -183,20 +119,8 @@ class Base64 implements POG_Plugin
 		$sql2 = "show tables like 'base64_data'";
 		$connection = Database::Connect();
 		$result = Database::Query($sql1, $connection);
-		$connection = Database::Connect();
 		$result2 = Database::Query($sql2, $connection);
-		$count1 = 0;
-		foreach ($result as $row)
-		{
-			$count1++;
-		}
-		$count2 = 0;
-		foreach($result2 as $row)
-		{
-			$count2++;
-		}
-		echo $count1;
-		if ($count1 == 2 && $count2 == 1)
+		if ($result == 2 && $result2 == 1)
 		{
 			return true;
 		}

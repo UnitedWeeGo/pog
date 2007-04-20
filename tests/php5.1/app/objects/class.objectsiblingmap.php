@@ -13,7 +13,6 @@
 * @version POG 3.0 / PHP5.1 MYSQL
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */
-include_once('class.pog_base.php');
 class objectsiblingMap
 {
 	public $objectId = '';
@@ -32,7 +31,7 @@ class objectsiblingMap
 	* @param sibling $otherObject 
 	* @return 
 	*/
-	function AddMapping(&$object, $otherObject)
+	function AddMapping($object, $otherObject)
 	{
 		if ($object instanceof object && $object->objectId != '')
 		{
@@ -59,33 +58,26 @@ class objectsiblingMap
 	* @param Object $object2 
 	* @return 
 	*/
-	function RemoveMapping(&$object, &$otherObject = null)
+	function RemoveMapping($object, $otherObject = null)
 	{
-		try
+		$connection = Database::Connect();
+		if ($object instanceof object)
 		{
-			$connection = Database::Connect();
-			if ($object instanceof object)
+			$this->pog_query = "delete from `objectsiblingmap` where `objectid` = '".$object->objectId."'";
+			if ($otherObject != null && $otherObject instanceof sibling)
 			{
-				$this->pog_query = "delete from `objectsiblingmap` where `objectid` = '".$object->objectId."'";
-				if ($otherObject != null && $otherObject instanceof sibling)
-				{
-					$this->pog_query .= " and `siblingid` = '".$otherObject->siblingId."'";
-				}
+				$this->pog_query .= " and `siblingid` = '".$otherObject->siblingId."'";
 			}
-			else if ($object instanceof sibling)
-			{
-				$this->pog_query = "delete from `objectsiblingmap` where `siblingid` = '".$object->siblingId."'";
-				if ($otherObject != null && $otherObject instanceof object)
-				{
-					$this->pog_query .= " and `objectid` = '".$otherObject->objectId."'";
-				}
-			}
-			$connection->Query($this->pog_query);
 		}
-		catch(PDOException $e)
+		else if ($object instanceof sibling)
 		{
-			throw new Exception($e->getMessage());
+			$this->pog_query = "delete from `objectsiblingmap` where `siblingid` = '".$object->siblingId."'";
+			if ($otherObject != null && $otherObject instanceof object)
+			{
+				$this->pog_query .= " and `objectid` = '".$otherObject->objectId."'";
+			}
 		}
+		Database::NonQuery($this->pog_query, $connection);
 	}
 	
 	
@@ -95,25 +87,14 @@ class objectsiblingMap
 	*/
 	function Save()
 	{
-		try
+		$connection = Database::Connect();
+		$this->pog_query = "select `objectid` from `objectsiblingmap` where `objectid`='".$this->objectId."' AND `siblingid`='".$this->siblingId."' LIMIT 1";
+		$rows = Database::Query($this->pog_query, $connection);
+		if ($rows == 0)
 		{
-			$connection = Database::Connect();
-			$this->pog_query = "select count(`objectid`) as count from `objectsiblingmap` where `objectid`='".$this->objectId."' AND `siblingid`='".$this->siblingId."' LIMIT 1";
-			foreach ($connection->query($this->pog_query) as $row)
-			{
-				$rows = $row["count"];
-				break;
-			}
-			if ($rows == 0)
-			{
-				$this->pog_query = "insert into `objectsiblingmap` (`objectid`, `siblingid`) values ('".$this->objectId."', '".$this->siblingId."')";
-				$connection->query($this->pog_query);
-			}
+			$this->pog_query = "insert into `objectsiblingmap` (`objectid`, `siblingid`) values ('".$this->objectId."', '".$this->siblingId."')";
 		}
-		catch(PDOException $e)
-		{
-			throw new Exception($e->getMessage());
-		}
+		return Database::InsertOrUpdate($this->pog_query, $connection);
 	}
 }
 ?>

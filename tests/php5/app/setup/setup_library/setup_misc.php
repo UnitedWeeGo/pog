@@ -566,36 +566,14 @@
 				return true;
 			break;
 		}
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
-		{
-			$connection = Database::Connect();
-			$result = Database::Query($query, $connection);
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-			$affectedRows = Database::Query($query, $connection);
-		}
 
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
+		$connection = Database::Connect();
+		$rows = Database::Query($query, $connection);
+		if ($rows > 0)
 		{
-			if (Database::Rows($result) > 0)
-			{
-				return  true;
-			}
-			return false;
+			return true;
 		}
-		else
-		{
-			if (sizeof($affectedRows->fetchAll()) > 0)
-			{
-				return true;
-			}
-			else
-			{
-				return  false;
-			}
-		}
+		return false;
 	}
 
 	/**
@@ -630,19 +608,8 @@
 			$sql = "CREATE ".$sqlPart[1].";";
 
 			//execute sql
-			if ($databaseType == "mysql" && !isset($GLOBALS['configuration']['pdoDriver']))
-			{
-				$connection = Database::Connect();
-			}
-			else if ($databaseType == "sqlite" || $databaseType == "pgsql" || $databaseType == "mysql")
-			{
-				$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-			}
-			else if ($databaseType == "odbc")
-			{
-				$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':'.$GLOBALS['configuration']['odbcDSN']);
-			}
-			if (Database::Query($sql, $connection))
+			$connection = Database::Connect();
+			if (Database::NonQuery($sql, $connection) !== false)
 			{
 				return true;
 			}
@@ -658,15 +625,8 @@
 	function TestDeleteStorage($object, $databaseType = "mysql")
 	{
 		$tableName = strtolower(get_class($object));
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
-		{
-			$connection = Database::Connect();
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-		}
-		if (Database::Query('drop table `'.strtolower($tableName).'`', $connection))
+		$connection = Database::Connect();
+		if (Database::NonQuery('drop table `'.strtolower($tableName).'`', $connection) !== false)
 		{
 			return true;
 		}
@@ -680,19 +640,12 @@
 	 */
 	function TestExecuteQuery($query)
 	{
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
-		{
-			$connection = Database::Connect();
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-		}
+		$connection = Database::Connect();
 		if ($query == "")
 		{
 			return true;
 		}
-		if (Database::Query($query, $connection))
+		if (Database::NonQuery($query, $connection) !== false)
 		{
 			return true;
 		}
@@ -718,30 +671,13 @@
 		$columns = array();
 
 		$query = "describe `$tableName` ";
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
+		$connection = Database::Connect();
+		$cursor = Database::Reader($query, $connection);
+		if ($cursor !== false)
 		{
-			$connection = Database::Connect();
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-		}
-		$result = Database::Query($query, $connection);
-		if ($result != false)
-		{
-			if (!isset($GLOBALS['configuration']['pdoDriver']))
+			while ($row = Database::Read($cursor))
 			{
-				while ($row = mysql_fetch_assoc($result))
-				{
-					$columns[$row["Field"]] = $row["Type"];
-				}
-			}
-			else
-			{
-				foreach ($result as $row)
-				{
-			       $columns[$row['Field']] = $row['Type'];
-				}
+				$columns[$row["Field"]] = $row["Type"];
 			}
 
 			$attribute_types = $object -> pog_attribute_type;
@@ -877,7 +813,7 @@
 			$query = trim($query, ',');
 			//execute query
 
-			if (Database::Query($query, $connection))
+			if (Database::NonQuery($query, $connection) !== false)
 			{
 				return true;
 			}
@@ -894,15 +830,8 @@
 	 */
 	function TestOptimizeStorage($objectName)
 	{
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
-		{
-			$connection = Database::Connect();
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-		}
-		if (Database::Query("optimize table `".strtolower($objectName)."`", $connection))
+		$connection = Database::Connect();
+		if (Database::NonQuery("optimize table `".strtolower($objectName)."`", $connection) !== false)
 		{
 			AddTrace("\tOptimizing....OK!");
 			return true;
@@ -933,15 +862,8 @@
 		}
 		//cleanup test data
 		$query = "delete from `".strtolower($className)."` where ".strtolower($className)."id = '".$objectId."';";
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
-		{
-			$connection = Database::Connect();
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-		}
-		Database::Query($query, $connection);
+		$connection = Database::Connect();
+		Database::NonQuery($query, $connection);
 		if ($trace)
 		{
 			AddTrace("\tSave()....OK!");
@@ -968,15 +890,8 @@
 		if ($objectId)
 		{
 			$query = "delete from `".strtolower($className)."` where ".strtolower($className)."Id = '".$objectId."';";
-			if (!isset($GLOBALS['configuration']['pdoDriver']))
-			{
-				$connection = Database::Connect();
-			}
-			else
-			{
-				$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-			}
-			Database::Query($query, $connection);
+			$connection = Database::Connect();
+			Database::NonQuery($query, $connection);
 			if ($trace)
 			{
 				AddTrace("\tSaveNew()....OK!");
@@ -1110,6 +1025,8 @@
 			}
 			return false;
 		}
+		$object = PopulateTestValues($object);
+		$object->Save(false);
 		if ($object->Delete(false))
 		{
 			if ($trace)
@@ -2406,30 +2323,13 @@
 	function GetNumberOfRecords($objectName)
 	{
 		$sql = 'select count(*) from `'.strtolower($objectName)."`";
-		if (!isset($GLOBALS['configuration']['pdoDriver']))
+		$connection = Database::Connect();
+		$cursor = Database::Reader($sql, $connection);
+		if ($cursor !== false)
 		{
-			$connection = Database::Connect();
-		}
-		else
-		{
-			$connection = new PDO($GLOBALS['configuration']['pdoDriver'].':host='.$GLOBALS['configuration']['host'].';dbname='.$GLOBALS['configuration']['db'], $GLOBALS['configuration']['user'], $GLOBALS['configuration']['pass']);
-		}
-		if (isset($GLOBALS['configuration']['pdoDriver']))
-		{
-			foreach ($connection->query($sql) as $row)
+			while($row = Database::Read($cursor))
 			{
 				return $row['count(*)'];
-			}
-		}
-		else
-		{
-			$result = Database::Query($sql, $connection);
-			if ($result != false)
-			{
-				while ($row = mysql_fetch_assoc($result))
-				{
-					return $row['count(*)'];
-				}
 			}
 		}
 		return 0;

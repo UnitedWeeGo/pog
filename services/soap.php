@@ -186,7 +186,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 
 	if (strtoupper($wrapper) == "PDO")
 	{
-		require "../object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php";
+		require_once "../object_factory/class.object".$language.strtolower($wrapper).$pdoDriver.".php";
 	}
 	else
 	{
@@ -202,10 +202,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 	}
 	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
 	$object->BeginObject();
-	if (strtolower($language) != "php4")
-	{
-		$object->CreateMagicGetterFunction();
-	}
+	$object->CreateMagicGetterFunction();
 	$object->CreateConstructor();
 	$object->CreateGetFunction();
 	$object->CreateGetListFunction();
@@ -526,8 +523,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$data = file_get_contents("../setup_factory/setup_files/setup.css");
 	$package["setup"]["setup.css"] = base64_encode($data);
 
-
-	if (strtolower($language) == "php4")
+	if (strtolower($language) == 'php4')
 	{
 		$data = file_get_contents("../setup_factory/setup_files/setup_miscphp4.php");
 	}
@@ -615,7 +611,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["plugins"]["base64_install.sql"] = base64_encode($data);
 	$data = file_get_contents("../plugin_factory/base64_uninstall.sql");
 	$package["plugins"]["base64_uninstall.sql"] = base64_encode($data);
-	$data = file_get_contents("../plugin_factory/plugin.base64.".strtolower($language).".php");
+	$data = file_get_contents("../plugin_factory/plugin.base64.php");
 	$package["plugins"]["plugin.base64.php"] = base64_encode($data);
 
 	return serialize($package);

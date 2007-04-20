@@ -15,7 +15,7 @@
 * @link http://www.phpobjectgenerator.com/?language=php5&wrapper=pog&objectName=parent_&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27HASMANY%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
 include_once('class.pog_base.php');
-class parent_
+class parent_ extends POG_Base
 {
 	public $parent_Id = '';
 
@@ -69,11 +69,11 @@ class parent_
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select * from `parent_` where `parent_id`='".intval($parent_Id)."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		while ($row = mysql_fetch_assoc($result))
+		$cursor = Database::Reader($this->pog_query, $connection);
+		while ($row = Database::Read($cursor))
 		{
 			$this->parent_Id = $row['parent_id'];
-			$this->attribute = POG_Base::Unescape($row['attribute']);
+			$this->attribute = $this->Unescape($row['attribute']);
 		}
 		return $this;
 	}
@@ -118,7 +118,7 @@ class parent_
 						}
 						else
 						{
-							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".POG_Base::Escape($fcv_array[$i][2])."'";
+							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$this->Escape($fcv_array[$i][2])."'";
 							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 						}
 					}
@@ -154,12 +154,12 @@ class parent_
 		}
 		$pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
 		$thisObjectName = get_class($this);
-		$result = Database::Query($pog_query, $connection);
-		while ($row = mysql_fetch_assoc($result))
+		$cursor = Database::Reader($pog_query, $connection);
+		while ($row = Database::Read($cursor))
 		{
 			$parent_ = new $thisObjectName();
 			$parent_->parent_Id = $row['parent_id'];
-			$parent_->attribute = POG_Base::Unescape($row['attribute']);
+			$parent_->attribute = $this->Unescape($row['attribute']);
 			$parent_List[] = $parent_;
 		}
 		return $parent_List;
@@ -174,21 +174,21 @@ class parent_
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select `parent_id` from `parent_` where `parent_id`='".$this->parent_Id."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		if (Database::Rows($result) > 0)
+		$rows = Database::Query($this->pog_query, $connection);
+		if ($rows > 0)
 		{
 			$this->pog_query = "update `parent_` set 
-			`attribute`='".POG_Base::Escape($this->attribute)."' where `parent_id`='".$this->parent_Id."'";
+			`attribute`='".$this->Escape($this->attribute)."' where `parent_id`='".$this->parent_Id."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `parent_` (`attribute` ) values (
-			'".POG_Base::Escape($this->attribute)."' )";
+			'".$this->Escape($this->attribute)."' )";
 		}
-		Database::InsertOrUpdate($this->pog_query, $connection);
+		$insertId = Database::InsertOrUpdate($this->pog_query, $connection);
 		if ($this->parent_Id == "")
 		{
-			$this->parent_Id = Database::GetCurrentId($connection);
+			$this->parent_Id = $insertId;
 		}
 		if ($deep)
 		{
@@ -229,7 +229,7 @@ class parent_
 		}
 		$connection = Database::Connect();
 		$this->pog_query = "delete from `parent_` where `parent_id`='".$this->parent_Id."'";
-		return Database::Query($this->pog_query, $connection);
+		return Database::NonQuery($this->pog_query, $connection);
 	}
 	
 	
@@ -270,7 +270,7 @@ class parent_
 						}
 						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 						{
-							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".POG_Base::Escape($fcv_array[$i][2])."'";
+							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 						}
 						else
 						{
@@ -278,7 +278,7 @@ class parent_
 						}
 					}
 				}
-				return Database::Query($pog_query, $connection);
+				return Database::NonQuery($pog_query, $connection);
 			}
 		}
 	}

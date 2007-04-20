@@ -15,7 +15,7 @@
 * @link http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=parent_&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27HASMANY%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
 include_once('class.pog_base.php');
-class parent_
+class parent_ extends POG_Base
 {
 	var $parent_Id = '';
 
@@ -36,6 +36,22 @@ class parent_
 		);
 	var $pog_query;
 	
+	
+	/**
+	* Getter for some private attributes
+	* @return mixed $attribute
+	*/
+	function __get($attribute, &$value)
+	{
+		@eval('$result = $this->_'.$attribute.';');
+		if ($result == null)
+		{
+			$value = false;
+		}
+		$value = $result;
+		return true;
+	}
+	
 	function parent_($attribute='')
 	{
 		$this->_objectList = array();
@@ -52,11 +68,11 @@ class parent_
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select * from `parent_` where `parent_id`='".intval($parent_Id)."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		while ($rows = mysql_fetch_assoc($result))
+		$cursor = Database::Reader($this->pog_query, $connection);
+		while ($row = Database::Read($cursor))
 		{
-			$this->parent_Id = $rows["parent_id"];
-			$this->attribute = POG_Base::Unescape($rows["attribute"]);
+			$this->parent_Id = $row["parent_id"];
+			$this->attribute = $this->Unescape($row["attribute"]);
 		}
 		return $this;
 	}
@@ -64,7 +80,7 @@ class parent_
 	
 	/**
 	* Returns a sorted array of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ..} 
 	* @param string $sortBy 
 	* @param boolean $ascending 
 	* @param int limit 
@@ -77,38 +93,38 @@ class parent_
 		if (sizeof($fcv_array) > 0)
 		{
 			$parent_List = Array();
-			$this->pog_query .= " where ";
+			$this->pog_query  = $this->pog_query . " where ";
 			$connection = Database::Connect();
 			for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 			{
 				if (sizeof($fcv_array[$i]) == 1)
 				{
-					$this->pog_query .= " ".$fcv_array[$i][0]." ";
+					$this->pog_query  = $this->pog_query . " ".$fcv_array[$i][0]." ";
 					continue;
 				}
 				else
 				{
 					if ($i > 0 && sizeof($fcv_array[$i-1]) != 1)
 					{
-						$this->pog_query .= " AND ";
+						$this->pog_query  = $this->pog_query . " AND ";
 					}
 					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
 							$value = POG_Base::IsColumn($fcv_array[$i][2]) ? "BASE64_DECODE(".$fcv_array[$i][2].")" : "'".$fcv_array[$i][2]."'";
-							$this->pog_query .= "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
+							$this->pog_query  = $this->pog_query . "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
 						}
 						else
 						{
-							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".POG_Base::Escape($fcv_array[$i][2])."'";
-							$this->pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$this->Escape($fcv_array[$i][2])."'";
+							$this->pog_query  = $this->pog_query . "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 						}
 					}
 					else
 					{
 						$value = POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$fcv_array[$i][2]."'";
-						$this->pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+						$this->pog_query  = $this->pog_query . "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 					}
 				}
 			}
@@ -135,14 +151,14 @@ class parent_
 		{
 			$sortBy = "parent_id";
 		}
-		$this->pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
+		$this->pog_query  = $this->pog_query . " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
 		$thisObjectName = get_class($this);
-		$result = Database::Query($this->pog_query, $connection);
-		while ($row = mysql_fetch_assoc($result))
+		$cursor = Database::Reader($this->pog_query, $connection);
+		while ($row = Database::Read($cursor))
 		{
 			$parent_ = new $thisObjectName();
 			$parent_->parent_Id = $row['parent_id'];
-			$parent_->attribute = POG_Base::Unescape($row['attribute']);
+			$parent_->attribute = $this->Unescape($row['attribute']);
 			$parent_List[] = $parent_;
 		}
 		return $parent_List;
@@ -157,21 +173,21 @@ class parent_
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select `parent_id` from `parent_` where `parent_id`='".$this->parent_Id."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		if (Database::Rows($result) > 0)
+		$rows = Database::Query($this->pog_query, $connection);
+		if ($rows > 0)
 		{
 			$this->pog_query = "update `parent_` set 
-			`attribute`='".POG_Base::Escape($this->attribute)."' where `parent_id`='".$this->parent_Id."'";
+			`attribute`='".$this->Escape($this->attribute)."' where `parent_id`='".$this->parent_Id."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `parent_` (`attribute` ) values (
-			'".POG_Base::Escape($this->attribute)."' )";
+			'".$this->Escape($this->attribute)."' )";
 		}
-		Database::InsertOrUpdate($this->pog_query, $connection);
+		$insertId = Database::InsertOrUpdate($this->pog_query, $connection);
 		if ($this->parent_Id == "")
 		{
-			$this->parent_Id = Database::GetCurrentId($connection);
+			$this->parent_Id = $insertId;
 		}
 		if ($deep)
 		{
@@ -213,13 +229,13 @@ class parent_
 		}
 		$connection = Database::Connect();
 		$this->pog_query = "delete from `parent_` where `parent_id`='".$this->parent_Id."'";
-		return Database::Query($this->pog_query, $connection);
+		return Database::NonQuery($this->pog_query, $connection);
 	}
 	
 	
 	/**
 	* Deletes a list of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ..} 
 	* @param bool $deep 
 	* @return 
 	*/
@@ -243,26 +259,26 @@ class parent_
 				{
 					if (sizeof($fcv_array[$i]) == 1)
 					{
-						$pog_query .= " ".$fcv_array[$i][0]." ";
+						$pog_query  = $pog_query . " ".$fcv_array[$i][0]." ";
 						continue;
 					}
 					else
 					{
 						if ($i > 0 && sizeof($fcv_array[$i-1]) !== 1)
 						{
-							$pog_query .= " AND ";
+							$pog_query  = $pog_query . " AND ";
 						}
 						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 						{
-							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".POG_Base::Escape($fcv_array[$i][2])."'";
+							$pog_query  = $pog_query . "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 						}
 						else
 						{
-							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$fcv_array[$i][2]."'";
+							$pog_query  = $pog_query . "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$fcv_array[$i][2]."'";
 						}
 					}
 				}
-				return Database::Query($pog_query, $connection);
+				return Database::NonQuery($pog_query, $connection);
 			}
 		}
 	}
@@ -270,7 +286,7 @@ class parent_
 	
 	/**
 	* Gets a list of object objects associated to this one
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ..} 
 	* @param string $sortBy 
 	* @param boolean $ascending 
 	* @param int limit 
@@ -323,5 +339,5 @@ class parent_
 			$this->_objectList[] =& $object;
 		}
 	}
-}
+}overload('parent_');
 ?>

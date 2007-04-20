@@ -2,14 +2,12 @@
 /**
 * <b>Database Connection</b> class.
 * @author Php Object Generator
-* @version versionNumber / PHP5.1
+* @version 3.0 / PHP5.1
 * @see http://www.phpobjectgenerator.com/
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */
  Class Database
 {
-	public $connection;
-
 	private function Database()
 	{
 		$databaseName = $GLOBALS['configuration']['db'];
@@ -18,7 +16,11 @@
 		$databaseUser = $GLOBALS['configuration']['user'];
 		$databasePassword = $GLOBALS['configuration']['pass'];
 		$databasePort = $GLOBALS['configuration']['port'];
-		$this->connection = new PDO($driver.':host='.$serverName.';port='.$databasePort.';dbname='.$databaseName, $databaseUser, $databasePassword);
+		if (!isset($this->connection))
+		{
+			$this->connection = new PDO($driver.':host='.$serverName.';port='.$databasePort.';dbname='.$databaseName, $databaseUser, $databasePassword);
+			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
 		if (!$this->connection)
 		{
 			throw new Exception('I cannot connect to the database. Please edit configuration.php with your database configuration.');
@@ -27,23 +29,15 @@
 
 	public static function Connect()
 	{
+		static $database = null;
 		if (!isset($database))
 		{
-			static $database = null;
 			$database = new Database();
 		}
 		return $database->connection;
 	}
 
-	public static function Disconnect()
-	{
-		if (isset($database))
-		{
-			$database = null;
-		}
-	}
-
-	public static function Query($query, $connection)
+	public static function Reader($query, $connection)
 	{
 		try
 		{
@@ -51,25 +45,70 @@
 		}
 		catch(PDOException $e)
 		{
-			throw new Exception($e->getMessage());
+			return false;
 		}
 		return $result;
 	}
 
-	public static function Rows($result)
+	public static function Read($result)
 	{
-		return $result->rowCount();
+		try
+		{
+			return $result->fetch();
+		}
+		catch (PDOException $e)
+		{
+			return false;
+		}
+	}
+
+	public static function NonQuery($query, $connection)
+	{
+		try
+		{
+			$r = $connection->query($query);
+			if ($r === false)
+			{
+				return 0;
+			}
+			return $r->rowCount();
+		}
+		catch (PDOException $e)
+		{
+			return false;
+		}
+
+	}
+
+	public static function Query($query, $connection)
+	{
+		try
+		{
+			$i = 0;
+			$r = $connection->query($query);
+			foreach ($r as $row)
+			{
+				$i++;
+			}
+			return  $i;
+		}
+		catch (PDOException $e)
+		{
+			return false;
+		}
 	}
 
 	public static function InsertOrUpdate($query, $connection)
 	{
-		$result = mysql_query($query, $connection);
-		return (mysql_affected_rows() > 0);
-	}
-
-	public static function GetCurrentId($connection)
-	{
-		return intval(mysql_insert_id($connection));
+		try
+		{
+			$r = $connection->query($query);
+			return $connection->lastInsertId();
+		}
+		catch (PDOException $e)
+		{
+			return false;
+		}
 	}
 }
 ?>

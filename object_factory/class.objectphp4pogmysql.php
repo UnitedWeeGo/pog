@@ -32,7 +32,7 @@ class Object
 				$this->string .= "\ninclude_once('class.".strtolower($misc->MappingName($this->objectName, $this->attributeList[$key])).".php');";
 			}
 		}
-		$this->string .= "\nclass ".$this->objectName."\n{\n\t";
+		$this->string .= "\nclass ".$this->objectName." extends POG_Base\n{\n\t";
 		$this->string.="var \$".strtolower($this->objectName)."Id = '';\n\n\t";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
@@ -81,7 +81,9 @@ class Object
 	// -------------------------------------------------------------
 	function EndObject()
 	{
-		$this->string .= "\n}\n?>";
+		$this->string .= "\n}";
+		$this->string .= "overload('$this->objectName');\n";
+		$this->string .= "?>";
 	}
 
 	// -------------------------------------------------------------
@@ -184,6 +186,22 @@ class Object
 	// Essential functions
 
 	// -------------------------------------------------------------
+	function CreateMagicGetterFunction()
+	{
+		$this->string .= "\n\t".$this->separator."\n\t";
+		$this->string .= $this->CreateComments("Getter for some private attributes",'',"mixed \$attribute");
+		$this->string .= "\tfunction __get(\$attribute, &\$value)\n\t{";
+		$this->string .= "\n\t\t@eval('\$result = \$this->_'.\$attribute.';');";
+		$this->string .= "\n\t\tif (\$result == null)";
+		$this->string .= "\n\t\t{";
+		$this->string .= "\n\t\t\t\$value = false;";
+		$this->string .= "\n\t\t}";
+		$this->string .= "\n\t\t\$value = \$result;";
+		$this->string .= "\n\t\treturn true;";
+	    $this->string .= "\n\t}";
+	}
+
+	// -------------------------------------------------------------
 	function CreateGetFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
@@ -191,10 +209,10 @@ class Object
 		$this->string .="\tfunction Get(\$".strtolower($this->objectName)."Id)\n\t{";
 		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\$this->pog_query = \"select * from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".intval(\$".strtolower($this->objectName)."Id).\"' LIMIT 1\";";
-		$this->string .= "\n\t\t\$result = Database::Query(\$this->pog_query, \$connection);";
-		$this->string .= "\n\t\twhile (\$rows = mysql_fetch_assoc(\$result))";
+		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\twhile (\$row = Database::Read(\$cursor))";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$rows[\"".strtolower($this->objectName)."id\"];";
+		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$row[\"".strtolower($this->objectName)."id\"];";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
@@ -204,16 +222,16 @@ class Object
 				{
 					if ($this->typeList[$x] == "BELONGSTO")
 					{
-						$this->string .= "\n\t\t\t\$this->".strtolower($attribute)."Id = \$rows[\"".strtolower($attribute)."id\"];";
+						$this->string .= "\n\t\t\t\$this->".strtolower($attribute)."Id = \$row[\"".strtolower($attribute)."id\"];";
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t\$this->".$attribute." = \$rows[\"".strtolower($attribute)."\"];";
+						$this->string .= "\n\t\t\t\$this->".$attribute." = \$row[\"".strtolower($attribute)."\"];";
 					}
 				}
 				else
 				{
-					$this->string .= "\n\t\t\t\$this->".$attribute." = POG_Base::Unescape(\$rows[\"".strtolower($attribute)."\"]);";
+					$this->string .= "\n\t\t\t\$this->".$attribute." = \$this->Unescape(\$row[\"".strtolower($attribute)."\"]);";
 				}
 			}
 			$x++;
@@ -227,45 +245,45 @@ class Object
 	function CreateGetListFunction()
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","string \$sortBy","boolean \$ascending","int limit"),"array \$".strtolower($this->objectName)."List");
+		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ..}","string \$sortBy","boolean \$ascending","int limit"),"array \$".strtolower($this->objectName)."List");
 		$this->string .= "\tfunction GetList(\$fcv_array = array(), \$sortBy='', \$ascending=true, \$limit='')\n\t{";
 		$this->string .= "\n\t\t\$sqlLimit = (\$limit != '' ? \"LIMIT \$limit\" : '');";
 		$this->string .= "\n\t\t\$this->pog_query = \"select * from `".strtolower($this->objectName)."` \";";
 		$this->string .= "\n\t\tif (sizeof(\$fcv_array) > 0)";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."List = Array();";
-		$this->string .= "\n\t\t\t\$this->pog_query .= \" where \";";
+		$this->string .= "\n\t\t\t\$this->pog_query  = \$this->pog_query . \" where \";";
 		$this->string .= "\n\t\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array); \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\tif (sizeof(\$fcv_array[\$i]) == 1)";
 		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \" \".\$fcv_array[\$i][0].\" \";";
+		$this->string .= "\n\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \" \".\$fcv_array[\$i][0].\" \";";
 		$this->string .= "\n\t\t\t\t\tcontinue;";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) != 1)";
 		$this->string .= "\n\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \" AND \";";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \" AND \";";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]) && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \"'\".\$fcv_array[\$i][2].\"'\";";
-		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
+		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".POG_Base::Escape(\$fcv_array[\$i][2]).\"'\";";
-		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
+		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".\$fcv_array[\$i][2].\"'\";";
-		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
@@ -292,10 +310,10 @@ class Object
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$sortBy = \"".strtolower($this->objectName)."id\";";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\t\$this->pog_query .= \" order by \".\$sortBy.\" \".(\$ascending ? \"asc\" : \"desc\").\" \$sqlLimit\";";
+		$this->string .= "\n\t\t\$this->pog_query  = \$this->pog_query . \" order by \".\$sortBy.\" \".(\$ascending ? \"asc\" : \"desc\").\" \$sqlLimit\";";
 		$this->string .= "\n\t\t\$thisObjectName = get_class(\$this);";
-		$this->string .= "\n\t\t\$result = Database::Query(\$this->pog_query, \$connection);";
-		$this->string .= "\n\t\twhile (\$row = mysql_fetch_assoc(\$result))";
+		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\twhile (\$row = Database::Read(\$cursor))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)." = new \$thisObjectName();";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
@@ -317,7 +335,7 @@ class Object
 				}
 				else
 				{
-					$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."->".$attribute." = POG_Base::Unescape(\$row['".strtolower($attribute)."']);";
+					$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."->".$attribute." = \$this->Unescape(\$row['".strtolower($attribute)."']);";
 				}
 			}
 			$x++;
@@ -344,8 +362,8 @@ class Object
 		}
 		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\$this->pog_query = \"select `".strtolower($this->objectName)."id` from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"' LIMIT 1\";";
-		$this->string .= "\n\t\t\$result = Database::Query(\$this->pog_query, \$connection);";
-		$this->string .= "\n\t\tif (Database::Rows(\$result) > 0)";
+		$this->string .= "\n\t\t\$rows = Database::Query(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\tif (\$rows > 0)";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->pog_query = \"update `".strtolower($this->objectName)."` set ";
 		$x=0;
@@ -371,7 +389,7 @@ class Object
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".POG_Base::Escape(\$this->$attribute).\"' ";
+						$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".\$this->Escape(\$this->$attribute).\"' ";
 					}
 				}
 				else
@@ -389,7 +407,7 @@ class Object
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".POG_Base::Escape(\$this->$attribute).\"', ";
+						$this->string .= "\n\t\t\t`".strtolower($attribute)."`='\".\$this->Escape(\$this->$attribute).\"', ";
 					}
 				}
 			}
@@ -459,7 +477,7 @@ class Object
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t'\".POG_Base::Escape(\$this->$attribute).\"' ";
+						$this->string .= "\n\t\t\t'\".\$this->Escape(\$this->$attribute).\"' ";
 					}
 				}
 				else
@@ -477,7 +495,7 @@ class Object
 					}
 					else
 					{
-						$this->string .= "\n\t\t\t'\".POG_Base::Escape(\$this->$attribute).\"', ";
+						$this->string .= "\n\t\t\t'\".\$this->Escape(\$this->$attribute).\"', ";
 					}
 				}
 			}
@@ -489,10 +507,10 @@ class Object
 		}
 		$this->string .= ")\";";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\tDatabase::InsertOrUpdate(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\t\$insertId = Database::InsertOrUpdate(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t\tif (\$this->".strtolower($this->objectName)."Id == \"\")";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = Database::GetCurrentId(\$connection);";
+		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$insertId;";
 		$this->string .= "\n\t\t}";
 		if ($deep)
 		{
@@ -626,7 +644,7 @@ class Object
 		}
 		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\$this->pog_query = \"delete from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`='\".\$this->".strtolower($this->objectName)."Id.\"'\";";
-		$this->string .= "\n\t\treturn Database::Query(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\treturn Database::NonQuery(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t}";
 	}
 
@@ -634,7 +652,7 @@ class Object
 	function CreateDeleteListFunction($deep = false)
 	{
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Deletes a list of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","bool \$deep"));
+		$this->string .= $this->CreateComments("Deletes a list of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ..}","bool \$deep"));
 		if ($deep)
 		{
 			$this->string .= "\tfunction DeleteList(\$fcv_array, \$deep = false, \$across = false)\n\t{";
@@ -666,26 +684,26 @@ class Object
 		$this->string .= $indentation."{";
 		$this->string .= $indentation."\tif (sizeof(\$fcv_array[\$i]) == 1)";
 		$this->string .= $indentation."\t{";
-		$this->string .= $indentation."\t\t\$pog_query .= \" \".\$fcv_array[\$i][0].\" \";";
+		$this->string .= $indentation."\t\t\$pog_query  = \$pog_query . \" \".\$fcv_array[\$i][0].\" \";";
 		$this->string .= $indentation."\t\tcontinue;";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."\telse";
 		$this->string .= $indentation."\t{";
 		$this->string .= $indentation."\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) !== 1)";
 		$this->string .= $indentation."\t\t{";
-		$this->string .= $indentation."\t\t\t\$pog_query .= \" AND \";";
+		$this->string .= $indentation."\t\t\t\$pog_query  = \$pog_query . \" AND \";";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]) && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
 		$this->string .= $indentation."\t\t{";
-		$this->string .= $indentation."\t\t\t\$pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".POG_Base::Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= $indentation."\t\t\t\$pog_query  = \$pog_query . \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t\telse";
 		$this->string .= $indentation."\t\t{";
-		$this->string .= $indentation."\t\t\t\$pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
+		$this->string .= $indentation."\t\t\t\$pog_query  = \$pog_query . \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."}";
-		$this->string .= $indentation."return Database::Query(\$pog_query, \$connection);";
+		$this->string .= $indentation."return Database::NonQuery(\$pog_query, \$connection);";
 		if ($deep)
 		{
 			$this->string .= "\n\t\t\t}";
@@ -724,7 +742,7 @@ class Object
 	function CreateGetChildrenFunction($child)
 	{
 		$this->string .= "\n\t$this->separator\n\t";
-		$this->string .= $this->CreateComments("Gets a list of $child objects associated to this one", array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","string \$sortBy","boolean \$ascending","int limit"),"array of $child objects");
+		$this->string .= $this->CreateComments("Gets a list of $child objects associated to this one", array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ..}","string \$sortBy","boolean \$ascending","int limit"),"array of $child objects");
 		$this->string .= "\tfunction Get".ucfirst(strtolower($child))."List(\$fcv_array = array(), \$sortBy='', \$ascending=true, \$limit='')\n\t{";
 		$this->string .= "\n\t\t\$".strtolower($child)." = new ".$child."();";
 		$this->string .= "\n\t\t\$fcv_array[] = array(\"".strtolower($this->objectName)."Id\", \"=\", \$this->".strtolower($this->objectName)."Id);";
@@ -812,7 +830,7 @@ class Object
 	{
 		$misc = new Misc(array());
 		$this->string .= "\n\t".$this->separator."\n\t";
-		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ...}","string \$sortBy","boolean \$ascending","int limit"),"array \$".strtolower($this->objectName)."List");
+		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ..}","string \$sortBy","boolean \$ascending","int limit"),"array \$".strtolower($this->objectName)."List");
 		$this->string .= "\tfunction Get".ucfirst(strtolower($sibling))."List(\$fcv_array = array(), \$sortBy='', \$ascending=true, \$limit='')\n\t{";
 		$this->string .= "\n\t\t\$sqlLimit = (\$limit != '' ? \"LIMIT \$limit\" : '');";
 		$this->string .= "\n\t\t\$connection = Database::Connect();";
@@ -821,37 +839,37 @@ class Object
 		$this->string .= "\n\t\t\$this->pog_query = \"select distinct * from `".strtolower($sibling)."` a INNER JOIN `".strtolower($misc->MappingName($this->objectName, $sibling))."` m ON m.".strtolower($sibling)."id = a.".strtolower($sibling)."id where m.".strtolower($this->objectName)."id = '\$this->".strtolower($this->objectName)."Id' \";";
 		$this->string .= "\n\t\tif (sizeof(\$fcv_array) > 0)";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$this->pog_query .= \" AND \";";
+		$this->string .= "\n\t\t\t\$this->pog_query  = \$this->pog_query . \" AND \";";
 		$this->string .= "\n\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array); \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\tif (sizeof(\$fcv_array[\$i]) == 1)";
 		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\$this->pog_query .= \" \".\$fcv_array[\$i][0].\" \";";
+		$this->string .= "\n\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \" \".\$fcv_array[\$i][0].\" \";";
 		$this->string .= "\n\t\t\t\t\tcontinue;";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) != 1)";
 		$this->string .= "\n\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \" AND \";";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \" AND \";";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]) && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \"'\".\$fcv_array[\$i][2].\"'\";";
-		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
+		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".POG_Base::Escape(\$fcv_array[\$i][2]).\"'\";";
-		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
+		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".\$fcv_array[\$i][2].\"'\";";
-		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
+		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
@@ -878,9 +896,9 @@ class Object
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$sortBy = \"a.".strtolower($sibling)."id\";";
 		$this->string .= "\n\t\t}";
-		$this->string .= "\n\t\t\$this->pog_query .= \" order by \".\$sortBy.\" \".(\$ascending ? \"asc\" : \"desc\").\" \$sqlLimit\";";
-		$this->string .= "\n\t\t\$result = Database::Query(\$this->pog_query, \$connection);";
-		$this->string .= "\n\t\twhile(\$rows = mysql_fetch_assoc(\$result))";
+		$this->string .= "\n\t\t\$this->pog_query  = \$this->pog_query . \" order by \".\$sortBy.\" \".(\$ascending ? \"asc\" : \"desc\").\" \$sqlLimit\";";
+		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query, \$connection);";
+		$this->string .= "\n\t\twhile(\$row = Database::Read(\$cursor))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($sibling)." = new ".$sibling."();";
 		$this->string .= "\n\t\t\tforeach (\$".strtolower($sibling)."->pog_attribute_type as \$attribute_name => \$attrubute_type)";
@@ -889,10 +907,10 @@ class Object
 		$this->string .= "\n\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\tif (\$attrubute_type[1] == \"BELONGSTO\")";
 		$this->string .= "\n\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\$".strtolower($sibling)."->{strtolower(\$attribute_name).'Id'} = \$rows[strtolower(\$attribute_name).'id'];";
+		$this->string .= "\n\t\t\t\t\t\t\$".strtolower($sibling)."->{strtolower(\$attribute_name).'Id'} = \$row[strtolower(\$attribute_name).'id'];";
 		$this->string .= "\n\t\t\t\t\t\tcontinue;";
 		$this->string .= "\n\t\t\t\t\t}";
-		$this->string .= "\n\t\t\t\t\t\$".strtolower($sibling)."->{\$attribute_name} = POG_Base::Unescape(\$rows[strtolower(\$attribute_name)]);";
+		$this->string .= "\n\t\t\t\t\t\$".strtolower($sibling)."->{\$attribute_name} = \$this->Unescape(\$row[strtolower(\$attribute_name)]);";
 		$this->string .= "\n\t\t\t\t}";
 		$this->string .= "\n\t\t\t}";
 		$this->string .= "\n\t\t\t\$".strtolower($sibling)."List[] = $".strtolower($sibling).";";

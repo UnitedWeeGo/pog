@@ -5,7 +5,7 @@ if (!isset($_SESSION))
 }
 global $configuration;
 $configuration['soap'] = "http://beta.phpobjectgenerator.com/services/soap.php?wsdl";
-$configuration['homepage'] = "http://beta.phpobjectgenerator.com";
+$configuration['homepage'] = "beta.phpobjectgenerator.com";
 $configuration['revisionNumber'] = "";
 $configuration['versionNumber'] = "3.0";
 

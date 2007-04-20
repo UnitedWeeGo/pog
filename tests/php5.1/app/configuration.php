@@ -5,17 +5,15 @@ if (!isset($_SESSION))
 }
 global $configuration;
 $configuration['soap'] = "http://beta.phpobjectgenerator.com/services/soap.php?wsdl";
-$configuration['homepage'] = "http://beta.phpobjectgenerator.com";
+$configuration['homepage'] = "beta.phpobjectgenerator.com";
 $configuration['revisionNumber'] = "";
 $configuration['versionNumber'] = "3.0";
 
+$configuration['pdoDriver']	= 'mysql';
 $configuration['setup_password'] = '';
-
-//db_encoding=1 is highly recommended unless you know what you're doing
 $configuration['db_encoding'] = 0;
 
 // edit the information below to match your database settings
-
 $configuration['db']	= ''; 		//	database name
 $configuration['host']	= '';	//	database host
 $configuration['user']	= '';		//	database user

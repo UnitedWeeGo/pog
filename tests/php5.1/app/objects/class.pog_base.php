@@ -149,7 +149,7 @@ class POG_Base
 	* @param string $text
 	* @return string encoded to base64
 	*/
-	public static function Escape($text)
+	public function Escape($text)
 	{
 		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{
@@ -164,7 +164,7 @@ class POG_Base
 	 * @param unknown_type $text
 	 * @return unknown
 	 */
-	public static function Unescape($text)
+	public function Unescape($text)
 	{
 		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{

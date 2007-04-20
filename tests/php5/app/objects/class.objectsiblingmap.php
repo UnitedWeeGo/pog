@@ -77,7 +77,7 @@ class objectsiblingMap
 				$this->pog_query .= " and `objectid` = '".$otherObject->objectId."'";
 			}
 		}
-		Database::Query($this->pog_query, $connection);
+		Database::NonQuery($this->pog_query, $connection);
 	}
 	
 	
@@ -89,8 +89,8 @@ class objectsiblingMap
 	{
 		$connection = Database::Connect();
 		$this->pog_query = "select `objectid` from `objectsiblingmap` where `objectid`='".$this->objectId."' AND `siblingid`='".$this->siblingId."' LIMIT 1";
-		$result = Database::Query($this->pog_query, $connection);
-		if (Database::Rows($result) == 0)
+		$rows = Database::Query($this->pog_query, $connection);
+		if ($rows == 0)
 		{
 			$this->pog_query = "insert into `objectsiblingmap` (`objectid`, `siblingid`) values ('".$this->objectId."', '".$this->siblingId."')";
 		}
