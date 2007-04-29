@@ -92,42 +92,42 @@ class child extends POG_Base
 	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
 	{
 		$sqlLimit = ($limit != '' ? "LIMIT $limit" : '');
-		$pog_query = "select * from `child` ";
+		$this->pog_query = "select * from `child` ";
 		if (sizeof($fcv_array) > 0)
 		{
 			$childList = Array();
-			$pog_query .= " where ";
+			$this->pog_query .= " where ";
 			$connection = Database::Connect();
 			for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 			{
 				if (sizeof($fcv_array[$i]) == 1)
 				{
-					$pog_query .= " ".$fcv_array[$i][0]." ";
+					$this->pog_query .= " ".$fcv_array[$i][0]." ";
 					continue;
 				}
 				else
 				{
 					if ($i > 0 && sizeof($fcv_array[$i-1]) != 1)
 					{
-						$pog_query .= " AND ";
+						$this->pog_query .= " AND ";
 					}
 					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
 							$value = POG_Base::IsColumn($fcv_array[$i][2]) ? "BASE64_DECODE(".$fcv_array[$i][2].")" : "'".$fcv_array[$i][2]."'";
-							$pog_query .= "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
+							$this->pog_query .= "BASE64_DECODE(`".$fcv_array[$i][0]."`) ".$fcv_array[$i][1]." ".$value;
 						}
 						else
 						{
 							$value =  POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$this->Escape($fcv_array[$i][2])."'";
-							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+							$this->pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 						}
 					}
 					else
 					{
 						$value = POG_Base::IsColumn($fcv_array[$i][2]) ? $fcv_array[$i][2] : "'".$fcv_array[$i][2]."'";
-						$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
+						$this->pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." ".$value;
 					}
 				}
 			}
@@ -154,9 +154,9 @@ class child extends POG_Base
 		{
 			$sortBy = "childid";
 		}
-		$pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
+		$this->pog_query .= " order by ".$sortBy." ".($ascending ? "asc" : "desc")." $sqlLimit";
 		$thisObjectName = get_class($this);
-		$cursor = Database::Reader($pog_query, $connection);
+		$cursor = Database::Reader($this->pog_query, $connection);
 		while ($row = Database::Read($cursor))
 		{
 			$child = new $thisObjectName();

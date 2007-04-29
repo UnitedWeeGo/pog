@@ -60,7 +60,7 @@
 		{
 			return false;
 		}
-		return mysql_affected_rows($connection);
+		return $result;
 
 	}
 
@@ -73,7 +73,6 @@
 	public static function InsertOrUpdate($query, $connection)
 	{
 		$result = mysql_query($query, $connection);
-		$x = intval(mysql_insert_id($connection));
 		return intval(mysql_insert_id($connection));
 	}
 }
