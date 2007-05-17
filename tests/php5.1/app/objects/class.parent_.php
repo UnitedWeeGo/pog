@@ -24,20 +24,20 @@ class parent_ extends POG_Base
 	 * @var private array of object objects
 	 */
 	private $_objectList = array();
-	
+
 	/**
 	 * @var VARCHAR(255)
 	 */
 	public $attribute;
-	
+
 	public $pog_attribute_type = array(
-		"parent_Id" => array("NUMERIC", "INT"),
-		"object" => array("OBJECT", "HASMANY"),
-		"attribute" => array("TEXT", "VARCHAR", "255"),
+		"parent_Id" => array('db_attributes' => array("NUMERIC", "INT")),
+		"object" => array('db_attributes' => array("OBJECT", "HASMANY")),
+		"attribute" => array('db_attributes' => array("TEXT", "VARCHAR", "255")),
 		);
 	public $pog_query;
-	
-	
+
+
 	/**
 	* Getter for some private attributes
 	* @return mixed $attribute
@@ -53,17 +53,17 @@ class parent_ extends POG_Base
 			return false;
 		}
 	}
-	
+
 	function parent_($attribute='')
 	{
 		$this->_objectList = array();
 		$this->attribute = $attribute;
 	}
-	
-	
+
+
 	/**
 	* Gets object from database
-	* @param integer $parent_Id 
+	* @param integer $parent_Id
 	* @return object $parent_
 	*/
 	function Get($parent_Id)
@@ -78,14 +78,14 @@ class parent_ extends POG_Base
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	* Returns a sorted array of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array $parent_List
 	*/
 	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
@@ -110,7 +110,7 @@ class parent_ extends POG_Base
 					{
 						$this->pog_query .= " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -133,7 +133,7 @@ class parent_ extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($this->pog_attribute_type[$sortBy]['db_attributes']) && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -165,8 +165,8 @@ class parent_ extends POG_Base
 		}
 		return $parent_List;
 	}
-	
-	
+
+
 	/**
 	* Saves the object to the database
 	* @return integer $parent_Id
@@ -178,7 +178,7 @@ class parent_ extends POG_Base
 		$rows = Database::Query($this->pog_query, $connection);
 		if ($rows > 0)
 		{
-			$this->pog_query = "update `parent_` set 
+			$this->pog_query = "update `parent_` set
 			`attribute`='".$this->Escape($this->attribute)."' where `parent_id`='".$this->parent_Id."'";
 		}
 		else
@@ -201,8 +201,8 @@ class parent_ extends POG_Base
 		}
 		return $this->parent_Id;
 	}
-	
-	
+
+
 	/**
 	* Clones the object and saves it to the database
 	* @return integer $parent_Id
@@ -212,8 +212,8 @@ class parent_ extends POG_Base
 		$this->parent_Id = '';
 		return $this->Save($deep);
 	}
-	
-	
+
+
 	/**
 	* Deletes the object from the database
 	* @return boolean
@@ -232,13 +232,13 @@ class parent_ extends POG_Base
 		$this->pog_query = "delete from `parent_` where `parent_id`='".$this->parent_Id."'";
 		return Database::NonQuery($this->pog_query, $connection);
 	}
-	
-	
+
+
 	/**
 	* Deletes a list of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param bool $deep 
-	* @return 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param bool $deep
+	* @return
 	*/
 	function DeleteList($fcv_array, $deep = false, $across = false)
 	{
@@ -269,7 +269,7 @@ class parent_ extends POG_Base
 						{
 							$pog_query .= " AND ";
 						}
-						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 						{
 							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 						}
@@ -283,14 +283,14 @@ class parent_ extends POG_Base
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	* Gets a list of object objects associated to this one
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array of object objects
 	*/
 	function GetObjectList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
@@ -300,8 +300,8 @@ class parent_ extends POG_Base
 		$dbObjects = $object->GetList($fcv_array, $sortBy, $ascending, $limit);
 		return $dbObjects;
 	}
-	
-	
+
+
 	/**
 	* Makes this the parent of all object objects in the object List array. Any existing object will become orphan(s)
 	* @return null
@@ -317,11 +317,11 @@ class parent_ extends POG_Base
 		}
 		$this->_objectList = $list;
 	}
-	
-	
+
+
 	/**
 	* Associates the object object to this one
-	* @return 
+	* @return
 	*/
 	function AddObject(&$object)
 	{

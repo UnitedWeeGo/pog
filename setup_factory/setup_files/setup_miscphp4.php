@@ -35,21 +35,21 @@
 		array_shift($pog_attribute_type); //get rid of objectid
 		foreach ($pog_attribute_type as $attribute => $property)
 		{
-			if (isset($property[2]))
+			if (isset($property['db_attributes'][2]))
 			//length is specified, for e.g. if attribute = VARCHAR(255), $property[2]=255
 			{
-				$limit =  explode(',', $property[2]);
+				$limit =  explode(',', $property['db_attributes'][2]);
 				//field is limited
 				if (intval($limit[0]) > 0)
 				{
 					if (isset($limit[1]) && intval($limit[1]) > 0)
 					{
 						//decimal, enum, set
-						$attribute_testValues[$attribute] = substr(${$property[1]}, 0, ceil($limit[0]*0.6)).".".substr(${$property[1]}, 0, $limit[1]);
+						$attribute_testValues[$attribute] = substr(${$property['db_attributes'][1]}, 0, ceil($limit[0]*0.6)).".".substr(${$property['db_attributes'][1]}, 0, $limit[1]);
 					}
 					else
 					{
-						$attribute_testValues[$attribute] = substr(${$property[1]}, 0, ceil($limit[0] * 0.6));
+						$attribute_testValues[$attribute] = substr(${$property['db_attributes'][1]}, 0, ceil($limit[0] * 0.6));
 					}
 				}
 			}
@@ -57,13 +57,13 @@
 			//length not specified, but we still need to account for default mysql behavior
 			//for eg, FLOAT(X), if X isn't specified, mysql defaults to (10,2).
 			{
-				if ($property[1] == "FLOAT" || $property[1] == "DOUBLE")
+				if ($property['db_attributes'][1] == "FLOAT" || $property['db_attributes'][1] == "DOUBLE")
 				{
 					$attribute_testValues[$attribute] = "1234.56";
 				}
-				else if ($property[1] != "HASMANY" && $property[1] != "BELONGSTO" && $property[1] != "JOIN")
+				else if ($property['db_attributes'][1] != "HASMANY" && $property['db_attributes'][1] != "BELONGSTO" && $property['db_attributes'][1] != "JOIN")
 				{
-					$attribute_testValues[$attribute] = ${$property[1]};
+					$attribute_testValues[$attribute] = ${$property['db_attributes'][1]};
 				}
 			}
 		}
@@ -166,8 +166,8 @@
 			{
 				if (isset($instance->pog_attribute_type[$attribute]))
 				{
-					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]});
-					$subnode = &$node->addItem(new XNode("<br/>".$attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute][1]."}</span><br/>".str_replace("\0", "", $thisValue)."<br/><br/>", false,'',"setup_images/folderopen.gif"));
+					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute]['db_attributes'], $instance->{$attribute}, $instance->{$attributeList[0]});
+					$subnode = &$node->addItem(new XNode("<br/>".$attribute."<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute]['db_attributes'][1]."}</span><br/>".str_replace("\0", "", $thisValue)."<br/><br/>", false,'',"setup_images/folderopen.gif"));
 				}
 			}
 		}
@@ -175,13 +175,13 @@
 		//parents, children and mapping
 		foreach ($instance->pog_attribute_type as $attribute_name => $attrubute_type)
 		{
-			if ($attrubute_type[1] == "HASMANY" || $attrubute_type[1] == "BELONGSTO" || $attrubute_type[1] == "JOIN")
+			if ($attrubute_type['db_attributes'][1] == "HASMANY" || $attrubute_type['db_attributes'][1] == "BELONGSTO" || $attrubute_type['db_attributes'][1] == "JOIN")
 			{
-				if ($attrubute_type[1] == "BELONGSTO")
+				if ($attrubute_type['db_attributes'][1] == "BELONGSTO")
 				{
 					eval ('$value = $instance->'.strtolower($attribute_name).'Id;');
-					$thisValue = ConvertAttributeToHtml($attribute_name, $attrubute_type, $value, '');
-					$subnode = &$node->addItem(new XNode("<br/>".$attribute_name."<span style='font-weight:normal;color:#ADA8B2;'>{".($attrubute_type[1] == "HASMANY" ? "CHILD" : "PARENT")."}</span><br/>".$thisValue."<br/><br/>", false,'',"setup_images/folderopen.gif"));
+					$thisValue = ConvertAttributeToHtml($attribute_name, $attrubute_type['db_attributes'], $value, '');
+					$subnode = &$node->addItem(new XNode("<br/>".$attribute_name."<span style='font-weight:normal;color:#ADA8B2;'>{".($attrubute_type['db_attributes'][1] == "HASMANY" ? "CHILD" : "PARENT")."}</span><br/>".$thisValue."<br/><br/>", false,'',"setup_images/folderopen.gif"));
 				}
 				else
 				{
@@ -213,7 +213,7 @@
 							foreach ($siblingList as $child)
 							{
 								/*$value .= $child->{strtolower($attribute_name)."Id"} . ",";*/
-								if ($attrubute_type[1] == "JOIN")
+								if ($attrubute_type['db_attributes'][1] == "JOIN")
 								{
 									ConvertObjectToNode($child, $myNode, $js2, $anchor, true);
 								}
@@ -255,7 +255,7 @@
 				{
 					$object->{$attribute} = $type_value[$attribute];
 				}
-				else if ($object->pog_attribute_type[$attribute][0] != "OBJECT")
+				else if ($object->pog_attribute_type[$attribute]['db_attributes'][0] != "OBJECT")
 				{
 					$object->{$attribute} = "1";
 				}
@@ -699,10 +699,10 @@
 			$columnsToModify = array();
 			foreach ($otherColumns as $otherColumn)
 			{
-				$type = strtolower($lowerAttributes[$otherColumn][1]);
-				if (isset($lowerAttributes[$otherColumn][2]))
+				$type = strtolower($lowerAttributes[$otherColumn]['db_attributes'][1]);
+				if (isset($lowerAttributes[$otherColumn]['db_attributes'][2]))
 				{
-					$type .= "(".$lowerAttributes[$otherColumn][2].")";
+					$type .= "(".$lowerAttributes[$otherColumn]['db_attributes'][2].")";
 				}
 				if (strpos(strtolower($columns[$otherColumn]), $type) === false && $type != "hasmany" && $type != "join")
 				{
@@ -728,9 +728,9 @@
 			$columnsToAdd2 = array();
 			foreach ($columnsToAdd as $c)
 			{
-				if ($lowerAttributes[$c][1] != "HASMANY" && $lowerAttributes[$c][1] != "JOIN")
+				if ($lowerAttributes[$c]['db_attributes'][1] != "HASMANY" && $lowerAttributes[$c]['db_attributes'][1] != "JOIN")
 				{
-					if ($lowerAttributes[$c][1] == "BELONGSTO")
+					if ($lowerAttributes[$c]['db_attributes'][1] == "BELONGSTO")
 					{
 						$colMarkedForDeletion = array_search(strtolower($c)."id", $columnsToRemove);
 						if ($colMarkedForDeletion === false) //this is clumsy, until we think of something better
@@ -789,11 +789,11 @@
 				$columnType = '';
 				if (isset($lowerAttributes[$add]))
 				{
-					$columnType = strtolower($lowerAttributes[$add][1]);
+					$columnType = strtolower($lowerAttributes[$add]['db_attributes'][1]);
 				}
-				if (isset($lowerAttributes[$add][2]))
+				if (isset($lowerAttributes[$add]['db_attributes'][2]))
 				{
-					$columnType .= "(".$lowerAttributes[$add][2].")";
+					$columnType .= "(".$lowerAttributes[$add]['db_attributes'][2].")";
 				}
 				if ($columnType != '')
 				{
@@ -984,7 +984,7 @@
 								{
 									if($trace)
 									{
-										AddError("WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$object->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$object->pog_attribute_type[$attribute][1]."`");
+										AddError("WARNING: Failed to retrieve attribute `$attribute`. Expecting `".$type_value[$attribute]."`; found `".$object->{$attribute}."`. Check that column `$attribute` in the `$className` table is of type `".$object->pog_attribute_type[$attribute]['db_attributes'][1]."`");
 									}
 								}
 							}
@@ -1107,7 +1107,7 @@
 		$childrenList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -1117,7 +1117,7 @@
 		$parentsList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "BELONGSTO")
+			if ($attribute_array['db_attributes'][1] == "BELONGSTO")
 			{
 				$parentsList[] = $key;
 			}
@@ -1127,7 +1127,7 @@
 		$associationsList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$associationsList[] = $key;
 			}
@@ -1156,7 +1156,7 @@
 		$childrenList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -1166,7 +1166,7 @@
 		$parentsList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "BELONGSTO")
+			if ($attribute_array['db_attributes'][1] == "BELONGSTO")
 			{
 				$parentsList[] = $key;
 			}
@@ -1235,7 +1235,7 @@
 		$associationsList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$associationsList[] = $key;
 			}
@@ -1279,7 +1279,7 @@
 		$attribute_types = $object->pog_attribute_type;
 		foreach ($attribute_types as $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				return true;
 			}
@@ -1297,7 +1297,7 @@
 		$attribute_types = $object->pog_attribute_type;
 		foreach ($attribute_types as $attribute_array)
 		{
-			if ($attribute_array[1] == "BELONGSTO")
+			if ($attribute_array['db_attributes'][1] == "BELONGSTO")
 			{
 				return true;
 			}
@@ -1316,7 +1316,7 @@
 		$attribute_types = $object->pog_attribute_type;
 		foreach ($attribute_types as $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				return true;
 			}
@@ -1386,7 +1386,7 @@
 
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -1478,7 +1478,7 @@
 
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$siblingList[] = $key;
 			}
@@ -1561,7 +1561,7 @@
 		$childrenList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -1644,7 +1644,7 @@
 		$siblingList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$siblingList[] = $key;
 			}
@@ -1731,7 +1731,7 @@
 		$parentList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "BELONGSTO")
+			if ($attribute_array['db_attributes'][1] == "BELONGSTO")
 			{
 				$parentList[] = $key;
 			}
@@ -1798,7 +1798,7 @@
 		$parentList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "BELONGSTO")
+			if ($attribute_array['db_attributes'][1] == "BELONGSTO")
 			{
 				$parentList[] = $key;
 			}
@@ -1870,7 +1870,7 @@
 		$childrenList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -1936,7 +1936,7 @@
 		$childrenList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -2016,7 +2016,7 @@
 
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "HASMANY")
+			if ($attribute_array['db_attributes'][1] == "HASMANY")
 			{
 				$childrenList[] = $key;
 			}
@@ -2090,7 +2090,7 @@
 		$siblingList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$siblingList[] = $key;
 			}
@@ -2157,7 +2157,7 @@
 		$siblingList = array();
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$siblingList[] = $key;
 			}
@@ -2245,7 +2245,7 @@
 
 		foreach ($attribute_types as $key => $attribute_array)
 		{
-			if ($attribute_array[1] == "JOIN")
+			if ($attribute_array['db_attributes'][1] == "JOIN")
 			{
 				$siblingList[] = $key;
 			}

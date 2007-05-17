@@ -26,38 +26,38 @@ class object extends POG_Base
 	 * @var VARCHAR(255)
 	 */
 	public $attribute;
-	
+
 	/**
 	 * @var private array of child objects
 	 */
 	private $_childList = array();
-	
+
 	/**
 	 * @var INT(11)
 	 */
 	public $parent_Id;
-	
+
 	/**
 	 * @var private array of sibling objects
 	 */
 	private $_siblingList = array();
-	
+
 	/**
 	 * @var VARCHAR(255)
 	 */
 	public $attribute2;
-	
+
 	public $pog_attribute_type = array(
-		"objectId" => array("NUMERIC", "INT"),
-		"attribute" => array("TEXT", "VARCHAR", "255"),
-		"child" => array("OBJECT", "HASMANY"),
-		"parent_" => array("OBJECT", "BELONGSTO"),
-		"sibling" => array("OBJECT", "JOIN"),
-		"attribute2" => array("TEXT", "VARCHAR", "255"),
+		"objectId" => array('db_attributes' => array("NUMERIC", "INT")),
+		"attribute" => array('db_attributes' => array("TEXT", "VARCHAR", "255")),
+		"child" => array('db_attributes' => array("OBJECT", "HASMANY")),
+		"parent_" => array('db_attributes' => array("OBJECT", "BELONGSTO")),
+		"sibling" => array('db_attributes' => array("OBJECT", "JOIN")),
+		"attribute2" => array('db_attributes' => array("TEXT", "VARCHAR", "255")),
 		);
 	public $pog_query;
-	
-	
+
+
 	/**
 	* Getter for some private attributes
 	* @return mixed $attribute
@@ -73,7 +73,7 @@ class object extends POG_Base
 			return false;
 		}
 	}
-	
+
 	function object($attribute='', $attribute2='')
 	{
 		$this->attribute = $attribute;
@@ -81,11 +81,11 @@ class object extends POG_Base
 		$this->_siblingList = array();
 		$this->attribute2 = $attribute2;
 	}
-	
-	
+
+
 	/**
 	* Gets object from database
-	* @param integer $objectId 
+	* @param integer $objectId
 	* @return object $object
 	*/
 	function Get($objectId)
@@ -102,14 +102,14 @@ class object extends POG_Base
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	* Returns a sorted array of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array $objectList
 	*/
 	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
@@ -134,7 +134,7 @@ class object extends POG_Base
 					{
 						$this->pog_query .= " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -157,7 +157,7 @@ class object extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($this->pog_attribute_type[$sortBy]['db_attributes']) && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -191,8 +191,8 @@ class object extends POG_Base
 		}
 		return $objectList;
 	}
-	
-	
+
+
 	/**
 	* Saves the object to the database
 	* @return integer $objectId
@@ -204,16 +204,16 @@ class object extends POG_Base
 		$rows = Database::Query($this->pog_query, $connection);
 		if ($rows > 0)
 		{
-			$this->pog_query = "update `object` set 
-			`attribute`='".$this->Escape($this->attribute)."', 
-			`parent_id`='".$this->parent_Id."', 
+			$this->pog_query = "update `object` set
+			`attribute`='".$this->Escape($this->attribute)."',
+			`parent_id`='".$this->parent_Id."',
 			`attribute2`='".$this->Escape($this->attribute2)."' where `objectid`='".$this->objectId."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `object` (`attribute`, `parent_id`, `attribute2` ) values (
-			'".$this->Escape($this->attribute)."', 
-			'".$this->parent_Id."', 
+			'".$this->Escape($this->attribute)."',
+			'".$this->parent_Id."',
 			'".$this->Escape($this->attribute2)."' )";
 		}
 		$insertId = Database::InsertOrUpdate($this->pog_query, $connection);
@@ -237,8 +237,8 @@ class object extends POG_Base
 		}
 		return $this->objectId;
 	}
-	
-	
+
+
 	/**
 	* Clones the object and saves it to the database
 	* @return integer $objectId
@@ -248,8 +248,8 @@ class object extends POG_Base
 		$this->objectId = '';
 		return $this->Save($deep);
 	}
-	
-	
+
+
 	/**
 	* Deletes the object from the database
 	* @return boolean
@@ -283,13 +283,13 @@ class object extends POG_Base
 		$this->pog_query = "delete from `object` where `objectid`='".$this->objectId."'";
 		return Database::NonQuery($this->pog_query, $connection);
 	}
-	
-	
+
+
 	/**
 	* Deletes a list of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param bool $deep 
-	* @return 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param bool $deep
+	* @return
 	*/
 	function DeleteList($fcv_array, $deep = false, $across = false)
 	{
@@ -320,7 +320,7 @@ class object extends POG_Base
 						{
 							$pog_query .= " AND ";
 						}
-						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 						{
 							$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 						}
@@ -334,14 +334,14 @@ class object extends POG_Base
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	* Gets a list of child objects associated to this one
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array of child objects
 	*/
 	function GetChildList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
@@ -351,8 +351,8 @@ class object extends POG_Base
 		$dbObjects = $child->GetList($fcv_array, $sortBy, $ascending, $limit);
 		return $dbObjects;
 	}
-	
-	
+
+
 	/**
 	* Makes this the parent of all child objects in the child List array. Any existing child will become orphan(s)
 	* @return null
@@ -368,11 +368,11 @@ class object extends POG_Base
 		}
 		$this->_childList = $list;
 	}
-	
-	
+
+
 	/**
 	* Associates the child object to this one
-	* @return 
+	* @return
 	*/
 	function AddChild(&$child)
 	{
@@ -391,8 +391,8 @@ class object extends POG_Base
 			$this->_childList[] = $child;
 		}
 	}
-	
-	
+
+
 	/**
 	* Associates the parent_ object to this one
 	* @return boolean
@@ -402,18 +402,18 @@ class object extends POG_Base
 		$parent_ = new parent_();
 		return $parent_->Get($this->parent_Id);
 	}
-	
-	
+
+
 	/**
 	* Associates the parent_ object to this one
-	* @return 
+	* @return
 	*/
 	function SetParent_(&$parent_)
 	{
 		$this->parent_Id = $parent_->parent_Id;
 	}
-	
-	
+
+
 	/**
 	* Creates mappings between this and all objects in the sibling List array. Any existing mapping will become orphan(s)
 	* @return null
@@ -424,14 +424,14 @@ class object extends POG_Base
 		$map->RemoveMapping($this);
 		$this->_siblingList = $siblingList;
 	}
-	
-	
+
+
 	/**
 	* Returns a sorted array of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array $objectList
 	*/
 	function GetSiblingList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
@@ -457,7 +457,7 @@ class object extends POG_Base
 					{
 						$this->pog_query .= " AND ";
 					}
-					if (isset($sibling->pog_attribute_type[$fcv_array[$i][0]]) && $sibling->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $sibling->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($sibling->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $sibling->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $sibling->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -480,7 +480,7 @@ class object extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($sibling->pog_attribute_type[$sortBy]) && $sibling->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $sibling->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($sibling->pog_attribute_type[$sortBy]['db_attributes']) && $sibling->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $sibling->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -507,9 +507,9 @@ class object extends POG_Base
 			$sibling = new sibling();
 			foreach ($sibling->pog_attribute_type as $attribute_name => $attrubute_type)
 			{
-				if ($attrubute_type[1] != "HASMANY" && $attrubute_type[1] != "JOIN")
+				if ($attrubute_type['db_attributes'][1] != "HASMANY" && $attrubute_type['db_attributes'][1] != "JOIN")
 				{
-					if ($attrubute_type[1] == "BELONGSTO")
+					if ($attrubute_type['db_attributes'][1] == "BELONGSTO")
 					{
 						$sibling->{strtolower($attribute_name).'Id'} = $rows[strtolower($attribute_name).'id'];
 						continue;
@@ -521,11 +521,11 @@ class object extends POG_Base
 		}
 		return $siblingList;
 	}
-	
-	
+
+
 	/**
 	* Associates the sibling object to this one
-	* @return 
+	* @return
 	*/
 	function AddSibling(&$sibling)
 	{

@@ -20,8 +20,8 @@ class objectsiblingMap
 	public $siblingId = '';
 
 	public $pog_attribute_type = array(
-		"objectId" => array("NUMERIC", "INT"),
-		"siblingId" => array("NUMERIC", "INT"));
+		"objectId" => array('db_attributes' => array("NUMERIC", "INT")),
+		"siblingId" => array('db_attributes' => array("NUMERIC", "INT")));
 		public $pog_query;
 	
 	

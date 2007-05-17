@@ -606,7 +606,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 		$data = file_get_contents("../plugin_factory/IPlugin.php");
 		$package["plugins"]["IPlugin.php"] = base64_encode($data);
 	}
-	//add default base64 plugin
+//	add default base64 plugin
 	$data = file_get_contents("../plugin_factory/base64_install.sql");
 	$package["plugins"]["base64_install.sql"] = base64_encode($data);
 	$data = file_get_contents("../plugin_factory/base64_uninstall.sql");

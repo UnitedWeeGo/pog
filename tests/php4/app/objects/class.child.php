@@ -31,9 +31,9 @@ class child extends POG_Base
 	var $attribute;
 	
 	var $pog_attribute_type = array(
-		"childId" => array("NUMERIC", "INT"),
-		"object" => array("OBJECT", "BELONGSTO"),
-		"attribute" => array("TEXT", "VARCHAR", "255"),
+		"childId" => array('db_attributes' => array("NUMERIC", "INT")),
+		"object" => array('db_attributes' => array("OBJECT", "BELONGSTO")),
+		"attribute" => array('db_attributes' => array("TEXT", "VARCHAR", "255")),
 		);
 	var $pog_query;
 	
@@ -109,7 +109,7 @@ class child extends POG_Base
 					{
 						$this->pog_query  = $this->pog_query . " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -132,7 +132,7 @@ class child extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($this->pog_attribute_type[$sortBy]['db_attributes']) && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -245,7 +245,7 @@ class child extends POG_Base
 					{
 						$pog_query  = $pog_query . " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						$pog_query  = $pog_query . "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 					}

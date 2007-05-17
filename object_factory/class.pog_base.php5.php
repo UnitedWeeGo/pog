@@ -4,19 +4,13 @@ class POG_Base
 	/**
 	 * Overloading
 	 */
-	private function __call($method, $arguments)
+	//if function is not recognized, call a plugin
+	function __call($method, $argv)
 	{
-		include_once("plugins/IPlugin.php");
-		include_once("plugins/plugin.".strtolower($method).".php");
-		$argumentString = '';
-		foreach ($arguments as $arg)
-		{
-			$value = str_replace('\'', '"', var_export($arg, true));
-			$argumentString .= $value.',';
-		}
-		$argumentString = trim($argumentString, ',');
-		eval('$plugin = new $method('.$argumentString.');');
-		return $plugin->Execute($this);
+		include_once("../plugins/IPlugin.php");
+		include_once("../plugins/plugin.".strtolower($method).".php");
+		eval('$plugin = new $method($this,$argv);');
+		return $plugin->Execute();
 	}
 
 	/**
@@ -29,116 +23,23 @@ class POG_Base
 	}
 
 
-	/**
-	 * Gets
-	 */
-
-	/**
-	 * Gets table name associated with of POG Object
-	 *
-	 * @param object $pog_object
-	 * @return string
-	 */
-	public function GetTableName($pog_object)
+	function SetFieldAttribute($fieldName, $attributeName, $attributeValue)
 	{
-		return strtolower(get_class($pog_object));
+        if (isset($this->pog_attribute_type[$fieldName]) && isset($this->pog_attribute_type[$fieldName][$attributeName]))
+        {
+             $this->pog_attribute_type[$fieldName][$attributeName] = $attributeValue;
+        }
 	}
 
-	/**
-	 * Gets the non-child/non-parent and non-sibling attributes of the POG Object
-	 *
-	 * @param object $pog_object
-	 * @return array
-	 */
-	public function GetAttributes($pog_object)
+	function GetFieldAttribute($fieldName, $attributeName)
 	{
-		$columns = array();
-		foreach ($pog_object->pog_attribute_type as $attribute => $attribute_type)
-		{
-			$columns[] = $attribute;
-		}
-		return $columns;
+        if (isset($this->pog_attribute_type[$fieldName]) && isset($this->pog_attribute_type[$fieldName][$attributeName]))
+        {
+        	return $this->pog_attribute_type[$fieldName][$attributeName];
+        }
+        return null;
 	}
 
-	/**
-	 * Enter description here...
-	 *
-	 */
-	public function GetParentClasses()
-	{
-
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 */
-	public function GetChildClasses()
-	{
-
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 */
-	public function GetSiblingClasses()
-	{
-
-	}
-
-	/**
-	 * Returns true if pog_object is a child of other_object. If other_object is '', returns whether pog_object is a child of any other object
-	 *
-	 */
-	public function IsChildOf($object_instance)
-	{
-
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 * @param unknown_type $pog_object
-	 * @param unknown_type $other_object
-	 */
-	public function IsParentOf($object_instance)
-	{
-
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 * @param unknown_type $pog_object
-	 * @param unknown_type $other_object
-	 */
-	public function IsSiblingOf($object_instance)
-	{
-
-	}
-
-	/**
-	 * Returns all objects in the /objects/ directory
-	 *
-	 */
-	public function GetAllObjects()
-	{
-		$dir = opendir('../objects/');
-		$objects = array();
-		while(($file = readdir($dir)) !== false)
-		{
-			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php")
-			{
-				include_once("../objects/{$file}");
-				$objectNameParts = explode('.', $file);
-				$instance = new $objectNameParts[1]();
-				$objects[] = $instance;
-			}
-		}
-		closedir($dir);
-		return $objects;
-	}
 
 	///////////////////////////
 	// Data manipulation
@@ -212,6 +113,19 @@ class POG_Base
 			$pog_object->{$column} = $this->Unescape($fetched_row[strtolower($column)]);
 		}
 		return $pog_object;
+	}
+
+	private function GetAttributes($object)
+	{
+		$columns = array();
+		foreach ($object->pog_attribute_type as $att => $properties)
+		{
+			if ($properties['db_attributes'][0] != 'OBJECT')
+			{
+				$columns[] = $att;
+			}
+		}
+		return $columns;
 	}
 
 	//misc

@@ -31,9 +31,9 @@ class sibling extends POG_Base
 	var $attribute;
 	
 	var $pog_attribute_type = array(
-		"siblingId" => array("NUMERIC", "INT"),
-		"object" => array("OBJECT", "JOIN"),
-		"attribute" => array("TEXT", "VARCHAR", "255"),
+		"siblingId" => array('db_attributes' => array("NUMERIC", "INT")),
+		"object" => array('db_attributes' => array("OBJECT", "JOIN")),
+		"attribute" => array('db_attributes' => array("TEXT", "VARCHAR", "255")),
 		);
 	var $pog_query;
 	
@@ -109,7 +109,7 @@ class sibling extends POG_Base
 					{
 						$this->pog_query  = $this->pog_query . " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -132,7 +132,7 @@ class sibling extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($this->pog_attribute_type[$sortBy]['db_attributes']) && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -277,7 +277,7 @@ class sibling extends POG_Base
 						{
 							$pog_query  = $pog_query . " AND ";
 						}
-						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+						if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 						{
 							$pog_query  = $pog_query . "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 						}
@@ -336,7 +336,7 @@ class sibling extends POG_Base
 					{
 						$this->pog_query  = $this->pog_query . " AND ";
 					}
-					if (isset($object->pog_attribute_type[$fcv_array[$i][0]]) && $object->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $object->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($object->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $object->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $object->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -359,7 +359,7 @@ class sibling extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($object->pog_attribute_type[$sortBy]) && $object->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $object->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($object->pog_attribute_type[$sortBy]['db_attributes']) && $object->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $object->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -386,9 +386,9 @@ class sibling extends POG_Base
 			$object = new object();
 			foreach ($object->pog_attribute_type as $attribute_name => $attrubute_type)
 			{
-				if ($attrubute_type[1] != "HASMANY" && $attrubute_type[1] != "JOIN")
+				if ($attrubute_type['db_attributes'][1] != "HASMANY" && $attrubute_type['db_attributes'][1] != "JOIN")
 				{
-					if ($attrubute_type[1] == "BELONGSTO")
+					if ($attrubute_type['db_attributes'][1] == "BELONGSTO")
 					{
 						$object->{strtolower($attribute_name).'Id'} = $row[strtolower($attribute_name).'id'];
 						continue;

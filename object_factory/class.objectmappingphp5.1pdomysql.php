@@ -27,8 +27,8 @@ class ObjectMap
 		//	create attribute => type array map
 		//	needed for setup
 		$this->string .= "public \$pog_attribute_type = array(\n\t\t";
-		$this->string .= "\"".strtolower($this->object1)."Id\" => array(\"NUMERIC\", \"INT\"),\n\t\t";
-		$this->string .= "\"".strtolower($this->object2)."Id\" => array(\"NUMERIC\", \"INT\"));\n\t\t";
+		$this->string .= "\"".strtolower($this->object1)."Id\" => array('db_attributes' => array(\"NUMERIC\", \"INT\")),\n\t\t";
+		$this->string .= "\"".strtolower($this->object2)."Id\" => array('db_attributes' => array(\"NUMERIC\", \"INT\")));\n\t\t";
 		$this->string .= "public \$pog_query;";
 	}
 

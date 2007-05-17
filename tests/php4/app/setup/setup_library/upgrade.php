@@ -59,7 +59,14 @@ include_once "setup_misc.php";
 					$linkParts2 = split("\@link", $linkParts1[0]);
 					$link = $linkParts2[1];
 
-					$client = new soapclient($GLOBALS['configuration']['soap'], true);
+					$client = new soapclient(
+								$GLOBALS['configuration']['soap'],
+								true,
+								(isset($GLOBALS['configuration']['proxy_host'])?$GLOBALS['configuration']['proxy_host']:false),
+								(isset($GLOBALS['configuration']['proxy_port'])?$GLOBALS['configuration']['proxy_port']:false),
+								(isset($GLOBALS['configuration']['proxy_username'])?$GLOBALS['configuration']['proxy_username']:false),
+								(isset($GLOBALS['configuration']['proxy_password'])?$GLOBALS['configuration']['proxy_password']:false)
+								);
 					$params = array('link' 	=> $link);
 					if ($i == 0)
 					{
@@ -81,7 +88,7 @@ include_once "setup_misc.php";
 			$instance = new $objectName();
 			foreach ($instance->pog_attribute_type as $key => $attribute_type)
 			{
-				if ($attribute_type[1] == "JOIN")
+				if ($attribute_type['db_attributes'][1] == "JOIN")
 				{
 					$params = array('objectName1' => $objectName, 'objectName2' => $key, 'language' => "php4", 'wrapper' => 'POG', 'pdoDriver' => ' ');
 					$mappingString = $client->call('GenerateMapping', $params);

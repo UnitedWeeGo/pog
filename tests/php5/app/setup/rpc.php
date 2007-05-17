@@ -185,8 +185,8 @@ switch($action)
 				if ($x != 0 && isset($instance->pog_attribute_type[$attribute]))
 				{
 					$js .= '"'.$attribute.'",';
-					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute], $instance->{$attribute}, $instance->{$attributeList[0]});
-					$subnode = &$node->addItem(new XNode("<br/><span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
+					$thisValue = ConvertAttributeToHtml($attribute, $instance->pog_attribute_type[$attribute]['db_attributes'], $instance->{$attribute}, $instance->{$attributeList[0]});
+					$subnode = &$node->addItem(new XNode("<br/><span style='color:#998D05'>".$attribute."</span>&nbsp;<span style='font-weight:normal;color:#ADA8B2;'>{".$instance->pog_attribute_type[$attribute]['db_attributes'][1]."}</span><br/>".$thisValue."<br/>", false,'',"setup_images/folderopen.gif"));
 				}
 			}
 			$x++;

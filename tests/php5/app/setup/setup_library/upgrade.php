@@ -57,7 +57,22 @@ include_once "setup_misc.php";
 					$linkParts1 = split("\*\/", $contentParts[1]);
 					$linkParts2 = split("\@link", $linkParts1[0]);
 					$link = $linkParts2[1];
-					$client = new SoapClient($GLOBALS['configuration']['soap']) ;
+					$options = false;
+					if ($GLOBALS['configuration']['proxy_host'] != false &&
+						$GLOBALS['configuration']['proxy_port'] != false &&
+						$GLOBALS['configuration']['proxy_username'] != false &&
+						$GLOBALS['configuration']['proxy_password'] != false)
+					{
+						$options = array(
+											'proxy_host' => $GLOBALS['configuration']['proxy_host'],
+											'proxy_port' => $GLOBALS['configuration']['proxy_port'],
+											'proxy_login' => $GLOBALS['configuration']['proxy_username'],
+											'proxy_password' => $GLOBALS['configuration']['proxy_password']
+											);
+					}
+					$client = new SoapClient(
+											$GLOBALS['configuration']['soap'],
+											$options) ;
 					if ($i == 0)
 					{
 						$package = unserialize($client->GeneratePackageFromLink($link));
@@ -79,7 +94,7 @@ include_once "setup_misc.php";
 			$instance = new $objectName();
 			foreach ($instance->pog_attribute_type as $key => $attribute_type)
 			{
-				if ($attribute_type[1] == "JOIN")
+				if ($attribute_type['db_attributes'][1] == "JOIN")
 				{
 					$mappingString = $client->GenerateMapping($objectName, $key, (isset($GLOBALS['configuration']['pdoDriver']) ? 'php5.1' :'php5'), (isset($GLOBALS['configuration']['pdoDriver']) ? 'pdo' :'pog'), (isset($GLOBALS['configuration']['pdoDriver']) ? 'mysql' :''));
 					$package["objects"]['class.'.strtolower(MappingName($objectName, $key)).'.php'] = $mappingString;

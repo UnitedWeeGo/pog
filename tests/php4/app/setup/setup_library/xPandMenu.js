@@ -167,7 +167,6 @@ function refTree(offset, limit, objectName)
 function sndReq(action, openNodes, objectName, objectId, currentNode, attributes, anchor)
 {
 
-
 	http = createRequestObject();
 	var req = './rpc.php?action='+action+'&opennodes='+openNodes+'&objectname='+objectName+'&objectid='+objectId+'&currentnode='+currentNode+'&anchor='+anchor;
 	if (action == "Add")

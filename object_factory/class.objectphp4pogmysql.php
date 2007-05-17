@@ -66,11 +66,11 @@ class Object
 		//	create attribute => type array map
 		//	needed for setup
 		$this->string .= "var \$pog_attribute_type = array(\n\t\t";
-		$this->string .= "\"".strtolower($this->objectName)."Id\" => array(\"NUMERIC\", \"INT\"),\n\t\t";
+		$this->string .= "\"".strtolower($this->objectName)."Id\" => array('db_attributes' => array(\"NUMERIC\", \"INT\")),\n\t\t";
 		$x = 0;
 		foreach ($this->attributeList as $attribute)
 		{
-			$this->string .= "\"".$attribute."\" => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '')."),\n\t\t";
+			$this->string .= "\"".$attribute."\" => array('db_attributes' => array(\"".$misc->InterpretType($this->typeList[$x])."\", \"".$misc->GetAttributeType($this->typeList[$x])."\"".(($misc->InterpretLength($this->typeList[$x]) != null) ?  ', "'.$misc->InterpretLength($this->typeList[$x]).'"' : '').")),\n\t\t";
 			$x++;
 		}
 		$this->string .= ");\n\t";
@@ -267,7 +267,7 @@ class Object
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \" AND \";";
 		$this->string .= "\n\t\t\t\t\t}";
-		$this->string .= "\n\t\t\t\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]) && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
+		$this->string .= "\n\t\t\t\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes']) && \$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'SET')";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t\t\t{";
@@ -290,7 +290,7 @@ class Object
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\tif (\$sortBy != '')";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\tif (isset(\$this->pog_attribute_type[\$sortBy]) && \$this->pog_attribute_type[\$sortBy][0] != 'NUMERIC' && \$this->pog_attribute_type[\$sortBy][0] != 'SET')";
+		$this->string .= "\n\t\t\tif (isset(\$this->pog_attribute_type[\$sortBy]['db_attributes']) && \$this->pog_attribute_type[\$sortBy]['db_attributes'][0] != 'NUMERIC' && \$this->pog_attribute_type[\$sortBy]['db_attributes'][0] != 'SET')";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t{";
@@ -693,7 +693,7 @@ class Object
 		$this->string .= $indentation."\t\t{";
 		$this->string .= $indentation."\t\t\t\$pog_query  = \$pog_query . \" AND \";";
 		$this->string .= $indentation."\t\t}";
-		$this->string .= $indentation."\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]) && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
+		$this->string .= $indentation."\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes']) && \$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'SET')";
 		$this->string .= $indentation."\t\t{";
 		$this->string .= $indentation."\t\t\t\$pog_query  = \$pog_query . \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
 		$this->string .= $indentation."\t\t}";
@@ -853,7 +853,7 @@ class Object
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query  = \$this->pog_query . \" AND \";";
 		$this->string .= "\n\t\t\t\t\t}";
-		$this->string .= "\n\t\t\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]) && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]][0] != 'SET')";
+		$this->string .= "\n\t\t\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes']) && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'SET')";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t\t\t{";
@@ -876,7 +876,7 @@ class Object
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\tif (\$sortBy != '')";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$sortBy]) && \$".strtolower($sibling)."->pog_attribute_type[\$sortBy][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$sortBy][0] != 'SET')";
+		$this->string .= "\n\t\t\tif (isset(\$".strtolower($sibling)."->pog_attribute_type[\$sortBy]['db_attributes']) && \$".strtolower($sibling)."->pog_attribute_type[\$sortBy]['db_attributes'][0] != 'NUMERIC' && \$".strtolower($sibling)."->pog_attribute_type[\$sortBy]['db_attributes'][0] != 'SET')";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t{";
@@ -903,9 +903,9 @@ class Object
 		$this->string .= "\n\t\t\t\$".strtolower($sibling)." = new ".$sibling."();";
 		$this->string .= "\n\t\t\tforeach (\$".strtolower($sibling)."->pog_attribute_type as \$attribute_name => \$attrubute_type)";
 		$this->string .= "\n\t\t\t{";
-		$this->string .= "\n\t\t\t\tif (\$attrubute_type[1] != \"HASMANY\" && \$attrubute_type[1] != \"JOIN\")";
+		$this->string .= "\n\t\t\t\tif (\$attrubute_type['db_attributes'][1] != \"HASMANY\" && \$attrubute_type['db_attributes'][1] != \"JOIN\")";
 		$this->string .= "\n\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\tif (\$attrubute_type[1] == \"BELONGSTO\")";
+		$this->string .= "\n\t\t\t\t\tif (\$attrubute_type['db_attributes'][1] == \"BELONGSTO\")";
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\t\$".strtolower($sibling)."->{strtolower(\$attribute_name).'Id'} = \$row[strtolower(\$attribute_name).'id'];";
 		$this->string .= "\n\t\t\t\t\t\tcontinue;";

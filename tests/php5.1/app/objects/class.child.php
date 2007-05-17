@@ -25,20 +25,20 @@ class child extends POG_Base
 	 * @var INT(11)
 	 */
 	public $objectId;
-	
+
 	/**
 	 * @var VARCHAR(255)
 	 */
 	public $attribute;
-	
+
 	public $pog_attribute_type = array(
-		"childId" => array("NUMERIC", "INT"),
-		"object" => array("OBJECT", "BELONGSTO"),
-		"attribute" => array("TEXT", "VARCHAR", "255"),
+		"childId" => array('db_attributes' => array("NUMERIC", "INT")),
+		"object" => array('db_attributes' => array("OBJECT", "BELONGSTO")),
+		"attribute" => array('db_attributes' => array("TEXT", "VARCHAR", "255")),
 		);
 	public $pog_query;
-	
-	
+
+
 	/**
 	* Getter for some private attributes
 	* @return mixed $attribute
@@ -54,16 +54,16 @@ class child extends POG_Base
 			return false;
 		}
 	}
-	
+
 	function child($attribute='')
 	{
 		$this->attribute = $attribute;
 	}
-	
-	
+
+
 	/**
 	* Gets object from database
-	* @param integer $childId 
+	* @param integer $childId
 	* @return object $child
 	*/
 	function Get($childId)
@@ -79,14 +79,14 @@ class child extends POG_Base
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	* Returns a sorted array of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param string $sortBy 
-	* @param boolean $ascending 
-	* @param int limit 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param string $sortBy
+	* @param boolean $ascending
+	* @param int limit
 	* @return array $childList
 	*/
 	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
@@ -111,7 +111,7 @@ class child extends POG_Base
 					{
 						$this->pog_query .= " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						if ($GLOBALS['configuration']['db_encoding'] == 1)
 						{
@@ -134,7 +134,7 @@ class child extends POG_Base
 		}
 		if ($sortBy != '')
 		{
-			if (isset($this->pog_attribute_type[$sortBy]) && $this->pog_attribute_type[$sortBy][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy][0] != 'SET')
+			if (isset($this->pog_attribute_type[$sortBy]['db_attributes']) && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$sortBy]['db_attributes'][0] != 'SET')
 			{
 				if ($GLOBALS['configuration']['db_encoding'] == 1)
 				{
@@ -167,8 +167,8 @@ class child extends POG_Base
 		}
 		return $childList;
 	}
-	
-	
+
+
 	/**
 	* Saves the object to the database
 	* @return integer $childId
@@ -180,14 +180,14 @@ class child extends POG_Base
 		$rows = Database::Query($this->pog_query, $connection);
 		if ($rows > 0)
 		{
-			$this->pog_query = "update `child` set 
-			`objectid`='".$this->objectId."', 
+			$this->pog_query = "update `child` set
+			`objectid`='".$this->objectId."',
 			`attribute`='".$this->Escape($this->attribute)."' where `childid`='".$this->childId."'";
 		}
 		else
 		{
 			$this->pog_query = "insert into `child` (`objectid`, `attribute` ) values (
-			'".$this->objectId."', 
+			'".$this->objectId."',
 			'".$this->Escape($this->attribute)."' )";
 		}
 		$insertId = Database::InsertOrUpdate($this->pog_query, $connection);
@@ -197,8 +197,8 @@ class child extends POG_Base
 		}
 		return $this->childId;
 	}
-	
-	
+
+
 	/**
 	* Clones the object and saves it to the database
 	* @return integer $childId
@@ -208,8 +208,8 @@ class child extends POG_Base
 		$this->childId = '';
 		return $this->Save();
 	}
-	
-	
+
+
 	/**
 	* Deletes the object from the database
 	* @return boolean
@@ -220,13 +220,13 @@ class child extends POG_Base
 		$this->pog_query = "delete from `child` where `childid`='".$this->childId."'";
 		return Database::NonQuery($this->pog_query, $connection);
 	}
-	
-	
+
+
 	/**
 	* Deletes a list of objects that match given conditions
-	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...} 
-	* @param bool $deep 
-	* @return 
+	* @param multidimensional array {("field", "comparator", "value"), ("field", "comparator", "value"), ...}
+	* @param bool $deep
+	* @return
 	*/
 	function DeleteList($fcv_array)
 	{
@@ -247,7 +247,7 @@ class child extends POG_Base
 					{
 						$pog_query .= " AND ";
 					}
-					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]) && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]][0] != 'SET')
+					if (isset($this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes']) && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'NUMERIC' && $this->pog_attribute_type[$fcv_array[$i][0]]['db_attributes'][0] != 'SET')
 					{
 						$pog_query .= "`".$fcv_array[$i][0]."` ".$fcv_array[$i][1]." '".$this->Escape($fcv_array[$i][2])."'";
 					}
@@ -260,8 +260,8 @@ class child extends POG_Base
 			return Database::NonQuery($pog_query, $connection);
 		}
 	}
-	
-	
+
+
 	/**
 	* Associates the object object to this one
 	* @return boolean
@@ -271,11 +271,11 @@ class child extends POG_Base
 		$object = new object();
 		return $object->Get($this->objectId);
 	}
-	
-	
+
+
 	/**
 	* Associates the object object to this one
-	* @return 
+	* @return
 	*/
 	function SetObject(&$object)
 	{
