@@ -700,19 +700,38 @@
 			foreach ($otherColumns as $otherColumn)
 			{
 				$type = strtolower($lowerAttributes[$otherColumn]['db_attributes'][1]);
-				if (isset($lowerAttributes[$otherColumn]['db_attributes'][2]))
+				if ($type == 'enum' || $type == 'set')
 				{
-					$type .= "(".$lowerAttributes[$otherColumn]['db_attributes'][2].")";
-				}
-				if (strpos(strtolower($columns[$otherColumn]), $type) === false && $type != "hasmany" && $type != "join")
-				{
-					if ($type == "belongsto")
+					$enumPartsObj = explode(',', strtolower($lowerAttributes[$otherColumn]['db_attributes'][2]));
+					$parts = explode('(',$columns[$otherColumn]);
+					$parts2 = explode(')',$parts[1]);
+					$enumpartsDb = explode(',', strtolower(trim($parts2[0])));
+					foreach ($enumPartsObj as $ep)
 					{
-						$columnsToModify[strtolower($otherColumn)] = "int";
+						if (array_search(trim($ep), $enumpartsDb) === false)
+						{
+							$type .= "(".$lowerAttributes[$otherColumn]['db_attributes'][2].")";
+							$columnsToModify[$otherColumn] = $type;
+							break;
+						}
 					}
-					else
+				}
+				else
+				{
+					if (isset($lowerAttributes[$otherColumn]['db_attributes'][2]))
 					{
-						$columnsToModify[$otherColumn] = $type;
+						$type .= "(".$lowerAttributes[$otherColumn]['db_attributes'][2].")";
+					}
+					if (strpos(strtolower($columns[$otherColumn]), $type) === false && $type != "hasmany" && $type != "join")
+					{
+						if ($type == "belongsto")
+						{
+							$columnsToModify[strtolower($otherColumn)] = "int";
+						}
+						else
+						{
+							$columnsToModify[$otherColumn] = $type;
+						}
 					}
 				}
 			}

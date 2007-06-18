@@ -29,4 +29,8 @@ $configuration['proxy_port'] = false;
 $configuration['proxy_username'] = false;
 $configuration['proxy_password'] = false;
 
+
+//plugin settings
+$configuration['plugins_path'] = "";  //absolute path to plugins folder
+
 ?>

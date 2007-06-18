@@ -274,7 +274,8 @@ function WarnMinInput()
 			}
 			else
 			{
-				allVals[allCount] = trs[w].value;
+				allVals.push(trs[w].value);
+				allCount++;
 			}
 		}
 	}

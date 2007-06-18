@@ -104,7 +104,7 @@ function WarnMinInput()
 else if(trs[w].value == document.getElementById('objName').value)
 {alert("An object cannot relate to itself recursively. Make sure attribute names are different from the object name.");return;}
 else
-{allVals[allCount]=trs[w].value;}}}
+{allVals.push(trs[w].value);allCount++;}}}
 if(inputCount>0)
 {var typeCount=0;trs=document.getElementsByTagName("select");for(var w=0;w<trs.length;w++)
 {if(trs[w].value=="HASMANY"||trs[w].value=="BELONGSTO"||trs[w].value=="JOIN")

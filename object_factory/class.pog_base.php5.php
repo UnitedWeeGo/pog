@@ -7,8 +7,8 @@ class POG_Base
 	//if function is not recognized, call a plugin
 	function __call($method, $argv)
 	{
-		include_once("../plugins/IPlugin.php");
-		include_once("../plugins/plugin.".strtolower($method).".php");
+		include_once($GLOBALS['configuration']['plugins_path']."/IPlugin.php");
+		include_once($GLOBALS['configuration']['plugins_path']."/plugin.".strtolower($method).".php");
 		eval('$plugin = new $method($this,$argv);');
 		return $plugin->Execute();
 	}

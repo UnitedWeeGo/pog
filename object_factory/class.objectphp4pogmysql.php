@@ -148,7 +148,7 @@ class Object
 		{
 			$this->sql .= " INDEX(".implode(',', $indexesToBuild)."),";
 		}
-		$this->sql .= " PRIMARY KEY  (`".strtolower($this->objectName)."id`));";
+		$this->sql .= " PRIMARY KEY  (`".strtolower($this->objectName)."id`)) ENGINE=MyISAM;";
 	}
 
 	// -------------------------------------------------------------
@@ -247,13 +247,13 @@ class Object
 		$this->string .= "\n\t".$this->separator."\n\t";
 		$this->string .= $this->CreateComments("Returns a sorted array of objects that match given conditions",array("multidimensional array {(\"field\", \"comparator\", \"value\"), (\"field\", \"comparator\", \"value\"), ..}","string \$sortBy","boolean \$ascending","int limit"),"array \$".strtolower($this->objectName)."List");
 		$this->string .= "\tfunction GetList(\$fcv_array = array(), \$sortBy='', \$ascending=true, \$limit='')\n\t{";
+		$this->string .= "\n\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\$sqlLimit = (\$limit != '' ? \"LIMIT \$limit\" : '');";
 		$this->string .= "\n\t\t\$this->pog_query = \"select * from `".strtolower($this->objectName)."` \";";
+		$this->string .= "\n\t\t\$".strtolower($this->objectName)."List = Array();";
 		$this->string .= "\n\t\tif (sizeof(\$fcv_array) > 0)";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)."List = Array();";
 		$this->string .= "\n\t\t\t\$this->pog_query  = \$this->pog_query . \" where \";";
-		$this->string .= "\n\t\t\t\$connection = Database::Connect();";
 		$this->string .= "\n\t\t\tfor (\$i=0, \$c=sizeof(\$fcv_array); \$i<\$c; \$i++)";
 		$this->string .= "\n\t\t\t{";
 		$this->string .= "\n\t\t\t\tif (sizeof(\$fcv_array[\$i]) == 1)";
