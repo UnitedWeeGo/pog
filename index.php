@@ -200,7 +200,11 @@ urchinTracker();
 				</div>';
 			}
 			$max++;
-			for ($j=$max; $j<100; $j++)
+			if ($max < 3)
+			{
+				$max = 3;
+			}
+			for ($j=$max+1; $j<100; $j++)
 			{
 				echo '<div style="display:none" id="attribute_'.$j.'">
 					<br/><span class="line"><img src="./images/object2.jpg" alt="object attribute"/><img src="./images/attribute.jpg" alt="object attribute"/>  <input type="text" name="fieldattribute_'.$j.'" class="i" id="fieldattribute_'.$j.'" value="" onkeydown="javascript:Reposition(this,event);"/> &nbsp;&nbsp;<img src="./images/type.jpg" alt="object attribute"/>
