@@ -85,10 +85,13 @@ urchinTracker();
 		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/>PHP Object Generator, (POG) is an open source <h1>PHP code generator</h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
 		<br /><br/>By generating PHP objects with integrated CRUD methods, POG gives you a head start in any project. The time you save can be spent on more interesting areas of your project.<br/><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="extended introduction to pog">Read more &#8250;&#8250;</a>
 		<br /><br/><img src="./images/keyfeaturesphpobjectgenerator.jpg" alt="Key Features of  Php Object Generator"/>
-		<br />Generates clean &amp; tested code
+		<br />Fast and scalable
+		<br />Generates clean+tested code
 		<br />Generates CRUD methods
 		<br />Generates setup file
 		<br />Generates parent-child relations
+		<br />Generates sibling relations
+		<br />Extensible via plugins
 		<br />Compatible with PHP4 &amp; PHP5
 		<br />Compatible with PDO
 		<br />Automatic data encoding
@@ -125,9 +128,9 @@ urchinTracker();
 		<form method="post" action="index2.php">
 		<div class="customize">
 			<select class="s" name="language" id="FirstField" onchange="CascadePhpVersion()">
-				<option value="php4" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php4"?"selected":"")?>>PHP 4</option>
 				<option value="php5" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php5"?"selected":"")?>>PHP 5</option>
 				<option value="php5.1" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php5.1"?"selected":"")?>>PHP 5.1+</option>
+				<option value="php4" <?=($misc->GetVariable('language') != null && $misc->GetVariable('language')=="php4"?"selected":"")?>>PHP 4</option>
 			</select>
 			<br/><br/>
 			<select class="s" name="wrapper" id="wrapper" onchange="IsPDO()">

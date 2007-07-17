@@ -350,7 +350,7 @@
 		if (isset($_SESSION['errorMessages']))
 		{
 			$errorMessages = unserialize($_SESSION['errorMessages']);
-			if (!array_search($error, $errorMessages))
+			if (array_search($error, $errorMessages) === false)
 			{
 				$errorMessages[] = $error;
 			}
