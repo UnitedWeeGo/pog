@@ -1,4 +1,4 @@
-<?
+<?php
 class POG_Base
 {
 	/**

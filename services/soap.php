@@ -437,7 +437,7 @@ function GenerateConfiguration($wrapper = null, $pdoDriver = null, $db_encoding 
 		$data = file_get_contents("../configuration_factory/configuration.php");
 	}
 	$data = str_replace('&db_encoding', $db_encoding, $data);
-	$data = str_replace('&soap', $GLOBALS['configuration']['soap'], $data);
+	$data = str_replace('&soap', 'http://www.phpobjectgenerator.com/services/soap.php?wsdl', $data);
 	$data = str_replace('&versionNumber', $GLOBALS['configuration']['versionNumber'], $data);
 	$data = str_replace('&revisionNumber', $GLOBALS['configuration']['revisionNumber'], $data);
 	$data = str_replace('&homepage', $GLOBALS['configuration']['homepage'], $data);
@@ -476,7 +476,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	{
 		$data = file_get_contents("../object_factory/class.database.php4.php");
 	}
-	else if (strtolower($language) == "php5")
+	else if (strtolower($language) == "php5" || (strtolower($language) == "php5.1" && strtolower($wrapper) == "pog"))
 	{
 		$data = file_get_contents("../object_factory/class.database.php5.php");
 	}
