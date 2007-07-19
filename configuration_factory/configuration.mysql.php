@@ -32,7 +32,7 @@ $configuration['proxy_password'] = false;
 
 
 //plugin settings
-$configuration['plugins_path'] = "";  //absolute path to plugins folder
+$configuration['plugins_path'] = '';  //absolute path to plugins folder
 
 
 ?>
