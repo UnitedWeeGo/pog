@@ -1,7 +1,7 @@
 body {margin:0 auto;padding:0;color:#828282;background:#fff;font:bold 10px Verdana}
 .greybox {background:url('./images/tile.jpg') repeat-y;padding:10px 0 10px 45px;width:360px;font-size:9px;float:left;position:relative;z-index:100}
 .greybox2 {background:url('./images/tile2.jpg') repeat-y;padding:5px 0 10px 60px;width:360px;font-size:9px;float:left;position:relative;z-index:100}
-.header {width:425px;height:147px;float:left;background:url('./images/header.jpg') top left no-repeat;position:relative}
+.header {width:425px;height:147px;float:left;background:url('./images/header.gif') top left no-repeat;position:relative}
 .objectname {float:left;position:relative;padding:45px 0 0 155px;background:url('./images/body.jpg') top left no-repeat;width:258px;height:79px;z-index:100}
 .header2 {width:425px;height:147px;float:left;background:url('./images/header2.jpg') top left no-repeat;position:relative}
 .result {float:left;position:relative;padding:90px 0 0;background:url('./images/body2.jpg') top left no-repeat;width:413px;height:151px;z-index:100}

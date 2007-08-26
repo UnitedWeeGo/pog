@@ -8,14 +8,16 @@ class Object
 	var $typeList;
 	var $separator = "\n\t";
 	var $pdoDriver = "";
+	var $language = 'php5.1';
 
 	// -------------------------------------------------------------
-	function Object($objectName, $attributeList = '', $typeList ='', $pdoDriver = '')
+	function Object($objectName, $attributeList = '', $typeList ='', $pdoDriver = '', $language = 'php5.1')
 	{
 		$this->objectName = $objectName;
 		$this->attributeList = $attributeList;
 		$this->typeList = $typeList;
 		$this->pdoDriver = $pdoDriver;
+		$this->language = $language;
 	}
 
 	// -------------------------------------------------------------
@@ -173,10 +175,10 @@ class Object
 		$this->string .= "\n\n/**";
 		$this->string .= "\n* <b>".$this->objectName."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
-		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / PHP5.1 MYSQL";
+		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / ".strtoupper($this->language)." MYSQL";
 		$this->string .= "\n* @see http://www.phpobjectgenerator.com/plog/tutorials/45/pdo-mysql";
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
-		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php5.1&wrapper=pdo&pdoDriver=".$this->pdoDriver."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(urlencode(var_export($this->typeList, true)));
+		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=".$this->language."&wrapper=pdo&pdoDriver=".$this->pdoDriver."&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(urlencode(var_export($this->typeList, true)));
 		$this->string .= "\n*/";
 	}
 

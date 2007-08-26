@@ -8,14 +8,16 @@ class Object
 	var $typeList;
 	var $separator = "\n\t";
 	var $pdoDriver;
+	var $language = 'php4';
 
 	// -------------------------------------------------------------
-	function Object($objectName, $attributeList='', $typeList='', $pdoDriver='')
+	function Object($objectName, $attributeList='', $typeList='', $pdoDriver='', $language='php4')
 	{
 		$this->objectName = $objectName;
 		$this->attributeList = $attributeList;
 		$this->typeList = $typeList;
 		$this->pdoDriver = $pdoDriver;
+		$this->language = $language;
 	}
 
 	// -------------------------------------------------------------
@@ -176,9 +178,9 @@ class Object
 		$this->string .= "\n\n/**";
 		$this->string .= "\n* <b>".$this->objectName."</b> class with integrated CRUD methods.";
 		$this->string .= "\n* @author ".$GLOBALS['configuration']['author'];
-		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / PHP4";
+		$this->string .= "\n* @version POG ".$GLOBALS['configuration']['versionNumber'].$GLOBALS['configuration']['revisionNumber']." / ".strtoupper($this->language);
 		$this->string .= "\n* @copyright ".$GLOBALS['configuration']['copyright'];
-		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
+		$this->string .= "\n* @link http://www.phpobjectgenerator.com/?language=".$this->language."&wrapper=pog&objectName=".urlencode($this->objectName)."&attributeList=".urlencode(var_export($this->attributeList, true))."&typeList=".urlencode(var_export($this->typeList, true));;
 		$this->string .= "\n*/";
 	}
 

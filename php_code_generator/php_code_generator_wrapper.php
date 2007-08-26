@@ -52,19 +52,48 @@ urchinTracker();
 
 <p>As described in the <i><a href="http://www.phpobjectgenerator.com/php_code_generator/introduction_php_code_generator.php" title="Introduction to POG">Introduction to POG</a></i>, POG generates objects which use the Object Relational Mapping, or ORM, programming pattern where "objects" are used to represent rows in a database table. Each object also comes with 5 integrated CRUD methods which allow you to perform atomic database operations. </p>
 
-<p>Instead of repeating the code that performs those database operations across objects, we've abstracted, or grouped them, in a separate database class. This Database class (class.database.php) is required by your object so that it can perform database operations such as "Save", "Delete", "Get" etc. It's also important to note that currently, this database wrapper is specific to MySQL only and won't work if you're planning to use other databases, such as Oracle. 
+<p>Instead of repeating the code that performs those database operations across objects, we've abstracted, or grouped them, in a separate database class. This Database class (class.database.php) is required by your object so that it can perform database operations such as "Save", "Delete", "Get" etc. It's also important to note that currently, this database wrapper is specific to MySQL only and won't work if you're planning to use other databases, such as Oracle.
 
 
 <h2>More about PDO</h2>
 <p><b>From the PHP website</b><br/>
 The PHP Data Objects (PDO) extension defines a lightweight, consistent interface for accessing databases in PHP. Each database driver that implements the PDO interface can expose database-specific features as regular extension functions. Note that you cannot perform any database functions using the PDO extension by itself; you must use a database-specific PDO driver to access a database server.</p>
 
-<p>PDO provides a data-access abstraction layer, which means that, regardless of which database you're using, you use the same functions to issue queries and fetch data. PDO does not provide a database abstraction; it doesn't rewrite SQL or emulate missing features. You should use a full-blown abstraction layer if you need that facility. 
+<p>PDO provides a data-access abstraction layer, which means that, regardless of which database you're using, you use the same functions to issue queries and fetch data. PDO does not provide a database abstraction; it doesn't rewrite SQL or emulate missing features. You should use a full-blown abstraction layer if you need that facility.
 
 <p>PDO ships with PHP 5.1, and is available as a PECL extension for PHP 5.0; PDO requires the new OO features in the core of PHP 5, and so will not run with earlier versions of PHP.</p>
 	</div><!-- middle -->
-	<div class="right">
-
+	<div class="right" style="padding-left:100px;">
+<script type="text/javascript"><!--
+google_ad_client = "pub-7832108692498114";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_cpa_choice = "CAEaCD6CK5N5V0NTUAVQA1AIUEM";
+google_ad_channel = "6934687074";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "000000";
+google_color_text = "333333";
+google_color_url = "0000FF";
+//-->
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7832108692498114";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_cpa_choice = "CAEaCDFo_JLOUFdYUC9QNFAS";
+google_ad_channel = "7811436112";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "000000";
+google_color_text = "333333";
+google_color_url = "0000FF";
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
 	</div>
 </div><!-- main -->
 </body>

@@ -200,7 +200,7 @@ function GenerateObject($objectName, $attributeList, $typeList, $language, $wrap
 			require_once "../object_factory/class.objectphp5pogmysql.php";
 		}
 	}
-	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver);
+	$object = new Object($objectName,$attributeList,$typeList,$pdoDriver, $language);
 	$object->BeginObject();
 	$object->CreateMagicGetterFunction();
 	$object->CreateConstructor();

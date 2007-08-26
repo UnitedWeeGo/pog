@@ -53,8 +53,37 @@ urchinTracker();
 
 
 	</div><!-- middle -->
-	<div class="right">
-
+	<div class="right" style="padding-left:100px;">
+		<script type="text/javascript"><!--
+google_ad_client = "pub-7832108692498114";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_cpa_choice = "CAEaCD6CK5N5V0NTUAVQA1AIUEM";
+google_ad_channel = "6934687074";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "000000";
+google_color_text = "333333";
+google_color_url = "0000FF";
+//-->
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7832108692498114";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_cpa_choice = "CAEaCDFo_JLOUFdYUC9QNFAS";
+google_ad_channel = "7811436112";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "000000";
+google_color_text = "333333";
+google_color_url = "0000FF";
+//-->
+</script>
+<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
 	</div>
 </div><!-- main -->
 </body>

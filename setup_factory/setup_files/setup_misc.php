@@ -30,6 +30,7 @@
 		$MEDIUMBLOB =
 		$MEDIUMTEXT =
 		$LONGBLOB =
+		$BINARY=
 		$LONGTEXT = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry';
 		$attribute_testValues = array();
 		array_shift($pog_attribute_type); //get rid of objectid

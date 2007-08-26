@@ -28,7 +28,7 @@ if (isset($_POST['atlink']))
 			}
 			else
 			{
-				$typeLis = array();
+				$typeList = array();
 				$value_parts = explode('=>', $value);
 
 				for($j = 1; $j < sizeof($value_parts); $j++)
@@ -38,22 +38,22 @@ if (isset($_POST['atlink']))
 					{
 						$val = explode("(", $value_part);
 						$val = explode(")", $val[1]);
-						$typeLis[] = "enum(".stripcslashes($val[0]).")";
+						$typeList[] = "enum(".stripcslashes($val[0]).")";
 					}
 					else if (strpos(strtolower($value_part), "set") != false)
 					{
 						$val = explode("(", $value_part);
 						$val = explode(")", $val[1]);
-						$typeLis[] = "set(".stripcslashes($val[0]).")";
+						$typeList[] = "set(".stripcslashes($val[0]).")";
 					}
 					else
 					{
 						$val = explode("'", $value_part);
-						$typeLis[] = $val[1];
+						$typeList[] = $val[1];
 					}
 				}
 			}
-			$_SESSION['typeList'] = serialize($typeLis);
+			$_SESSION['typeList'] = serialize($typeList);
 		}
 		else
 		{
