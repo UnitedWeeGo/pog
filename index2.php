@@ -8,8 +8,10 @@
 session_start();
 include "./include/misc.php";
 include "./include/configuration.php";
-include "./services/nusoap.php";
-
+if ($GLOBALS['configuration']['soapEngine'] == "nusoap")
+{
+	include "./services/nusoap.php";
+}
 
 if (IsPostback())
 {
@@ -48,21 +50,40 @@ if (IsPostback())
 	$_SESSION['wrapper'] = $wrapper = GetVariable('wrapper');
 	$_SESSION['pdoDriver'] = $pdoDriver = GetVariable('pdoDriver');
 
-	$client = new soapclient($GLOBALS['configuration']['soap'], true);
-	$params = array(
-		    'objectName' 	=> $objectName,
-		    'attributeList' => $attributeList,
-		    'typeList'      => $typeList,
-		    'language'      => $language,
-		    'wrapper'       => $wrapper,
-		    'pdoDriver'     => $pdoDriver
-		);
 
-	$object = base64_decode($client->call('GenerateObject', $params));
-	//echo $client->debug_str;
-	$_SESSION['objectString'] = $object;
-	$_SESSION['attributeList'] = serialize($attributeList);
-	$_SESSION['typeList'] = serialize($typeList);
+if ($GLOBALS['configuration']['soapEngine'] == "nusoap")
+{
+		$client = new soapclient($GLOBALS['configuration']['soap'], true);
+		$params = array(
+			    'objectName' 	=> $objectName,
+			    'attributeList' => $attributeList,
+			    'typeList'      => $typeList,
+			    'language'      => $language,
+			    'wrapper'       => $wrapper,
+			    'pdoDriver'     => $pdoDriver
+			);
+
+		$object = base64_decode($client->call('GenerateObject', $params));
+		//echo $client->debug_str;
+		$_SESSION['objectString'] = $object;
+		$_SESSION['attributeList'] = serialize($attributeList);
+		$_SESSION['typeList'] = serialize($typeList);
+}
+else if ($GLOBALS['configuration']['soapEngine'] == "phpsoap")
+{
+	$client = new SoapClient('services/pog.wsdl');
+	try
+	{
+		$object = base64_decode($client->GenerateObject($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver));
+		$_SESSION['objectString'] = $object;
+		$_SESSION['attributeList'] = serialize($attributeList);
+		$_SESSION['typeList'] = serialize($typeList);
+	}
+	catch (SoapFault $e)
+	{
+		echo "Error: {$e->faultstring}";
+	}
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

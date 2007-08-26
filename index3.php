@@ -8,24 +8,50 @@
 session_start();
 include "./include/configuration.php";
 include "./include/class.zipfile.php";
-include "./services/nusoap.php";
-
+if ($GLOBALS['configuration']['soapEngine'] == "nusoap")
+{
+	include "./services/nusoap.php";
+}
 if (isset($_SESSION['objectString']))
 {
 	$_GET = null;
-	$client = new soapclient($GLOBALS['configuration']['soap'], true);
-	$attributeList = unserialize($_SESSION['attributeList']);
-	$typeList = unserialize($_SESSION['typeList']);
-	$params = array(
-		    'objectName' 	=> $_SESSION['objectName'],
-		    'attributeList' => $attributeList,
-		    'typeList'      => $typeList,
-		    'language'      => $_SESSION['language'],
-		    'wrapper'       => $_SESSION['wrapper'],
-		    'pdoDriver'     => $_SESSION['pdoDriver'],
-		    'db_encoding' 	=> "0"
-		);
-	$package = unserialize($client->call('GeneratePackage', $params));
+
+	if ($GLOBALS['configuration']['soapEngine'] == "nusoap")
+	{
+		$client = new soapclient($GLOBALS['configuration']['soap'], true);
+		$attributeList = unserialize($_SESSION['attributeList']);
+		$typeList = unserialize($_SESSION['typeList']);
+		$params = array(
+			    'objectName' 	=> $_SESSION['objectName'],
+			    'attributeList' => $attributeList,
+			    'typeList'      => $typeList,
+			    'language'      => $_SESSION['language'],
+			    'wrapper'       => $_SESSION['wrapper'],
+			    'pdoDriver'     => $_SESSION['pdoDriver'],
+			    'db_encoding' 	=> "0"
+			);
+		$package = unserialize($client->call('GeneratePackage', $params));
+	}
+	else if ($GLOBALS['configuration']['soapEngine'] == "phpsoap")
+	{
+		$client = new SoapClient('services/pog.wsdl');
+		$attributeList = unserialize($_SESSION['attributeList']);
+		$typeList = unserialize($_SESSION['typeList']);
+		$objectName = $_SESSION['objectName'];
+		$language = $_SESSION['language'];
+		$pdoDriver = $_SESSION['pdoDriver'];
+		$dbEncoding = "0";
+
+		try
+		{
+			$package = unserialize($client->GeneratePackage($objectName, $attributeList, $typeList, $language, $pdoDriver, $dbEncoding));
+		}
+
+		catch (SoapFault $e)
+		{
+			echo "Error: {$e->faultstring}";
+		}
+	}
 	$zipfile = new createZip();
 	$zipfile -> addPOGPackage($package);
 	$zipfile -> forceDownload("pog.".time().".zip");
