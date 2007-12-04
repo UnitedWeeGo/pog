@@ -79,7 +79,7 @@ _uacct = "UA-72762-1";
 urchinTracker();
 </script>
 </head>
-<body>
+<body id="frame">
 <div class="main">
 	<div class="left">
 		<img src="./images/aboutphpobjectgenerator.jpg" alt="About Php Object Generator"/><br/>PHP Object Generator, (POG) is an open source <h1>PHP code generator</h1>&nbsp;which automatically generates clean &amp; tested Object Oriented code for your PHP4/PHP5 application. Over the years, we realized that a large portion of a PHP programmer's time is wasted on repetitive coding of the Database Access Layer of an application simply because different applications require different objects.
