@@ -33,7 +33,7 @@ if (sizeof($_POST) > 0 && $_POST['name'] != '' && $_POST['description'] != '' &&
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="http://www.phpobjectgenerator.com/plog/rss/"/>
-<link rel="stylesheet" href="../phpobjectgenerator.css" type="text/css" />
+<link rel="stylesheet" href="http://www.phpobjectgenerator.com/phpobjectgenerator.css" type="text/css" />
 <link rel="shortcut icon" href="favicon.ico" >
 <title>Php Object Generator Plugins</title>
 <meta name="description" content="Php Object Generator, (POG) is a PHP code generator which automatically generates tested Object Oriented code that you can use for your PHP4/PHP5 application.  " />
@@ -41,7 +41,7 @@ if (sizeof($_POST) > 0 && $_POST['name'] != '' && $_POST['description'] != '' &&
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="ICBM" content="53.5411, -113.4914">
 <meta name="DC.title" content="PHP Object Generator (POG)">
-<script src="../pog.js" type="text/javascript">
+<script src="http://www.phpobjectgenerator.com/pog.js" type="text/javascript">
 </script>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
 </script>
