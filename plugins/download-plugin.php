@@ -10,8 +10,11 @@ if ($_GET['id'] != ''){
 	if ($plugin->pluginId){
 		header ("Content-Type: application/force-download");
 		header('Content-Disposition: attachment; filename="class.'.strtolower($plugin->name).'.php"');
-		echo base64_decode($plugin->code);
+		echo stripslashes(base64_decode($plugin->code));
 
+	}
+	else{
+		echo 'plugin not found';
 	}
 
 
