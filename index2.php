@@ -142,7 +142,7 @@ else if ($GLOBALS['configuration']['soapEngine'] == "phpsoap")
 				<br /><a href="http://www.phpobjectgenerator.com/plog" title="php object generator weblog">The POG Weblog</a> and <a href="http://www.phpobjectgenerator.com/plog/rss/" title="POG RSS feed">RSS feed</a>.
 				<br /><a href="http://groups.google.com/group/Php-Object-Generator" title="Php object generator google group">The POG Google group</a>
 				<br /><a href="http://www.phpobjectgenerator.com/plog/tutorials" title="php object generator tutorials and documentation">The POG Tutorials</a>
-				<br /><a href="http://www.faintlight.com/techinfo/pog" title="POG mirror site">The POG mirror site</a>
+				<br /><a href="http://plugins.phpobjectgenerator.com" title="POG Plugins">POG Plugins</a>
 			</div>
 			<!-- left -->
 			<div class="middle">
