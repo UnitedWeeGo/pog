@@ -15,7 +15,7 @@ body
 	width:360px;
 	font-size:9px;
 	float:left;
-	position:relative;	
+	position:relative;
 	z-index:100;
 }
 
@@ -26,7 +26,7 @@ body
 	width:360px;
 	font-size:9px;
 	float:left;
-	position:relative;	
+	position:relative;
 	z-index:100;
 }
 .header
@@ -130,7 +130,7 @@ select.s
 	vertical-align:middle;
 	border:1px solid #D1D1D1;
 	z-index:101;
-	
+
 }
 .objectattributes
 {
@@ -248,7 +248,7 @@ a
 {
 	position:absolute;
 	float:left;
-	padding-left:175px; 
+	padding-left:175px;
 	width:500px;
 }
 textarea
@@ -258,6 +258,10 @@ textarea
 	color:#333;
 	font-weight:bold;
 	font-size:9px;
+}
+textarea.t{
+	background-color:#EEEAEB;
+	border:1px solid #D1D1D1;
 }
 .news
 {
