@@ -26,7 +26,7 @@ if ($misc->GetVariable('attributeList') != null)
 	if (isset($_GET['attributeList']))
 		eval ("\$attributeList =". stripcslashes(urldecode($_GET['attributeList'])).";");
 	else
-		$attributeList=unserialize($_SESSION['attributeList']);
+		@$attributeList=unserialize($_SESSION['attributeList']);
 }
 if ($misc->GetVariable('typeList') != null)
 {
@@ -48,7 +48,7 @@ if ($misc->GetVariable('typeList') != null)
 	}
 	else
 	{
-		$typeList = unserialize($_SESSION['typeList']);
+		@$typeList = unserialize($_SESSION['typeList']);
 		if (count($typeList) == 0)
 		{
 			$typeList = null;
