@@ -9,7 +9,7 @@ if ($_GET['id'] != ''){
 
 	if ($plugin->pluginId){
 		header ("Content-Type: application/force-download");
-		header('Content-Disposition: attachment; filename="class.'.strtolower($plugin->name).'.php"');
+		header('Content-Disposition: attachment; filename="plugin.'.strtolower($plugin->name).'.php"');
 		echo stripslashes(base64_decode($plugin->code));
 
 	}
