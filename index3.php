@@ -39,12 +39,13 @@ if (isset($_SESSION['objectString']))
 		$typeList = unserialize($_SESSION['typeList']);
 		$objectName = $_SESSION['objectName'];
 		$language = $_SESSION['language'];
+		$wrapper = $_SESSION['wrapper'];
 		$pdoDriver = $_SESSION['pdoDriver'];
 		$dbEncoding = "0";
 
 		try
 		{
-			$package = unserialize($client->GeneratePackage($objectName, $attributeList, $typeList, $language, $pdoDriver, $dbEncoding));
+			$package = unserialize($client->GeneratePackage($objectName, $attributeList, $typeList, $language, $wrapper, $pdoDriver, $dbEncoding));
 		}
 
 		catch (SoapFault $e)
