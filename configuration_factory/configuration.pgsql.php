@@ -1,4 +1,6 @@
 <?php
+//IMPORTANT:
+//Rename this file to configuration.php after having inserted all the correct db information
 if (!isset($_SESSION))
 {
 	session_start();

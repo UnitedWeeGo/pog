@@ -1,4 +1,6 @@
 <?php
+//IMPORTANT:
+//Rename this file to configuration.php after having inserted all the correct db information
 /**
  * http://groups.google.com/group/mailing.www.php-dev/browse_thread/thread/6e0f0cea5cfb106a/83647b79c1867e06%2383647b79c1867e06?sa=X&oi=groupsr&start=0&num=3
  */

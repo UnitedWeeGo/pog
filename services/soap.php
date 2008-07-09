@@ -468,7 +468,7 @@ function GeneratePackage($objectName, $attributeList, $typeList, $language, $wra
 	$package["setup"]["setup_library"] = array();
 
 	//generate configuration file
-	$package["configuration.php"] = GenerateConfiguration($wrapper, $pdoDriver, $db_encoding);
+	$package["configuration.example.php"] = GenerateConfiguration($wrapper, $pdoDriver, $db_encoding);
 
 	//generate objects
 

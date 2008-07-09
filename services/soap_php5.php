@@ -348,7 +348,7 @@ class ServiceClass
 		$package["setup"]["setup_library"] = array();
 
 		//generate configuration file
-		$package["configuration.php"] = $this->GenerateConfiguration($wrapper, $pdoDriver, $db_encoding);
+		$package["configuration.example.php"] = $this->GenerateConfiguration($wrapper, $pdoDriver, $db_encoding);
 
 		//generate objects
 
