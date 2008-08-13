@@ -366,7 +366,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	}
 	$connection = Database::Connect();
 	$count = 0;
-	$sql = 'show index from `guest` where Key_name = "searching"';
+	$sql = 'show index from `'.strtolower($_SESSION['objectName']).'` where Key_name = "searching"';
 	$cursor = Database::Reader($sql,$connection);
 	while ($row = Database::Read($cursor))
 	{
