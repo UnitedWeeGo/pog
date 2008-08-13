@@ -57,7 +57,7 @@ include_once "setup_misc.php";
 					$linkParts1 = split("\*\/", $contentParts[1]);
 					$linkParts2 = split("\@link", $linkParts1[0]);
 					$link = $linkParts2[1];
-					$options = false;
+					$options = array();
 					if ($GLOBALS['configuration']['proxy_host'] != false &&
 						$GLOBALS['configuration']['proxy_port'] != false &&
 						$GLOBALS['configuration']['proxy_username'] != false &&
