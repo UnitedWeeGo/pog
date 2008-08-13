@@ -1,6 +1,6 @@
 <?php
 global $configuration;
-$configuration['soap'] = "http://localhost/pog_dev/services/soap.php?wsdl";
+$configuration['soap'] = "http://www.phpobjectgenerator.com/services/pog.wsdl";
 $configuration['homepage'] = "http://localhost/pog_dev";
 $configuration['revisionNumber'] = "";
 $configuration['versionNumber'] = "3.0";
@@ -16,10 +16,10 @@ $configuration['db_encoding'] = 0;
 
 // edit the information below to match your database settings
 
-$configuration['db']	= 'evaa'; 		//	database name
+$configuration['db']	= 'test'; 		//	database name
 $configuration['host']	= 'localhost';	//	database host
 $configuration['user']	= 'root';		//	database user
-$configuration['pass']	= 'givvinus';		//	database password
+$configuration['pass']	= 'pass';		//	database password
 $configuration['port'] 	= '3306';		//	database port
 
 
@@ -28,5 +28,9 @@ $configuration['proxy_host'] = false;
 $configuration['proxy_port'] = false;
 $configuration['proxy_username'] = false;
 $configuration['proxy_password'] = false;
+
+//plugin settings
+$configuration['plugins_path'] = 'C:/mycode/pog/tests/php5/app/plugins';  //absolute path to plugins folder, e.g c:/mycode/test/plugins or /home/phpobj/public_html/plugins
+
 
 ?>

@@ -164,12 +164,13 @@ function refTree(offset, limit, objectName)
     http.send(null);
 }
 
-function sndReq(action, openNodes, objectName, objectId, currentNode, attributes, anchor)
+function sndReq(action, openNodes, objectName, objectId, currentNode, attributes, anchor, search)
 {
 
-
+	if(search==undefined){search='';}
 	http = createRequestObject();
 	var req = './rpc.php?action='+action+'&opennodes='+openNodes+'&objectname='+objectName+'&objectid='+objectId+'&currentnode='+currentNode+'&anchor='+anchor;
+	if (search!=''){req += '&s='+search;}
 	if (action == "Add")
 	{
 		for (i=0; i<attributes.length; i++)
@@ -270,4 +271,51 @@ function ToggleElementVisibility(elementId)
 	{
 		element.style.display = 'inline';
 	}
+}
+window.onload = function(){
+	if ($('search_objects')){
+		$('search_objects').onclick = function(){$('search_objects').value='';}
+		if(navigator.userAgent.indexOf("Safari")>0){
+			$('search_objects').addEventListener("keydown",liveSearchKeyPress,false)
+		} else if(navigator.product=="Gecko"){
+			$('search_objects').addEventListener("keypress",liveSearchKeyPress,false)
+		}else{
+			$('search_objects').attachEvent('onkeydown',liveSearchKeyPress)
+			isIE=true
+		}
+		$('search_objects').setAttribute("autocomplete","off")
+	}
+}
+function restoreTree(){
+	sndReq('GetList', '', $('hidden_object_name').value, '', '', '', $('hidden_object_name').value);
+}
+function liveSearchHide(){
+	t=window.setTimeout("restoreTree()",200)
+}
+function liveSearchKeyPress(event){
+	if(event.keyCode==27){
+		liveSearchHide()
+	} else{
+		liveSearchStart();
+	}
+}
+function liveSearchStart(){
+	try{
+		if(t){
+			window.clearTimeout(t)
+		}
+	}catch(e){}
+	t=window.setTimeout("liveSearchDoSearch()",200)
+}
+function liveSearchDoSearch(){
+	if(typeof liveSearchRoot=="undefined"){
+		liveSearchRoot=""
+	}
+	if(typeof liveSearchRootSubDir=="undefined"){
+		liveSearchRootSubDir="";
+	}
+	if(typeof liveSearchParams=="undefined"){
+		liveSearchParams="";
+	}
+	sndReq('Search', '', $('hidden_object_name').value, '', '', '', $('hidden_object_name').value, $('search_objects').value);
 }

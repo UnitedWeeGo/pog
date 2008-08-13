@@ -4,13 +4,13 @@
 
 	CREATE TABLE `objectsiblingmap` (
 	`objectid` int(11) NOT NULL,
-	`siblingid` int(11) NOT NULL,INDEX(`objectid`, `siblingid`));
+	`siblingid` int(11) NOT NULL,INDEX(`objectid`, `siblingid`)) ENGINE=MyISAM;
 */
 
 /**
 * <b>objectsiblingMap</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 3.0 / PHP5
+* @version POG 3.0e / PHP5
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 */
 class objectsiblingMap

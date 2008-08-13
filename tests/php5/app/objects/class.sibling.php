@@ -4,13 +4,13 @@
 
 	CREATE TABLE `sibling` (
 	`siblingid` int(11) NOT NULL auto_increment,
-	`attribute` VARCHAR(255) NOT NULL, PRIMARY KEY  (`siblingid`));
+	`attribute` VARCHAR(255) NOT NULL, PRIMARY KEY  (`siblingid`)) ENGINE=MyISAM;
 */
 
 /**
 * <b>sibling</b> class with integrated CRUD methods.
 * @author Php Object Generator
-* @version POG 3.0 / PHP5
+* @version POG 3.0e / PHP5
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
 * @link http://www.phpobjectgenerator.com/?language=php5&wrapper=pog&objectName=sibling&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27JOIN%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
@@ -90,13 +90,13 @@ class sibling extends POG_Base
 	*/
 	function GetList($fcv_array = array(), $sortBy='', $ascending=true, $limit='')
 	{
+		$connection = Database::Connect();
 		$sqlLimit = ($limit != '' ? "LIMIT $limit" : '');
 		$this->pog_query = "select * from `sibling` ";
+		$siblingList = Array();
 		if (sizeof($fcv_array) > 0)
 		{
-			$siblingList = Array();
 			$this->pog_query .= " where ";
-			$connection = Database::Connect();
 			for ($i=0, $c=sizeof($fcv_array); $i<$c; $i++)
 			{
 				if (sizeof($fcv_array[$i]) == 1)
