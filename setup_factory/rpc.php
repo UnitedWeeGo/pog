@@ -153,6 +153,15 @@ switch($action)
     	$instance->Save();
     	RefreshTree($anchor, $root);
     break;
+    case 'Search':
+		eval ('$instance = new '.$objectName.'();');
+		@$list = $instance->Search($_GET['s']);
+		if(sizeof($list) == 0){
+			echo '<div style="width:200px; height:30px;padding:100px 70px;text-align:center;">No object found</div>';
+		} else{
+			DisplayTree($list, $anchor, $root, $offset, $limit, true);
+		}
+	break;
  }
 
  /**
@@ -170,12 +179,20 @@ switch($action)
  		}
 		$sqlLimit = "$offset, $limit";
 
+ 		eval ('$instance = new '.$objectName.'();');
+
+		$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0)), strtolower($objectName)."Id", false, $sqlLimit);
+		DisplayTree($instanceList, $objectName, $root, $offset, $limit);
+ }
+ function DisplayTree($instanceList,$objectName, $root, $offset = '', $limit = '', $searching=false){
  		$js = "new Array(";
  		eval ('$instance = new '.$objectName.'();');
  		$recCount = GetNumberOfRecords(strtolower($objectName));
+		if($searching){
+ 			$recCount = sizeof($instanceList);
+		}
 		$attributeList = array_keys(get_object_vars($instance));
-		$instanceList = $instance->GetList(array(array(strtolower($objectName)."Id",">",0)), strtolower($objectName)."Id", false, $sqlLimit);
-		$x = 0;
+ 		$x = 0;
 		$masterNode = &$root->addItem(new XNode("<span style='color:#998D05'>".$objectName."</span>&nbsp;<span style='font-weight:normal'>{Dimensions:[".sizeof($instanceList)."]}</span>", false, "setup_images/folderclose.gif","setup_images/folderopen.gif"));
 		$node = &$masterNode->addItem(new XNode("<span style='color:#998D05'>ADD RECORD</span>", false,"setup_images/folderclose.gif","setup_images/folderopen.gif"));
 		foreach($attributeList as $attribute)
@@ -214,7 +231,7 @@ switch($action)
 		$pre .= "<b>".($recCount-$offset-$limit < 0 ? 0 : $recCount-$offset-$limit)." - ".($recCount-$offset)." of $recCount </b>";
 		$menu_html_code .= "<b>".($recCount-$offset-$limit < 0 ? 0 : $recCount-$offset-$limit)." - ".($recCount-$offset)." of $recCount </b>";
 
-		if ($offset <= $recCount - $limit)
+		if (($offset <= $recCount - $limit) && $limit != '')
 		{
 			$pre .= "| <a href='#' onclick='javascript:refTree(".($offset+$limit).", $limit, \"$objectName\");return false;'>Older</a>&#8250;&#8250;";
 			$menu_html_code.= "| <a href='#' onclick='javascript:refTree(".($offset+$limit).", $limit, \"$objectName\");return false;'>Older</a>&#8250;&#8250;";

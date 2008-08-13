@@ -524,11 +524,19 @@ else if($_SESSION['diagnosticsSuccessful'] == true && (!isset($_GET['plugins']) 
 			//echo "<a href='./index.php?objectName=".$objectNameList[$i]."'".(isset($_SESSION['objectName']) && $_SESSION['objectName']==$objectNameList[$i]?"class='activetab'":(!isset($_SESSION['objectName'])&&$i==0?"class='activetab'":"inactivetab")).">".$objectNameList[$i]."</a> ";
 		}
 	}
+	$connection = Database::Connect();
+	$count = 0;
+	$sql = 'show index from `guest` where Key_name = "searching"';
+	$cursor = Database::Reader($sql,$connection);
+	while ($row = Database::Read($cursor))
+	{
+		$count++;
+	}
 	?>
 	</ul>
 	</div><!--header-->
 	</div><!--subtabs-->
-	<div class="toolbar"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" title="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="#" title="Delete all objects" onclick="if (confirm('Are you sure you want to delete all objects in this table? TPress OK to Delete.')){window.location='./?thrashall=true';}else{alert('Phew, nothing was deleted ;)');}"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="#" title="update all objects to newest POG version" onclick="if (confirm('Setup will now attempt to upgrade your objects by contacting the POG SOAP server. Would you like to continue?')){window.location='./setup_library/upgrade.php';}else{alert('Upgrade aborted');}"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><div class="middle3">
+	<div class="toolbar"><div style="float:left;"><a href="<?php echo $_SESSION['links'][$_SESSION['objectName']]?>" target="_blank" title="modify and regenerate object"><img src="./setup_images/setup_regenerate.jpg" border="0"/></a><a href="#" title="Delete all objects" onclick="if (confirm('Are you sure you want to delete all objects in this table? TPress OK to Delete.')){window.location='./?thrashall=true';}else{alert('Phew, nothing was deleted ;)');}"><img src='./setup_images/setup_deleteall.jpg' alt='delete all' border="0"/></a><a href="#" onclick="javascript:expandAll();return false;" title="expand all nodes"><img src='./setup_images/setup_expandall.jpg' alt='expand all' border="0"/></a><a href="#" onclick="javascript:collapseAll();return false;" title="collapse all nodes"><img src='./setup_images/setup_collapseall.jpg' alt='collapse all' border="0"/></a><a href="#" title="update all objects to newest POG version" onclick="if (confirm('Setup will now attempt to upgrade your objects by contacting the POG SOAP server. Would you like to continue?')){window.location='./setup_library/upgrade.php';}else{alert('Upgrade aborted');}"><img src='./setup_images/setup_updateall.jpg' alt='update all objects' border='0'/></a></div><?if ($count>0){?><div style="position:relative;float:left;height:20px;padding-top:10px;padding-left:15px;width:100px;"><input id='search_objects' type="text" name="Search" value="Search <?=ucfirst($_SESSION['objectName'])?>" style="color:#666;font-size:9px;" /></div><? } ?></div><div class="middle3">
 	<?php
 	//is there an action to perform?
 	if (isset($_GET['thrashall']))
@@ -552,6 +560,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true && (!isset($_GET['plugins']) 
 </div><!--container-->
 </form>
 <?php
+echo "<input id='hidden_object_name' type='hidden' value='".$objectName."'></input>";
 echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</script>";
 }
 else if ($_SESSION['diagnosticsSuccessful'] && $_GET['plugins'])

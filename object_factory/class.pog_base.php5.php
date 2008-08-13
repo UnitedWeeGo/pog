@@ -86,10 +86,10 @@ class POG_Base
 	 * @param string $objectClass. POG Object type to return
 	 * @param bool $lazy. If true, will also load all children/sibling
 	 */
-	public function FetchObjects($query, $objectClass, $lazy = true)
+	protected function FetchObjects($query, $objectClass, $lazy = true)
 	{
 		$databaseConnection = Database::Connect();
-		$result = Database::Query($query, $databaseConnection);
+		$result = Database::Reader($query, $databaseConnection);
 		$objectList = $this->CreateObjects($result, $objectClass, $lazy);
 		return $objectList;
 	}
@@ -97,32 +97,37 @@ class POG_Base
 	private function CreateObjects($mysql_result, $objectClass, $lazyLoad = true)
 	{
 		$objectList = array();
-		while ($row = mysql_fetch_assoc($mysql_result))
-		{
-			$pog_object = new $objectClass();
-			$this->PopulateObjectAttributes($row, $pog_object);
-			$objectList[] = $pog_object;
+		if ($mysql_result != null){
+			while ($row =  Database::Read($mysql_result))
+			{
+				$pog_object = new $objectClass();
+				$this->PopulateObjectAttributes($row, $pog_object);
+				$objectList[] = $pog_object;
+			}
 		}
 		return $objectList;
 	}
 
 	private function PopulateObjectAttributes($fetched_row, $pog_object)
 	{
- 		foreach ($this->GetAttributes($pog_object) as $column)
+		$att = $this->GetAttributes($pog_object);
+ 		foreach ($att as $column)
 		{
 			$pog_object->{$column} = $this->Unescape($fetched_row[strtolower($column)]);
 		}
 		return $pog_object;
 	}
 
-	private function GetAttributes($object)
+	public function GetAttributes($object, $type='')
 	{
 		$columns = array();
 		foreach ($object->pog_attribute_type as $att => $properties)
 		{
 			if ($properties['db_attributes'][0] != 'OBJECT')
 			{
-				$columns[] = $att;
+				if (($type != '' && strtolower($type) == strtolower($properties['db_attributes'][0])) || $type == ''){
+					$columns[] = $att;
+				}
 			}
 		}
 		return $columns;
