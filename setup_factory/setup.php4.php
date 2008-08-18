@@ -395,6 +395,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true)
 	echo '<div id="container"></div>';
 	$_SESSION['fileNames'] = serialize($fileNames);
 	$_SESSION['objectNameList'] = serialize($objectNameList);
+	$_SESSION['pluginNameList'] = serialize($pluginNameList);
 ?>
 <b class="rbottom"><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></b>
 </div><!--middle3-->
