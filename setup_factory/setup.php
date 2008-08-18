@@ -610,18 +610,19 @@ else if ($_SESSION['diagnosticsSuccessful'] && $_GET['plugins'])
   	<ul>
   	<li id='inactive'>My Plugins:</li>
 	<?php
-	if (isset($_GET['pluginName']))
+	if (isset($_GET['pluginName']) && $_GET['pluginName'] != '')
 	{
 		$_SESSION['pluginName'] = $_GET['pluginName'];
+	} else{
+		$_SESSION['pluginName'] = $pluginNameList[0];
 	}
-	$pluginName = (isset($_SESSION['pluginName'])?$_SESSION['pluginName']:$pluginNameList[0]);
-	$_SESSION['pluginName'] = $pluginName;
+	$pluginName = $_SESSION['pluginName'];
 	for($i=0; $i<count($pluginNameList); $i++)
 	{
 		$name = $pluginNameList[$i];
-		echo "<li ".($_SESSION['pluginName']==$pluginNameList[$i]?"id='current'":'')."><a href='./index.php?plugins=true&pluginName=".$pluginNameList[$i]."'>".$pluginNameList[$i]."</a></li>";
+		echo "<li ".($pluginName==$pluginNameList[$i]?"id='current'":'')."><a href='./index.php?plugins=true&pluginName=".$pluginNameList[$i]."'>".$pluginNameList[$i]."</a></li>";
 	}
-	$pluginInstance = new $_SESSION['pluginName']('', '');
+	$pluginInstance = new $pluginName('', '');
 	?>
 	</ul>
 	</div><!--header-->
