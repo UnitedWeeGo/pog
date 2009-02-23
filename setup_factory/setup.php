@@ -123,7 +123,7 @@ if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 			if(strlen($file) > 4 && substr(strtolower($file), strlen($file) - 4) === '.php' && !is_dir($file) && $file != "class.database.php" && $file != "class.pog_base.php")
 			{
 				$objects[] = $file;
-				include("../objects/{$file}");
+				include_once("../objects/{$file}");
 			}
 		}
 		closedir($dir);
