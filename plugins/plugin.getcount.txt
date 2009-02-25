@@ -69,7 +69,7 @@ class GetCount
 		$cursor = Database::Reader($sql, $connection);
 		while ($row = Database::Read($cursor))
 		{
-			$count = $row['mycount'];
+			$count = intval($row['mycount']);
 		}
 		return $count;
 	}
