@@ -533,34 +533,34 @@ class Object
 			$indentation .= "\t";
 		}
 		$this->string .= $indentation."\$connection = Database::Connect();";
-		$this->string .= $indentation."\$pog_query = \"delete from `".strtolower($this->objectName)."` where \";";
+		$this->string .= $indentation."\$this->pog_query = \"delete from `".strtolower($this->objectName)."` where \";";
 		$this->string .= $indentation."for (\$i=0, \$c=sizeof(\$fcv_array); \$i<\$c; \$i++)";
 		$this->string .= $indentation."{";
 		$this->string .= $indentation."\tif (sizeof(\$fcv_array[\$i]) == 1)";
 		$this->string .= $indentation."\t{";
-		$this->string .= $indentation."\t\t\$pog_query .= \" \".\$fcv_array[\$i][0].\" \";";
+		$this->string .= $indentation."\t\t\$this->pog_query .= \" \".\$fcv_array[\$i][0].\" \";";
 		$this->string .= $indentation."\t\tcontinue;";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."\telse";
 		$this->string .= $indentation."\t{";
 		$this->string .= $indentation."\t\tif (\$i > 0 && sizeof(\$fcv_array[\$i-1]) !== 1)";
 		$this->string .= $indentation."\t\t{";
-		$this->string .= $indentation."\t\t\t\$pog_query .= \" AND \";";
+		$this->string .= $indentation."\t\t\t\$this->pog_query .= \" AND \";";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t\tif (isset(\$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes']) && \$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'NUMERIC' && \$this->pog_attribute_type[\$fcv_array[\$i][0]]['db_attributes'][0] != 'SET')";
 		$this->string .= $indentation."\t\t{";
 		$this->string .= $indentation."\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= $indentation."\t\t\t{";
-		$this->string .= $indentation."\t\t\t\t\$pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
 		$this->string .= $indentation."\t\t\t}";
 		$this->string .= $indentation."\t\t\telse";
 		$this->string .= $indentation."\t\t\t{";
-		$this->string .= $indentation."\t\t\t\t\$pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
+		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
 		$this->string .= $indentation."\t\t\t}";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."}";
-		$this->string .= $indentation."return Database::NonQuery(\$pog_query, \$connection);";
+		$this->string .= $indentation."return Database::NonQuery(\$this->pog_query, \$connection);";
 		if ($deep)
 		{
 			$this->string .= "\n\t\t\t}";
