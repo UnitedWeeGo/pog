@@ -80,6 +80,7 @@ class Object
 	}
 
 	// -------------------------------------------------------------
+
 	function EndObject()
 	{
 		$this->string .= "\n}\n?>";
@@ -555,12 +556,18 @@ class Object
 		$this->string .= $indentation."\t\t{";
 		$this->string .= $indentation."\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= $indentation."\t\t\t{";
-		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= $indentation."\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \"'\".\$fcv_array[\$i][2].\"'\";";
+		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= $indentation."\t\t\t}";
 		$this->string .= $indentation."\t\t\telse";
 		$this->string .= $indentation."\t\t\t{";
-		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
+		$this->string .= $indentation."\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \"'\".\$this->Escape(\$fcv_array[\$i][2]).\"'\";";
+		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= $indentation."\t\t\t}";
+		$this->string .= $indentation."\t\t}";
+		$this->string .= $indentation."\t\telse";
+		$this->string .= $indentation."\t\t{";
+		$this->string .= $indentation."\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" '\".\$fcv_array[\$i][2].\"'\";";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."}";
