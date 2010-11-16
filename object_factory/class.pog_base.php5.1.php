@@ -56,7 +56,7 @@ class POG_Base
 		{
 			return base64_encode($text);
 		}
-		return addslashes($text);
+		return mysql_real_escape_string($text);
 	}
 
 	/**
