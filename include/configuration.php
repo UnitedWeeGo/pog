@@ -1,6 +1,6 @@
 <?
 global $configuration;
-$configuration['soapEngine'] = "nusoap"; //other value is "phpsoap"
+$configuration['soapEngine'] = "phpsoap"; //other value is "nusoap"
 $configuration['soap'] = "http://pog.weegoapp.com/services/soap.php?wsdl";
 $configuration['homepage'] = "http://pog.weegoapp.com";
 $configuration['revisionNumber']="";
