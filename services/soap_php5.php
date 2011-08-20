@@ -1,7 +1,7 @@
 <?php
 include_once("../include/configuration.php");
 
-$server = new SoapServer('pog.wsdl');
+$server = new SoapServer('pog2.wsdl');
 $server->setClass('ServiceClass');
 $server->handle();
 
