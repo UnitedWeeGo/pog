@@ -13,7 +13,7 @@
 * @author Php Object Generator
 * @version POG 3.0 / PHP4
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
-* @link http://www.phpobjectgenerator.com/?language=php4&wrapper=pog&objectName=object&attributeList=array+%28%0A++0+%3D%3E+%27child%27%2C%0A++1+%3D%3E+%27parent_%27%2C%0A++2+%3D%3E+%27attribute%27%2C%0A++3+%3D%3E+%27sibling%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27HASMANY%27%2C%0A++1+%3D%3E+%27BELONGSTO%27%2C%0A++2+%3D%3E+%27VARCHAR%28255%29%27%2C%0A++3+%3D%3E+%27JOIN%27%2C%0A%29
+* @link http://pog.weegoapp.com/?language=php4&wrapper=pog&objectName=object&attributeList=array+%28%0A++0+%3D%3E+%27child%27%2C%0A++1+%3D%3E+%27parent_%27%2C%0A++2+%3D%3E+%27attribute%27%2C%0A++3+%3D%3E+%27sibling%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27HASMANY%27%2C%0A++1+%3D%3E+%27BELONGSTO%27%2C%0A++2+%3D%3E+%27VARCHAR%28255%29%27%2C%0A++3+%3D%3E+%27JOIN%27%2C%0A%29
 */
 include_once('class.pog_base.php');
 include_once('class.objectsiblingmap.php');
