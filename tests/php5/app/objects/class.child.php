@@ -13,7 +13,7 @@
 * @author Php Object Generator
 * @version POG 3.0e / PHP5
 * @copyright Free for personal & commercial use. (Offered under the BSD license)
-* @link http://pog.weegoapp.com/?language=php5&wrapper=pog&objectName=child&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27BELONGSTO%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
+* @link http://www.phpobjectgenerator.com/?language=php5&wrapper=pog&objectName=child&attributeList=array+%28%0A++0+%3D%3E+%27object%27%2C%0A++1+%3D%3E+%27attribute%27%2C%0A%29&typeList=array+%28%0A++0+%3D%3E+%27BELONGSTO%27%2C%0A++1+%3D%3E+%27VARCHAR%28255%29%27%2C%0A%29
 */
 include_once('class.pog_base.php');
 class child extends POG_Base

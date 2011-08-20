@@ -1,6 +1,6 @@
 <?php
 global $configuration;
-$configuration['soap'] = "http://pog.weegoapp.com/services/pog2.wsdl";
+$configuration['soap'] = "http://www.phpobjectgenerator.com/services/pog.wsdl";
 $configuration['homepage'] = "http://localhost/pog_dev";
 $configuration['revisionNumber'] = "";
 $configuration['versionNumber'] = "3.0";

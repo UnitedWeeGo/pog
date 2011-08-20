@@ -3,7 +3,7 @@
 //Rename this file to configuration.php after having inserted all the correct db information
 
 global $configuration;
-$configuration['soap'] = "http://pog.weegoapp.com/services/pog2.wsdl";
+$configuration['soap'] = "http://www.phpobjectgenerator.com/services/pog.wsdl";
 $configuration['homepage'] = "http://www.phpobjectgenerator.com";
 $configuration['revisionNumber'] = "";
 $configuration['versionNumber'] = "3.0e";
