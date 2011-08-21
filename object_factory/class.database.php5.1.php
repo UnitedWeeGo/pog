@@ -53,6 +53,21 @@
 		return $result;
 	}
 
+	public static function ReaderPrepared($query, $bindings)
+	{
+		try
+		{
+			$r = self::$connection->prepare($query);
+			$r->execute($bindings);			
+			$result = $r;
+		}
+		catch(PDOException $e)
+		{
+			return false;
+		}
+		return $result;
+	}
+
 	public static function Read($result)
 	{
 		try
@@ -123,6 +138,21 @@
 			self::Connect();
 		}
 		return self::$connection->quote($value); 
+	}
+
+	public static function InsertOrUpdatePrepared($query, $bindings)
+	{
+		try
+		{
+			$r = self::$connection->prepare($query);
+			$r->execute($bindings);
+			return self::$connection->lastInsertId();
+		}
+		catch (PDOException $e)
+		{
+			error_log($e->getMessage());
+			return false;
+		}
 	}
 
 }
