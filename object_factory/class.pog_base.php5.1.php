@@ -46,6 +46,59 @@ class POG_Base
 	///////////////////////////
 
 	/**
+	* This function will escape and quote $text
+	* @param string $text
+	* @return string escaped and single quoted
+	*/
+	public function Quote($text)
+	{
+		return Database::Quote($text);
+	}
+
+	/**
+	* This function will try to encode and quote $text to base64, except when $text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.
+	* @param string $text
+	* @return string encoded to base64
+	*/
+	public function QuoteEscape($text)
+	{
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
+		{
+			return base64_encode($text);
+		}
+		return $this->Quote($text);
+	}
+
+	/**
+	* This function will try to encode $text to base64, except when $text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.
+	* @param string $text
+	* @return string encoded to base64
+	*/
+	public function Encode($text)
+	{
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
+		{
+			return base64_encode($text);
+		}
+		return ($text);
+	}
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $text
+	 * @return unknown
+	 */
+	public function Decode($text)
+	{
+		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
+		{
+			return base64_decode($text);
+		}
+		return ($text);
+	}
+
+
+	/**
 	* This function will try to encode $text to base64, except when $text is a number. This allows us to Escape all data before they're inserted in the database, regardless of attribute type.
 	* @param string $text
 	* @return string encoded to base64
@@ -56,9 +109,8 @@ class POG_Base
 		{
 			return base64_encode($text);
 		}
-		return addslashes($text);
+		return mysql_real_escape_string($text);
 	}
-
 	/**
 	 * Enter description here...
 	 *
@@ -71,7 +123,7 @@ class POG_Base
 		{
 			return base64_decode($text);
 		}
-		return stripcslashes($text);
+		return ($text);
 	}
 
 
