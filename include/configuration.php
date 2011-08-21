@@ -1,4 +1,7 @@
 <?
+
+ini_set('soap.wsdl_cache_ttl', 1);
+
 global $configuration;
 $configuration['soapEngine'] = "phpsoap"; //other value is "nusoap"
 $configuration['soap'] = "http://pog.weegoapp.com/services/soap.php?wsdl";
