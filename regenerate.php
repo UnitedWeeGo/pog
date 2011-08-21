@@ -76,7 +76,7 @@ if (isset($_POST['atlink']))
 <link rel="stylesheet" href="phpobjectgenerator.css" type="text/css" />
 <link rel="stylesheet" type="text/css" href="./setup_library/xPandMenu.css"/>
 <div align="center">
-<form action="./regenerate.php" method="post"><br/>
+<form action="./regenerate.php" method="POST"><br/>
 <img src="setup_factory/setup_files/setup_images/mini_pog.jpg"/><br/><br/>
 Paste @link below<br/><br/>
 <input name="atlink" type="text" class="i" style="width:500px;"/>

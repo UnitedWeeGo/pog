@@ -34,7 +34,7 @@ ini_set("max_execution_time", 0);
 if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
 {
 ?>
-<form action="./index.php" method="post">
+<form action="./index.php" method="POST">
 <div class="container">
 <div class="left">
 	<div class="logo2"></div>
@@ -446,7 +446,7 @@ else if($_SESSION['diagnosticsSuccessful'] == true && (!isset($_GET['plugins']) 
 {
 	$pluginNameList = unserialize($_SESSION['pluginNameList']);
 ?>
-<form action="./index.php" method="post">
+<form action="./index.php" method="POST">
 <div class="container">
 	<div class="left">
 		<div class="logo3"></div>
@@ -561,7 +561,7 @@ echo "<script>sndReq('GetList', '', '$objectName', '', '', '', '$objectName');</
 else if ($_SESSION['diagnosticsSuccessful'] && $_GET['plugins'])
 {
 ?>
-<form action="./index.php?plugins=true" method="post">
+<form action="./index.php?plugins=true" method="POST">
 	<div class="container">
 	<div class="left">
 		<div class="logo3"></div>
@@ -659,7 +659,7 @@ else
 	unset($_SESSION['objectNameList'], $_SESSION['fileNames'], $_SESSION['links'], $_SESSION['pluginNameList']);
 	//welcome screen
 ?>
-<form action="./index.php" method="post">
+<form action="./index.php" method="POST">
 <div class="container">
 	<div class="left">
 		<div class="logo"></div>

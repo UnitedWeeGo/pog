@@ -40,7 +40,7 @@ if(!isset($_SESSION['diagnosticsSuccessful']) || (isset($_GET['step']) && $_GET[
 <div class="header">
 <?php include "setup_library/inc.header.php";?>
 </div>
-<form action="./index.php" method="post">
+<form action="./index.php" method="POST">
 <?php
 ini_set("error_reporting", 0);
 if(count($_POST) > 0 && $_SESSION['diagnosticsSuccessful']==false)
