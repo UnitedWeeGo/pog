@@ -8,6 +8,8 @@
 */
  Class Database
 {
+	private static $connection = null;
+	
 	private function Database()
 	{
 		$databaseName = $GLOBALS['configuration']['db'];
@@ -34,14 +36,30 @@
 		{
 			$database = new Database();
 		}
+		self::$connection = $database->connection;
 		return $database->connection;
 	}
 
-	public static function Reader($query, $connection)
+	public static function Reader($query)
 	{
 		try
 		{
-			$result = $connection->Query($query);
+			$result = self::$connection->Query($query);
+		}
+		catch(PDOException $e)
+		{
+			return false;
+		}
+		return $result;
+	}
+
+	public static function ReaderPrepared($query, $bindings)
+	{
+		try
+		{
+			$r = self::$connection->prepare($query);
+			$r->execute($bindings);			
+			$result = $r;
 		}
 		catch(PDOException $e)
 		{
@@ -62,11 +80,11 @@
 		}
 	}
 
-	public static function NonQuery($query, $connection)
+	public static function NonQuery($query)
 	{
 		try
 		{
-			$r = $connection->query($query);
+			$r = self::$connection->query($query);
 			if ($r === false)
 			{
 				return 0;
@@ -80,12 +98,12 @@
 
 	}
 
-	public static function Query($query, $connection)
+	public static function Query($query)
 	{
 		try
 		{
 			$i = 0;
-			$r = $connection->query($query);
+			$r = self::$connection->query($query);
 			foreach ($r as $row)
 			{
 				$i++;
@@ -94,21 +112,48 @@
 		}
 		catch (PDOException $e)
 		{
+			error_log($e->getMessage());
 			return false;
 		}
 	}
 
-	public static function InsertOrUpdate($query, $connection)
+	public static function InsertOrUpdate($query)
 	{
 		try
 		{
-			$r = $connection->query($query);
-			return $connection->lastInsertId();
+			$r = self::$connection->query($query);
+			return self::$connection->lastInsertId();
 		}
 		catch (PDOException $e)
 		{
+			error_log($e->getMessage());
 			return false;
 		}
 	}
+
+	public static function Quote($value)
+	{
+		if(is_null(self::$connection))
+		{
+			self::Connect();
+		}
+		return self::$connection->quote($value); 
+	}
+
+	public static function InsertOrUpdatePrepared($query, $bindings)
+	{
+		try
+		{
+			$r = self::$connection->prepare($query);
+			$r->execute($bindings);
+			return self::$connection->lastInsertId();
+		}
+		catch (PDOException $e)
+		{
+			error_log($e->getMessage());
+			return false;
+		}
+	}
+
 }
 ?>
