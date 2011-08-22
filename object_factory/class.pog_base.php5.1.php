@@ -50,9 +50,9 @@ class POG_Base
 	* @param string $text
 	* @return string escaped and single quoted
 	*/
-	public function Quote($text)
+	public function Quote($text, $connection)
 	{
-		return Database::Quote($text);
+		return Database::Quote($text, $connection);
 	}
 
 	/**
@@ -60,13 +60,13 @@ class POG_Base
 	* @param string $text
 	* @return string encoded to base64
 	*/
-	public function QuoteEscape($text)
+	public function QuoteEscape($text, $connection)
 	{
 		if ($GLOBALS['configuration']['db_encoding'] && !is_numeric($text))
 		{
 			return base64_encode($text);
 		}
-		return $this->Quote($text);
+		return $this->Quote($text, $connection);
 	}
 
 	/**

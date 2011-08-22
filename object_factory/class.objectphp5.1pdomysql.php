@@ -222,8 +222,8 @@ class Object
 		$this->string .= "\n\t\t\$rows = 0;";
 		$this->string .= "\n\t\tif (!empty(\$this->".strtolower($this->objectName)."Id))";
 		$this->string .= "\n\t\t{";
-		$this->string .= "\n\t\t\t\$this->pog_query = \"select `".strtolower($this->objectName)."id` from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`=\".\$this->Quote(\$this->".strtolower($this->objectName)."Id).\" LIMIT 1\";";
-		$this->string .= "\n\t\t\t\$rows = Database::Query(\$this->pog_query);";
+		$this->string .= "\n\t\t\t\$this->pog_query = \"select `".strtolower($this->objectName)."id` from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`=\".\$this->Quote(\$this->".strtolower($this->objectName)."Id, \$connection).\" LIMIT 1\";";
+		$this->string .= "\n\t\t\t\$rows = Database::Query(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\tif (\$rows > 0)";
 		$this->string .= "\n\t\t{";
@@ -290,7 +290,7 @@ class Object
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\t\$this->pog_bind = array(".implode(',',$bind)."\n\t\t);";
 		unset($bind);
-		$this->string .= "\n\t\t\$insertId = Database::InsertOrUpdatePrepared(\$this->pog_query, \$this->pog_bind);";
+		$this->string .= "\n\t\t\$insertId = Database::InsertOrUpdatePrepared(\$this->pog_query, \$this->pog_bind, \$connection);";
 		$this->string .= "\n\t\tif (\$this->".strtolower($this->objectName)."Id == \"\")";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$insertId;";
@@ -424,8 +424,8 @@ class Object
 			}
 		}
 		$this->string .= "\n\t\t\$connection = Database::Connect();";
-		$this->string .= "\n\t\t\$this->pog_query = \"delete from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`=\".\$this->Quote(\$this->".strtolower($this->objectName)."Id);";
-		$this->string .= "\n\t\treturn Database::NonQuery(\$this->pog_query);";
+		$this->string .= "\n\t\t\$this->pog_query = \"delete from `".strtolower($this->objectName)."` where `".strtolower($this->objectName)."id`=\".\$this->Quote(\$this->".strtolower($this->objectName)."Id, \$connection);";
+		$this->string .= "\n\t\treturn Database::NonQuery(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t}";
 	}
 
@@ -478,22 +478,22 @@ class Object
 		$this->string .= $indentation."\t\t{";
 		$this->string .= $indentation."\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= $indentation."\t\t\t{";
-		$this->string .= $indentation."\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= $indentation."\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= $indentation."\t\t\t}";
 		$this->string .= $indentation."\t\t\telse";
 		$this->string .= $indentation."\t\t\t{";
-		$this->string .= $indentation."\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= $indentation."\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= $indentation."\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= $indentation."\t\t\t}";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t\telse";
 		$this->string .= $indentation."\t\t{";
-		$this->string .= $indentation."\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= $indentation."\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= $indentation."\t\t}";
 		$this->string .= $indentation."\t}";
 		$this->string .= $indentation."}";
-		$this->string .= $indentation."return Database::NonQuery(\$this->pog_query);";
+		$this->string .= $indentation."return Database::NonQuery(\$this->pog_query, \$connection);";
 		if ($deep)
 		{
 			$this->string .= "\n\t\t\t}";
@@ -514,7 +514,7 @@ class Object
 		$bind[] = "\n\t\t\t':".strtolower($this->objectName)."Id' => intval(\$".strtolower($this->objectName)."Id)";
 		$this->string .= "\n\t\t\$this->pog_bind = array(".implode(',',$bind)."\n\t\t);";
 
-		$this->string .= "\n\t\t\$cursor = Database::ReaderPrepared(\$this->pog_query, \$this->pog_bind);";
+		$this->string .= "\n\t\t\$cursor = Database::ReaderPrepared(\$this->pog_query, \$this->pog_bind, \$connection);";
 		$this->string .= "\n\t\twhile (\$row = Database::Read(\$cursor))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$this->".strtolower($this->objectName)."Id = \$row['".strtolower($this->objectName)."id'];";
@@ -576,18 +576,18 @@ class Object
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= "\n\t\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= "\n\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \"`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
@@ -617,7 +617,7 @@ class Object
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\t\$this->pog_query .= \" order by \".\$sortBy.\" \".(\$ascending ? \"asc\" : \"desc\").\" \$sqlLimit\";";
 		$this->string .= "\n\t\t\$thisObjectName = get_class(\$this);";
-		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query);";
+		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t\twhile (\$row = Database::Read(\$cursor))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($this->objectName)." = new \$thisObjectName();";
@@ -795,18 +795,18 @@ class Object
 		$this->string .= "\n\t\t\t\t\t{";
 		$this->string .= "\n\t\t\t\t\t\tif (\$GLOBALS['configuration']['db_encoding'] == 1)";
 		$this->string .= "\n\t\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= "\n\t\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \"BASE64_DECODE(\".\$fcv_array[\$i][2].\")\" : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"BASE64_DECODE(`\".\$fcv_array[\$i][0].\"`) \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= "\n\t\t\t\t\t\t\t\$value =  POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= "\n\t\t\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t\telse";
 		$this->string .= "\n\t\t\t\t\t{";
-		$this->string .= "\n\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2]);";
+		$this->string .= "\n\t\t\t\t\t\t\$value = POG_Base::IsColumn(\$fcv_array[\$i][2]) ? \$fcv_array[\$i][2] : \$this->Quote(\$fcv_array[\$i][2], \$connection);";
 		$this->string .= "\n\t\t\t\t\t\t\$this->pog_query .= \"a.`\".\$fcv_array[\$i][0].\"` \".\$fcv_array[\$i][1].\" \".\$value;";
 		$this->string .= "\n\t\t\t\t\t}";
 		$this->string .= "\n\t\t\t\t}";
@@ -835,7 +835,7 @@ class Object
 		$this->string .= "\n\t\t\t\$sortBy = \"a.".strtolower($sibling)."id\";";
 		$this->string .= "\n\t\t}";
 		$this->string .= "\n\t\t\$this->pog_query .= \" order by \".\$sortBy.\" \".(\$ascending ? \"asc\" : \"desc\").\" \$sqlLimit\";";
-		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query);";
+		$this->string .= "\n\t\t\$cursor = Database::Reader(\$this->pog_query, \$connection);";
 		$this->string .= "\n\t\twhile(\$rows = Database::Read(\$cursor))";
 		$this->string .= "\n\t\t{";
 		$this->string .= "\n\t\t\t\$".strtolower($sibling)." = new ".$sibling."();";
